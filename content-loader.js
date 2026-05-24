@@ -1,8 +1,10 @@
 /* Hello Chụp Ảnh — nạp nội dung & giao diện động (sửa qua /admin) */
 (function(){
   var REPO="hellochupanh/hellochupanh-web", BRANCH="main";
-  function raw(p){ return "https://raw.githubusercontent.com/"+REPO+"/"+BRANCH+"/"+String(p).replace(/^\//,"")+"?t="+Date.now(); }
-  function resolveImg(p){ if(!p) return ""; if(/^https?:/.test(p)) return p; return "https://raw.githubusercontent.com/"+REPO+"/"+BRANCH+"/"+String(p).replace(/^\//,""); }
+  /* Đọc nội dung THẲNG từ web (Netlify) để sửa xong thấy ngay sau khi build (~1 phút),
+     không bị kẹt bộ nhớ đệm 5 phút của GitHub raw. */
+  function raw(p){ return "/"+String(p).replace(/^\//,"")+"?t="+Date.now(); }
+  function resolveImg(p){ if(!p) return ""; if(/^https?:/.test(p)) return p; return "/"+String(p).replace(/^\//,""); }
   function getJSON(path){ return fetch(raw(path)).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }); }
   function setText(sel,val){ if(val==null) return; document.querySelectorAll(sel).forEach(function(el){ el.textContent=val; }); }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){ return ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]); }); }
