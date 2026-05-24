@@ -5,9 +5,105 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="robots" content="noindex" />
 <title>Quản trị nội dung — Hello Chụp Ảnh</title>
+<style>
+  .pv { font-family: -apple-system, "Be Vietnam Pro", sans-serif; padding: 24px; color:#23201c; }
+  .pv h2 { font-family: "Playfair Display", Georgia, serif; font-size: 22px; margin: 0 0 14px; }
+  .pv .note { background:#fff7ed; border:1px solid #fed7aa; color:#9a5a00; padding:10px 12px; border-radius:10px; font-size:13px; margin-bottom:16px; }
+  .pv-cards { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+  .pv-card { border:1.5px solid #ece6dc; border-radius:14px; padding:16px; }
+  .pv-card h3 { font-family:"Playfair Display",serif; font-size:17px; margin:0 0 6px; }
+  .pv-now { font-size:22px; font-weight:800; color:#23201c; }
+  .pv-was { text-decoration:line-through; color:#8a8175; font-size:13px; margin-left:6px; }
+  .pv-save { display:inline-block; background:#ffe9c8; color:#9a5a00; font-size:11px; font-weight:700; padding:3px 8px; border-radius:999px; margin:6px 0; }
+  .pv-card ul { margin:8px 0 0 16px; padding:0; font-size:13px; color:#4a443b; }
+  .pv-nav { display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:#faf7f2; border:1px solid #ece6dc; border-radius:12px; padding:12px 16px; }
+  .pv-nav a { color:#23201c; font-size:14px; font-weight:500; }
+  .pv-nav .cta { background:#F4A14F; color:#fff; padding:6px 14px; border-radius:999px; }
+  .pv-swatch { display:inline-flex; align-items:center; gap:8px; margin:0 14px 10px 0; font-size:13px; }
+  .pv-dot { width:28px; height:28px; border-radius:8px; border:1px solid #0002; }
+  .pv-row { display:flex; gap:8px; padding:6px 0; border-bottom:1px dashed #ece6dc; font-size:14px; }
+  .pv-hidden { opacity:.4; text-decoration:line-through; }
+  .pv-contact div { padding:5px 0; font-size:14px; }
+  .pv-muted { color:#8a8175; font-size:13px; }
+</style>
 </head>
 <body>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script src="https://unpkg.com/decap-cms@^3.3.3/dist/decap-cms.js"></script>
+<script>
+(function(){
+  if(!window.CMS) return;
+  var h = window.h, createClass = window.createClass;
+  if(!h || !createClass) return;
+  function box(title, note, inner){
+    var kids=[h('h2',{},title)];
+    if(note) kids.push(h('div',{className:'note'}, note));
+    kids.push(inner);
+    return h('div',{className:'pv'}, kids);
+  }
+  function val(entry, name){ try{ var v=entry.getIn(['data',name]); return v && v.toJS ? v.toJS() : v; }catch(e){ return undefined; } }
+
+  try {
+    CMS.registerPreviewTemplate('pricing', createClass({ render:function(){
+      var pks=(val(this.props.entry,'packages')||[]);
+      return box('Bảng giá — xem trước','Hiện ở trang Bảng giá (hellochupanh.com/bang-gia/)',
+        h('div',{className:'pv-cards'}, pks.map(function(p,i){
+          return h('div',{className:'pv-card',key:i},[
+            h('h3',{},p.name||''),
+            h('div',{},[h('span',{className:'pv-now'},p.now||''), p.was?h('span',{className:'pv-was'},p.was):null]),
+            p.save?h('div',{className:'pv-save'},p.save):null,
+            h('ul',{},(p.features||[]).map(function(f,j){return h('li',{key:j}, f&&f.item!==undefined?f.item:f);}))
+          ]);
+        })));
+    }}));
+
+    CMS.registerPreviewTemplate('menu', createClass({ render:function(){
+      var items=(val(this.props.entry,'items')||[]);
+      return box('Menu — xem trước','Hiện ở thanh điều hướng trên cùng MỌI trang',
+        h('div',{className:'pv-nav'}, items.map(function(it,i){
+          return h('a',{key:i, className: it.cta?'cta':''}, it.label||'');
+        })));
+    }}));
+
+    CMS.registerPreviewTemplate('theme', createClass({ render:function(){
+      var d=val(this.props.entry,null); var e=this.props.entry;
+      var primary=e.getIn(['data','primary']), pdark=e.getIn(['data','primary_dark']), dark=e.getIn(['data','dark']), font=e.getIn(['data','font']);
+      return box('Giao diện — xem trước','Màu & phông áp dụng cho TOÀN web',
+        h('div',{},[
+          h('div',{className:'pv-swatch'},[h('span',{className:'pv-dot',style:{background:primary}}),'Màu chính: '+(primary||'')]),
+          h('div',{className:'pv-swatch'},[h('span',{className:'pv-dot',style:{background:pdark}}),'Màu chính đậm: '+(pdark||'')]),
+          h('div',{className:'pv-swatch'},[h('span',{className:'pv-dot',style:{background:dark}}),'Màu nền tối: '+(dark||'')]),
+          h('div',{className:'pv-muted'},'Phông chữ: '+(font||'classic'))
+        ]));
+    }}));
+
+    CMS.registerPreviewTemplate('homepage', createClass({ render:function(){
+      var order=(val(this.props.entry,'order')||[]);
+      var names={stats:'Dải thống kê',intro:'Giới thiệu (Chào bạn)',concepts:'Concept nổi bật',why:'Vì sao chọn Hello',cta:'Kêu gọi liên hệ'};
+      return box('Sắp xếp trang chủ — xem trước','Thứ tự các khối hiện trên trang chủ (Hero luôn ở trên cùng)',
+        h('div',{}, [h('div',{className:'pv-row',style:{fontWeight:700}},'1. Hero (cố định)')].concat(order.map(function(o,i){
+          return h('div',{className:'pv-row'+(o.visible===false?' pv-hidden':''),key:i},(i+2)+'. '+(names[o.key]||o.key)+(o.visible===false?' (ẩn)':''));
+        }))));
+    }}));
+
+    CMS.registerPreviewTemplate('settings', createClass({ render:function(){
+      var e=this.props.entry;
+      return box('Cài đặt chung — xem trước','Logo + liên hệ hiện ở đầu trang, chân trang & trang Liên hệ',
+        h('div',{className:'pv-contact'},[
+          h('div',{},'📞 '+(e.getIn(['data','phone'])||'')),
+          h('div',{},'✉ '+(e.getIn(['data','email'])||'')),
+          h('div',{},'📍 '+(e.getIn(['data','address'])||'')),
+          h('div',{},'🕐 '+(e.getIn(['data','hours'])||'')),
+          h('div',{className:'pv-muted'},'Facebook: '+(e.getIn(['data','facebook'])||''))
+        ]));
+    }}));
+
+    CMS.registerPreviewTemplate('homepage_images', createClass({ render:function(){
+      return box('Ảnh trang chủ — xem trước','Ảnh Hero = nền banner đầu trang; Ảnh Studio = khối "Chào bạn"',
+        h('div',{className:'pv-muted'},'Tải ảnh lên ở 2 ô bên trái. Lưu xong xem trực tiếp trên hellochupanh.com.'));
+    }}));
+  } catch(e){ console.warn('preview templates error', e); }
+})();
+</script>
 </body>
 </html>
