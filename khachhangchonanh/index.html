@@ -820,7 +820,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowLeft') lbNav(-1);
 });
 
-$('finishBtn').addEventListener('click', async () => {
+$('finishBtn').addEventListener('click', () => {
   if (state.selected.size === 0) { alert('Bạn chưa chọn ảnh nào!'); return; }
   if (!confirm(`Xác nhận gửi ${state.selected.size} ảnh đã chọn?`)) return;
   $('finishBtn').disabled = true;
@@ -830,21 +830,51 @@ $('finishBtn').addEventListener('click', async () => {
   selectedPhotos.forEach(p => {
     if (state.notes[p.id] && state.notes[p.id].trim()) selectedNotes[p.id] = state.notes[p.id];
   });
-  const res = await apiPost({
+  const count = selectedPhotos.length;
+
+  let modalShown = false, finished = false;
+  const resetBtn = () => { $('finishBtn').disabled = false; $('finishBtn').textContent = 'Hoàn tất'; };
+  const showModal = (orderId, cnt) => {
+    if (!modalShown) {
+      modalShown = true;
+      $('orderClient').textContent = state.client.name + ' (' + state.code + ')';
+      $('modal').classList.add('active');
+      resetBtn();
+    }
+    $('orderId').textContent = orderId || 'Đang cập nhật…';
+    $('orderCount').textContent = (cnt != null ? cnt : count);
+  };
+  const fail = (msg) => {
+    if (finished) return;
+    finished = true;
+    $('modal').classList.remove('active');
+    resetBtn();
+    alert('Gửi chưa thành công: ' + msg + '. Vui lòng bấm "Hoàn tất" lại nhé.');
+  };
+
+  // Gửi ngầm — không bắt khách chờ máy chủ gửi mail xong
+  const sendPromise = apiPost({
     action: "submit", code: state.code,
     ids: selectedPhotos.map(p => p.id),
     names: selectedPhotos.map(p => p.name),
     notes: selectedNotes
   });
-  $('finishBtn').disabled = false;
-  $('finishBtn').textContent = 'Hoàn tất';
-  if (!res.ok) { alert('Lỗi: ' + (res.error || 'Không gửi được')); return; }
-  $('orderId').textContent = res.orderId;
-  $('orderClient').textContent = state.client.name + ' (' + state.code + ')';
-  $('orderCount').textContent = res.count;
-  $('modal').classList.add('active');
-  localStorage.removeItem('sel:' + state.code);
-  localStorage.removeItem('notes:' + state.code);
+
+  // Hiện màn hình "thành công" nhanh (tối đa ~1.2s)
+  const timer = setTimeout(() => { if (!finished) showModal(null, count); }, 1200);
+
+  sendPromise.then(res => {
+    clearTimeout(timer);
+    if (finished) return;
+    if (!res || !res.ok) { fail((res && res.error) || 'không gửi được'); return; }
+    finished = true;
+    showModal(res.orderId, res.count);
+    localStorage.removeItem('sel:' + state.code);
+    localStorage.removeItem('notes:' + state.code);
+  }).catch(err => {
+    clearTimeout(timer);
+    fail((err && err.message) || 'lỗi kết nối');
+  });
 });
 
 $('modalClose').addEventListener('click', () => $('modal').classList.remove('active'));
