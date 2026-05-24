@@ -185,6 +185,7 @@
             +'<div class="svc-body"><div class="k">'+esc(it.tag)+'</div><h2>'+esc(it.heading)+'</h2>'
             +'<p class="desc">'+nl2br(it.desc)+'</p><ul>'+feats+'</ul>'+price
             +(it.btn_label?'<a class="btn btn-gold" href="'+esc(it.btn_url||'/lien-he/')+'">'+esc(it.btn_label)+'</a>':'')
+            +'<div style="margin-top:12px"><a href="/concept/" style="color:var(--gold-dark);font-weight:600;font-size:14px">Xem thêm concept →</a></div>'
             +'</div></div>';
         }).join('');
       }
