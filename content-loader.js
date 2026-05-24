@@ -46,6 +46,13 @@
     var mm=document.querySelector('.mobile-menu'); if(mm) mm.innerHTML=mob;
   });
 
+  /* ---- ẢNH TRANG CHỦ (Hero + Studio) ---- */
+  getJSON("content/homepage_images.json").then(function(hi){
+    if(!hi) return;
+    if(hi.hero){ var h=document.querySelector('.hero-bg .ph'); if(h) h.style.background="linear-gradient(rgba(26,23,20,0.5),rgba(26,23,20,0.62)),url('"+resolveImg(hi.hero)+"') center/cover no-repeat"; }
+    if(hi.intro){ var i=document.querySelector('.intro .ph-img'); if(i){ i.style.background="url('"+resolveImg(hi.intro)+"') center/cover no-repeat"; i.classList.add('has-img'); } }
+  });
+
   /* ---- CÀI ĐẶT CHUNG: logo + liên hệ ---- */
   getJSON("content/settings.json").then(function(s){
     if(!s) return;

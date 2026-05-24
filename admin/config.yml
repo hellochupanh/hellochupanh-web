@@ -38,6 +38,16 @@ collections:
           - { label: "Địa chỉ", name: "address", widget: "text", required: false, default: "371 Huỳnh Văn Bánh, Phường Phú Nhuận, TP.HCM" }
           - { label: "Giờ mở cửa", name: "hours", widget: "string", required: false, default: "9:00 – 21:00 hằng ngày" }
 
+  - name: "homepage_images"
+    label: "Ảnh trang chủ (Hero & Studio)"
+    files:
+      - name: "imgs"
+        label: "Ảnh Hero & Ảnh khối Giới thiệu"
+        file: "content/homepage_images.json"
+        fields:
+          - { label: "Ảnh nền đầu trang (Hero)", name: "hero", widget: "image", required: false, hint: "Ảnh lớn làm nền banner đầu trang chủ" }
+          - { label: "Ảnh khối Giới thiệu (Chào bạn)", name: "intro", widget: "image", required: false, hint: "Ảnh ở khối 'Chào bạn! Chúng tớ là Hello'" }
+
   - name: "theme"
     label: "Giao diện (Màu & Phông)"
     files:

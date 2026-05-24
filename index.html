@@ -91,6 +91,7 @@
   /* Intro split */
   .intro { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
   .intro .ph-img { aspect-ratio: 4/5; border-radius: 16px; background: linear-gradient(135deg, #e8d4b8, #c9a06a); position: relative; overflow: hidden; }
+  .intro .ph-img[style*="url"]::after, .intro .ph-img.has-img::after { content: none !important; }
   .intro .ph-img::after { content: "Ảnh studio"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.7); font-size: 14px; letter-spacing: 1px; }
   .intro h2 { font-family: var(--serif); font-size: clamp(26px, 3.5vw, 40px); font-weight: 700; line-height: 1.2; margin-bottom: 20px; }
   .intro p { color: #5a5349; margin-bottom: 16px; font-size: 16px; }
@@ -190,7 +191,7 @@
 </header>
 
 <section class="hero">
-  <div class="hero-bg"><div class="ph"></div></div>
+  <div class="hero-bg"><div class="ph" style="background:linear-gradient(rgba(26,23,20,0.5),rgba(26,23,20,0.62)),url('https://drive.google.com/thumbnail?id=16hByGg3HGzI-8syoO5wgVkhWRo9bDwqA&sz=w1600') center/cover no-repeat"></div></div>
   <div class="wrap hero-content">
     <div class="eyebrow">Studio chụp ảnh · TP. Hồ Chí Minh</div>
     <h1>Hoạ dấu ấn riêng<br/>bằng <em>ánh sáng</em></h1>
@@ -213,7 +214,7 @@
 
 <section class="block" data-section="intro">
   <div class="wrap intro">
-    <div class="ph-img"></div>
+    <div class="ph-img" style="background:url('https://drive.google.com/thumbnail?id=1BSzkRKFdfn41Qx_-MeYDLi6jtK8YdTVl&sz=w1000') center/cover no-repeat"></div>
     <div>
       <h2>Chào bạn! Chúng tớ là <span style="color:var(--gold-dark)">Hello Chụp Ảnh</span></h2>
       <p>Một studio nhỏ tại Phú Nhuận, TP.HCM — nơi của những người yêu nhiếp ảnh và yêu việc làm đẹp cho bạn.</p>
