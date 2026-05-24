@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="referrer" content="no-referrer" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Đánh giá khách hàng — Hello Chụp Ảnh</title>
+<meta name="description" content="Cảm nhận của khách hàng sau buổi chụp tại Hello Chụp Ảnh." />
+<meta name="theme-color" content="#F4A14F" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+  .dg-empty { color: var(--muted); text-align: center; padding: 40px 0; }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="nav-logo" href="/"><img src="https://drive.google.com/thumbnail?id=1ZozURa0rg25I18bU8aI4ErT081EttNzN&sz=w400" alt="Hello Chụp Ảnh" referrerpolicy="no-referrer" /></a>
+    <nav class="nav-links">
+      <a href="/">Trang chủ</a>
+      <a href="/dich-vu/">Dịch vụ</a>
+      <a href="/bang-gia/">Bảng giá</a>
+      <a href="/danh-gia/" class="active">Đánh giá</a>
+      <a href="/lien-he/">Liên hệ</a>
+      <a href="/blog/">Tin tức</a>
+      <a href="/khachhangchonanh/" class="nav-cta">Khách chọn ảnh</a>
+    </nav>
+    <button class="nav-toggle" onclick="document.getElementById('mm').classList.toggle('open')">☰</button>
+  </div>
+  <div class="mobile-menu" id="mm">
+    <a href="/">Trang chủ</a><a href="/dich-vu/">Dịch vụ</a><a href="/bang-gia/">Bảng giá</a><a href="/danh-gia/">Đánh giá</a><a href="/lien-he/">Liên hệ</a><a href="/blog/">Tin tức</a><a href="/khachhangchonanh/">Khách hàng chọn ảnh →</a>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow" id="dg-eyebrow">Cảm nhận khách hàng</div>
+    <h1 id="dg-title">Khách hàng nói gì về Hello</h1>
+    <p id="dg-sub">Những chia sẻ thật từ khách sau buổi chụp tại Hello Chụp Ảnh.</p>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="reviews-grid" id="dg-list"><p class="dg-empty">Đang tải đánh giá…</p></div>
+    <div style="text-align:center;margin-top:40px">
+      <a class="btn btn-gold" href="/lien-he/">Đặt lịch chụp ngay →</a>
+    </div>
+  </div>
+</section>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft-grid">
+      <div>
+        <div class="ft-logo"><img src="https://drive.google.com/thumbnail?id=1ZozURa0rg25I18bU8aI4ErT081EttNzN&sz=w400" alt="Hello Chụp Ảnh" referrerpolicy="no-referrer" /></div>
+        <p class="tagline" data-ft="tagline">Hoạ dấu ấn riêng bằng ánh sáng</p>
+        <p style="font-size:14px;margin-top:10px">371 Huỳnh Văn Bánh, P. Phú Nhuận, TP.HCM<br/>Mở cửa: 9:00 – 21:00 hằng ngày</p>
+      </div>
+      <div class="ft">
+        <h4 data-ft="services-title">Dịch vụ</h4>
+        <ul data-ft="services">
+          <li><a href="/dich-vu/">Chân dung Concept Hoạ Báo</a></li>
+          <li><a href="/dich-vu/">Chân dung Trắng Đen</a></li>
+          <li><a href="/dich-vu/">Beauty Hàn Quốc</a></li>
+          <li><a href="/bang-gia/">Bảng giá</a></li>
+        </ul>
+      </div>
+      <div class="ft">
+        <h4 data-ft="contact-title">Liên hệ</h4>
+        <ul>
+          <li><a href="tel:0856870001">☎ 08.5687.0001</a></li>
+          <li><a href="https://zalo.me/0856870001" target="_blank" rel="noopener">💬 Zalo</a></li>
+          <li><a href="https://www.facebook.com/hellochupanh/" target="_blank" rel="noopener">f Facebook</a></li>
+          <li><a href="/khachhangchonanh/">📸 Khách hàng chọn ảnh</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ft-bottom">
+      <div data-ft="copyright">© 2026 Hello Chụp Ảnh. Mọi quyền được bảo lưu.</div>
+      <div class="ft-social"><a href="https://www.facebook.com/hellochupanh/" target="_blank" rel="noopener">Facebook</a><a href="tel:0856870001">Hotline</a></div>
+    </div>
+  </div>
+</footer>
+
+<div class="float-contact">
+  <a class="fc-phone" href="tel:0856870001" title="Gọi">☎</a>
+  <a class="fc-zalo" href="https://zalo.me/0856870001" target="_blank" rel="noopener" title="Zalo">Zalo</a>
+  <a class="fc-fb" href="https://www.facebook.com/hellochupanh/" target="_blank" rel="noopener" title="Facebook">f</a>
+</div>
+
+<script src="/content-loader.js"></script>
+<script>
+(function(){
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]);}); }
+  var list=document.getElementById('dg-list');
+  fetch('/content/reviews.json?t='+Date.now()).then(function(r){ return r.ok?r.json():null; }).then(function(rv){
+    if(!rv){ list.innerHTML='<p class="dg-empty">Chưa có đánh giá nào.</p>'; return; }
+    if(rv.header){
+      if(rv.header.eyebrow) document.getElementById('dg-eyebrow').textContent=rv.header.eyebrow;
+      if(rv.header.title){ document.getElementById('dg-title').textContent=rv.header.title; document.title=rv.header.title+' — Hello Chụp Ảnh'; }
+      if(rv.header.sub) document.getElementById('dg-sub').textContent=rv.header.sub;
+    }
+    var items=rv.items||[];
+    list.innerHTML=items.length
+      ? items.map(function(r){ return '<div class="review-card"><p class="rv-text">“'+esc(r.text)+'”</p><div class="rv-name">— '+esc(r.name)+'</div></div>'; }).join('')
+      : '<p class="dg-empty">Chưa có đánh giá nào.</p>';
+  }).catch(function(){ list.innerHTML='<p class="dg-empty">Không tải được đánh giá.</p>'; });
+})();
+</script>
+</body>
+</html>
