@@ -16,6 +16,11 @@
       "cta": false
     },
     {
+      "label": "Đánh giá",
+      "url": "/danh-gia/",
+      "cta": false
+    },
+    {
       "label": "Liên hệ",
       "url": "/lien-he/",
       "cta": false

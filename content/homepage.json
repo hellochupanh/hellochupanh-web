@@ -58,6 +58,13 @@
       ]
     },
     {
+      "type": "reviews",
+      "visible": true,
+      "eyebrow": "Cảm nhận khách hàng",
+      "heading": "Khách hàng nói gì về Hello",
+      "limit": 3
+    },
+    {
       "type": "cta",
       "visible": true,
       "heading": "Câu chuyện của bạn bắt đầu ở đây",

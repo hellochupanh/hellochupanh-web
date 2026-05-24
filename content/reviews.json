@@ -1,0 +1,12 @@
+{
+  "header": {
+    "eyebrow": "Cảm nhận khách hàng",
+    "title": "Khách hàng nói gì về Hello",
+    "sub": "Những chia sẻ thật từ khách sau buổi chụp tại Hello Chụp Ảnh."
+  },
+  "items": [
+    { "name": "Minh Anh", "text": "Ekip dễ thương, hỗ trợ tạo dáng nhiệt tình. Ảnh ra ưng lắm, mình sẽ quay lại!" },
+    { "name": "Thu Hà", "text": "Studio tận tâm từ A-Z, lên hình tự nhiên mà vẫn sang. Rất đáng tiền." },
+    { "name": "Khánh Linh", "text": "Trả ảnh nhanh, chỉnh kỹ. Mê nhất concept trắng đen, đẹp đúng gu." }
+  ]
+}
