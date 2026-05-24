@@ -138,6 +138,7 @@ collections:
           - { label: "Facebook (đường dẫn)", name: "facebook", widget: "string", hint: "Link trang Facebook — gắn vào nút 'f' / Messenger" }
           - { label: "Địa chỉ", name: "address", widget: "text", required: false, hint: "Hiện ở chân trang & trang Liên hệ" }
           - { label: "Giờ mở cửa", name: "hours", widget: "string", required: false, hint: "Hiện ở chân trang & trang Liên hệ" }
+          - { label: "Ảnh nền trang 'Khách chọn ảnh'", name: "photoapp_bg", widget: "image", required: false, hint: "Ảnh nền màn hình đăng nhập của trang Khách chọn ảnh (hellochupanh.com/khachhangchonanh/). Để trống = giữ ảnh hiện tại." }
 
   # ============ BẢNG GIÁ ============
   - name: "pricing"
@@ -226,22 +227,31 @@ collections:
               - { label: "Dòng chữ nhỏ phía trên", name: "eyebrow", widget: "string", required: false, hint: "Vd: Bộ sưu tập Concept" }
               - { label: "Tiêu đề trang", name: "title", widget: "string", hint: "Vd: Concept cho câu chuyện của bạn" }
               - { label: "Mô tả ngắn", name: "sub", widget: "text", required: false }
-          - label: "Các concept (kéo ⠿ đổi thứ tự, × để xoá, + để thêm)"
+          - label: "Các nhóm concept (kéo ⠿ đổi thứ tự, × để xoá, + để thêm)"
             name: "items"
-            label_singular: "concept"
+            label_singular: "nhóm"
             widget: "list"
-            hint: "Mỗi mục là 1 concept hiện ở lưới. Bấm vào sẽ xem bộ ảnh bên trong."
+            hint: "Mỗi nhóm là 1 thẻ ở trang Concept. Khách bấm vào nhóm sẽ thấy các concept bên trong."
             fields:
-              - { label: "Tên concept", name: "name", widget: "string", hint: "Vd: Chân dung Hoạ Báo" }
+              - { label: "Tên nhóm", name: "name", widget: "string", hint: "Vd: Chân dung Hoạ Báo" }
               - { label: "Dòng nhỏ phía trên tên", name: "eyebrow", widget: "string", required: false, hint: "Vd: Cá tính · Sang trọng" }
               - { label: "Mô tả ngắn", name: "desc", widget: "text", required: false }
-              - { label: "Ảnh bìa", name: "cover", widget: "image", required: false, hint: "Ảnh đại diện hiện ở lưới concept. Để trống = dùng ảnh đầu trong bộ ảnh." }
-              - label: "Bộ ảnh (kéo ⠿ đổi thứ tự, × để xoá, + để thêm)"
-                name: "photos"
-                label_singular: "ảnh"
+              - { label: "Ảnh bìa nhóm", name: "cover", widget: "image", required: false, hint: "Ảnh đại diện nhóm. Để trống = dùng ảnh đầu tiên bên trong." }
+              - label: "Các concept trong nhóm (× để xoá, + để thêm)"
+                name: "concepts"
+                label_singular: "concept"
                 widget: "list"
-                hint: "Các ảnh mẫu của concept này. Bấm '＋ ảnh' để thêm rồi tải ảnh lên."
-                field: { label: "Ảnh", name: "image", widget: "image" }
+                hint: "Mỗi concept có bộ ảnh riêng. Khách bấm vào concept sẽ xem bộ ảnh đó."
+                fields:
+                  - { label: "Tên concept", name: "name", widget: "string", hint: "Vd: Hoạ Báo Tối Giản" }
+                  - { label: "Mô tả ngắn", name: "desc", widget: "text", required: false }
+                  - { label: "Ảnh bìa concept", name: "cover", widget: "image", required: false, hint: "Để trống = dùng ảnh đầu trong bộ ảnh." }
+                  - label: "Bộ ảnh (× để xoá, + để thêm)"
+                    name: "photos"
+                    label_singular: "ảnh"
+                    widget: "list"
+                    hint: "Các ảnh mẫu của concept này. Bấm '＋ ảnh' để thêm rồi tải ảnh lên."
+                    field: { label: "Ảnh", name: "image", widget: "image" }
 
   # ============ TRANG LIÊN HỆ ============
   - name: "contact"
