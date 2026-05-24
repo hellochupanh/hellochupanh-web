@@ -208,9 +208,44 @@ collections:
               - { label: "Nút — chữ trên nút", name: "btn_label", widget: "string", required: false, hint: "Vd: Đặt lịch concept này →" }
               - { label: "Nút — bấm vào đi tới", name: "btn_url", widget: "string", required: false, default: "/lien-he/" }
 
+  # ============ THƯ VIỆN CONCEPT ============
+  - name: "concepts"
+    label: "⑤ Thư viện Concept (bộ ảnh)"
+    description: "Các concept + bộ ảnh mẫu. Hiện ở trang /concept/ (khách vào từ nút 'Xem thêm concept' ở trang Dịch vụ). Bấm + để thêm concept, × để xoá, kéo ⠿ đổi thứ tự. Mỗi concept có ảnh bìa + bộ ảnh tải lên."
+    editor: { preview: false }
+    files:
+      - name: "concepts"
+        label: "Thư viện Concept"
+        file: "content/concepts.json"
+        fields:
+          - label: "Tiêu đề trang Concept"
+            name: "header"
+            widget: "object"
+            collapsed: false
+            fields:
+              - { label: "Dòng chữ nhỏ phía trên", name: "eyebrow", widget: "string", required: false, hint: "Vd: Bộ sưu tập Concept" }
+              - { label: "Tiêu đề trang", name: "title", widget: "string", hint: "Vd: Concept cho câu chuyện của bạn" }
+              - { label: "Mô tả ngắn", name: "sub", widget: "text", required: false }
+          - label: "Các concept (kéo ⠿ đổi thứ tự, × để xoá, + để thêm)"
+            name: "items"
+            label_singular: "concept"
+            widget: "list"
+            hint: "Mỗi mục là 1 concept hiện ở lưới. Bấm vào sẽ xem bộ ảnh bên trong."
+            fields:
+              - { label: "Tên concept", name: "name", widget: "string", hint: "Vd: Chân dung Hoạ Báo" }
+              - { label: "Dòng nhỏ phía trên tên", name: "eyebrow", widget: "string", required: false, hint: "Vd: Cá tính · Sang trọng" }
+              - { label: "Mô tả ngắn", name: "desc", widget: "text", required: false }
+              - { label: "Ảnh bìa", name: "cover", widget: "image", required: false, hint: "Ảnh đại diện hiện ở lưới concept. Để trống = dùng ảnh đầu trong bộ ảnh." }
+              - label: "Bộ ảnh (kéo ⠿ đổi thứ tự, × để xoá, + để thêm)"
+                name: "photos"
+                label_singular: "ảnh"
+                widget: "list"
+                hint: "Các ảnh mẫu của concept này. Bấm '＋ ảnh' để thêm rồi tải ảnh lên."
+                field: { label: "Ảnh", name: "image", widget: "image" }
+
   # ============ TRANG LIÊN HỆ ============
   - name: "contact"
-    label: "⑤ Trang Liên hệ"
+    label: "⑥ Trang Liên hệ"
     description: "Các tiêu đề/chữ trên trang Liên hệ. Số điện thoại, email, địa chỉ sửa ở mục 'Cài đặt chung'."
     editor: { preview: false }
     files:
@@ -227,7 +262,7 @@ collections:
 
   # ============ CHÂN TRANG ============
   - name: "footer"
-    label: "⑥ Chân trang (Footer)"
+    label: "⑦ Chân trang (Footer)"
     description: "Phần dưới cùng của MỌI trang: slogan, cột Dịch vụ, dòng bản quyền."
     editor: { preview: false }
     files:
@@ -249,7 +284,7 @@ collections:
 
   # ============ MENU ============
   - name: "menu"
-    label: "⑦ Menu (thanh điều hướng)"
+    label: "⑧ Menu (thanh điều hướng)"
     description: "Các mục trên thanh menu trên cùng (hiện ở MỌI trang). Kéo–thả để đổi thứ tự, × để xoá, + để thêm."
     editor: { preview: false }
     files:
@@ -269,7 +304,7 @@ collections:
 
   # ============ GIAO DIỆN ============
   - name: "theme"
-    label: "⑧ Giao diện (Màu & Phông)"
+    label: "⑨ Giao diện (Màu & Phông)"
     description: "Màu sắc & phông chữ — áp dụng cho TOÀN BỘ web."
     editor: { preview: false }
     files:
@@ -291,7 +326,7 @@ collections:
 
   # ============ BÀI VIẾT / TIN TỨC ============
   - name: "blog"
-    label: "⑨ Bài viết / Tin tức"
+    label: "⑩ Bài viết / Tin tức"
     label_singular: "Bài viết"
     description: "Viết, sửa, xoá bài đăng. Bài hiện ở trang Tin tức (hellochupanh.com/blog/). Sửa xong bấm 'Publish' → ~1 phút web cập nhật."
     folder: "posts"
