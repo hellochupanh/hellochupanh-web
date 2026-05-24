@@ -112,6 +112,15 @@ collections:
                   - { label: "Mô tả", name: "text", widget: "text", required: false }
                   - { label: "Nút — chữ trên nút", name: "btn_label", widget: "string", required: false, hint: "Vd: Đặt lịch & tư vấn →" }
                   - { label: "Nút — bấm vào đi tới", name: "btn_url", widget: "string", required: false, default: "/lien-he/" }
+              - label: "Đánh giá khách hàng"
+                name: "reviews"
+                widget: "object"
+                summary: "Đánh giá khách hàng"
+                fields:
+                  - { label: "Hiển thị khối này", name: "visible", widget: "boolean", default: true }
+                  - { label: "Dòng chữ nhỏ phía trên", name: "eyebrow", widget: "string", required: false, hint: "Vd: Cảm nhận khách hàng" }
+                  - { label: "Tiêu đề khối", name: "heading", widget: "string", hint: "Vd: Khách hàng nói gì về Hello" }
+                  - { label: "Số đánh giá hiện ở trang chủ", name: "limit", widget: "number", required: false, default: 3, hint: "Nội dung từng đánh giá sửa ở mục '⑪ Đánh giá khách hàng'." }
               - label: "Khối chữ tự do (tiêu đề + đoạn văn)"
                 name: "richtext"
                 widget: "object"
@@ -139,6 +148,8 @@ collections:
           - { label: "Địa chỉ", name: "address", widget: "text", required: false, hint: "Hiện ở chân trang & trang Liên hệ" }
           - { label: "Giờ mở cửa", name: "hours", widget: "string", required: false, hint: "Hiện ở chân trang & trang Liên hệ" }
           - { label: "Ảnh nền trang 'Khách chọn ảnh'", name: "photoapp_bg", widget: "image", required: false, hint: "Ảnh nền màn hình đăng nhập của trang Khách chọn ảnh (hellochupanh.com/khachhangchonanh/). Để trống = giữ ảnh hiện tại." }
+          - { label: "Instagram (đường dẫn)", name: "instagram", widget: "string", required: false, hint: "Link trang Instagram — hiện ở chân trang & nút nổi góc phải" }
+          - { label: "TikTok (đường dẫn)", name: "tiktok", widget: "string", required: false, hint: "Link trang TikTok — hiện ở chân trang & nút nổi góc phải" }
 
   # ============ BẢNG GIÁ ============
   - name: "pricing"
@@ -350,3 +361,30 @@ collections:
       - { label: "Ảnh bìa", name: "thumbnail", widget: "image", required: false, hint: "Ảnh hiện ngoài danh sách + đầu bài (không bắt buộc)" }
       - { label: "Mô tả ngắn", name: "excerpt", widget: "text", required: false, hint: "1-2 câu tóm tắt, hiện ngoài danh sách Tin tức" }
       - { label: "Nội dung bài", name: "body", widget: "markdown", hint: "Phần thân bài. Gõ như Word: in đậm, danh sách, chèn ảnh..." }
+
+  # ============ ĐÁNH GIÁ KHÁCH HÀNG ============
+  - name: "reviews"
+    label: "⑪ Đánh giá khách hàng"
+    description: "Cảm nhận khách hàng. Hiện ở khối đánh giá trên trang chủ + trang Đánh giá (hellochupanh.com/danh-gia/). Bấm + để thêm, × để xoá, kéo ⠿ đổi thứ tự."
+    editor: { preview: false }
+    files:
+      - name: "reviews"
+        label: "Đánh giá khách hàng"
+        file: "content/reviews.json"
+        fields:
+          - label: "Tiêu đề trang Đánh giá"
+            name: "header"
+            widget: "object"
+            collapsed: false
+            fields:
+              - { label: "Dòng chữ nhỏ phía trên", name: "eyebrow", widget: "string", required: false, hint: "Vd: Cảm nhận khách hàng" }
+              - { label: "Tiêu đề trang", name: "title", widget: "string", hint: "Vd: Khách hàng nói gì về Hello" }
+              - { label: "Mô tả ngắn", name: "sub", widget: "text", required: false }
+          - label: "Các đánh giá (kéo ⠿ đổi thứ tự, × để xoá, + để thêm)"
+            name: "items"
+            label_singular: "đánh giá"
+            widget: "list"
+            hint: "Mỗi mục là 1 đánh giá của khách."
+            fields:
+              - { label: "Tên khách", name: "name", widget: "string", hint: "Vd: Minh Anh" }
+              - { label: "Nội dung đánh giá", name: "text", widget: "text", hint: "Câu nhận xét của khách" }
