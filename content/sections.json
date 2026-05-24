@@ -1,0 +1,24 @@
+{
+  "order": [
+    {
+      "key": "stats",
+      "visible": true
+    },
+    {
+      "key": "intro",
+      "visible": true
+    },
+    {
+      "key": "concepts",
+      "visible": true
+    },
+    {
+      "key": "why",
+      "visible": true
+    },
+    {
+      "key": "cta",
+      "visible": true
+    }
+  ]
+}

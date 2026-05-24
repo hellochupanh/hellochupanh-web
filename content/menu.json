@@ -1,0 +1,34 @@
+{
+  "items": [
+    {
+      "label": "Trang chủ",
+      "url": "/",
+      "cta": false
+    },
+    {
+      "label": "Dịch vụ",
+      "url": "/dich-vu/",
+      "cta": false
+    },
+    {
+      "label": "Bảng giá",
+      "url": "/bang-gia/",
+      "cta": false
+    },
+    {
+      "label": "Liên hệ",
+      "url": "/lien-he/",
+      "cta": false
+    },
+    {
+      "label": "Tin tức",
+      "url": "/blog/",
+      "cta": false
+    },
+    {
+      "label": "Khách chọn ảnh",
+      "url": "/khachhangchonanh/",
+      "cta": true
+    }
+  ]
+}

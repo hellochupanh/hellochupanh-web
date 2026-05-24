@@ -1,0 +1,82 @@
+{
+  "packages": [
+    {
+      "name": "Chân dung Hoạ Báo Chất",
+      "now": "3.488.000đ",
+      "was": "4.488.000đ",
+      "save": "Tiết kiệm 1.000.000",
+      "features": [
+        {
+          "item": "1 layout makeup & 1 tóc theo concept"
+        },
+        {
+          "item": "1 trang phục & phụ kiện theo concept"
+        },
+        {
+          "item": "10 ảnh chỉnh sửa kỹ (file mềm)"
+        },
+        {
+          "item": "Thời gian hậu kỳ 5 ngày"
+        },
+        {
+          "item": "Ekip hỗ trợ tạo dáng xuyên suốt"
+        },
+        {
+          "item": "Trả toàn bộ file gốc trong 24h"
+        }
+      ]
+    },
+    {
+      "name": "Trắng Đen Cao Cấp",
+      "now": "3.288.000đ",
+      "was": "4.488.000đ",
+      "save": "Tiết kiệm 1.200.000",
+      "features": [
+        {
+          "item": "1 layout makeup & 1 tóc theo concept"
+        },
+        {
+          "item": "1 trang phục & phụ kiện theo concept"
+        },
+        {
+          "item": "10 ảnh chỉnh sửa kỹ (file mềm)"
+        },
+        {
+          "item": "Thời gian hậu kỳ 5 ngày"
+        },
+        {
+          "item": "Ekip hỗ trợ tạo dáng xuyên suốt"
+        },
+        {
+          "item": "Trả toàn bộ file gốc trong 24h"
+        }
+      ]
+    },
+    {
+      "name": "Beauty Hàn Quốc Tạp Chí",
+      "now": "3.288.000đ",
+      "was": "4.488.000đ",
+      "save": "Tiết kiệm 1.200.000",
+      "features": [
+        {
+          "item": "1 layout makeup & tóc theo concept"
+        },
+        {
+          "item": "1 trang phục & phụ kiện theo concept"
+        },
+        {
+          "item": "8 ảnh chỉnh sửa kỹ (file mềm)"
+        },
+        {
+          "item": "Thời gian hậu kỳ 5 ngày"
+        },
+        {
+          "item": "Ekip hỗ trợ tạo dáng xuyên suốt"
+        },
+        {
+          "item": "Trả toàn bộ file gốc trong 24h"
+        }
+      ]
+    }
+  ]
+}
