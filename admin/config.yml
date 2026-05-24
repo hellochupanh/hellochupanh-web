@@ -31,12 +31,81 @@ collections:
         label: "Logo & Thông tin liên hệ"
         file: "content/settings.json"
         fields:
-          - { label: "Logo (ảnh)", name: "logo", widget: "image", required: false, hint: "Tải logo mới lên; để trống nếu giữ logo hiện tại" }
+          - { label: "Logo (ảnh)", name: "logo", widget: "image", required: false, hint: "Tải logo mới; để trống nếu giữ logo hiện tại" }
           - { label: "Số điện thoại", name: "phone", widget: "string", default: "08.5687.0001" }
           - { label: "Email", name: "email", widget: "string", default: "hellochupanh@gmail.com" }
           - { label: "Facebook (đường dẫn)", name: "facebook", widget: "string", default: "https://www.facebook.com/hellochupanh/" }
           - { label: "Địa chỉ", name: "address", widget: "text", required: false, default: "371 Huỳnh Văn Bánh, Phường Phú Nhuận, TP.HCM" }
           - { label: "Giờ mở cửa", name: "hours", widget: "string", required: false, default: "9:00 – 21:00 hằng ngày" }
+
+  - name: "theme"
+    label: "Giao diện (Màu & Phông)"
+    files:
+      - name: "theme"
+        label: "Màu sắc & Phông chữ"
+        file: "content/theme.json"
+        fields:
+          - { label: "Màu chính (nút, điểm nhấn)", name: "primary", widget: "color", default: "#F4A14F" }
+          - { label: "Màu chính đậm (khi rê chuột)", name: "primary_dark", widget: "color", default: "#d9863a" }
+          - { label: "Màu nền tối (header/footer)", name: "dark", widget: "color", default: "#1a1714" }
+          - label: "Bộ phông chữ"
+            name: "font"
+            widget: "select"
+            default: "classic"
+            options:
+              - { label: "Sang trọng (Playfair)", value: "classic" }
+              - { label: "Hiện đại (Montserrat)", value: "modern" }
+              - { label: "Thanh lịch (Cormorant)", value: "elegant" }
+
+  - name: "homepage"
+    label: "Sắp xếp trang chủ"
+    files:
+      - name: "sections"
+        label: "Thứ tự & ẩn/hiện các khối"
+        file: "content/sections.json"
+        fields:
+          - label: "Các khối (kéo để đổi thứ tự, tắt 'Hiển thị' để ẩn)"
+            name: "order"
+            widget: "list"
+            fields:
+              - label: "Khối"
+                name: "key"
+                widget: "select"
+                options:
+                  - { label: "Dải thống kê (5★...)", value: "stats" }
+                  - { label: "Giới thiệu (Chào bạn!)", value: "intro" }
+                  - { label: "Concept nổi bật", value: "concepts" }
+                  - { label: "Vì sao chọn Hello", value: "why" }
+                  - { label: "Kêu gọi liên hệ (cuối trang)", value: "cta" }
+              - { label: "Hiển thị", name: "visible", widget: "boolean", default: true }
+            default:
+              - { key: "stats", visible: true }
+              - { key: "intro", visible: true }
+              - { key: "concepts", visible: true }
+              - { key: "why", visible: true }
+              - { key: "cta", visible: true }
+
+  - name: "menu"
+    label: "Menu (thanh điều hướng)"
+    files:
+      - name: "menu"
+        label: "Các mục menu"
+        file: "content/menu.json"
+        fields:
+          - label: "Các mục (kéo để đổi thứ tự)"
+            name: "items"
+            widget: "list"
+            fields:
+              - { label: "Tên hiển thị", name: "label", widget: "string" }
+              - { label: "Đường dẫn", name: "url", widget: "string", hint: "vd: / hoặc /bang-gia/" }
+              - { label: "Nút nổi bật (như 'Khách chọn ảnh')", name: "cta", widget: "boolean", default: false }
+            default:
+              - { label: "Trang chủ", url: "/", cta: false }
+              - { label: "Dịch vụ", url: "/dich-vu/", cta: false }
+              - { label: "Bảng giá", url: "/bang-gia/", cta: false }
+              - { label: "Liên hệ", url: "/lien-he/", cta: false }
+              - { label: "Tin tức", url: "/blog/", cta: false }
+              - { label: "Khách chọn ảnh", url: "/khachhangchonanh/", cta: true }
 
   - name: "pricing"
     label: "Bảng giá"
