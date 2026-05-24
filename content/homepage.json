@@ -1,0 +1,69 @@
+{
+  "hero": {
+    "eyebrow": "Studio chụp ảnh · TP. Hồ Chí Minh",
+    "title": "Hoạ dấu ấn riêng bằng ánh sáng",
+    "highlight": "ánh sáng",
+    "lead": "Hello Chụp Ảnh — nơi mỗi khung hình tôn lên cá tính riêng của bạn. Chân dung concept, trắng đen cao cấp, beauty Hàn Quốc. Từ 3.288.000đ trọn gói.",
+    "btn1_label": "Đặt lịch ngay →",
+    "btn1_url": "/lien-he/",
+    "btn2_label": "Xem bảng giá",
+    "btn2_url": "/bang-gia/",
+    "image": ""
+  },
+  "blocks": [
+    {
+      "type": "stats",
+      "visible": true,
+      "items": [
+        { "num": "5★", "lbl": "Đánh giá khách hàng" },
+        { "num": "100%", "lbl": "Trả file gốc trong 24h" },
+        { "num": "5 ngày", "lbl": "Hậu kỳ chuyên nghiệp" },
+        { "num": "9-21h", "lbl": "Mở cửa mỗi ngày" }
+      ]
+    },
+    {
+      "type": "intro",
+      "visible": true,
+      "image": "",
+      "heading": "Chào bạn! Chúng tớ là Hello Chụp Ảnh",
+      "highlight": "Hello Chụp Ảnh",
+      "paragraphs": [
+        { "text": "Một studio nhỏ tại Phú Nhuận, TP.HCM — nơi của những người yêu nhiếp ảnh và yêu việc làm đẹp cho bạn." },
+        { "text": "Chúng tớ tin rằng mỗi người đều có một dấu ấn riêng. Nhiệm vụ của Hello là dùng ánh sáng, góc máy và sự tận tâm để hoạ lại dấu ấn ấy — tự nhiên, tinh tế và thật là bạn nhất." },
+        { "text": "Nếu bạn không muốn vẻ đẹp thanh xuân chỉ nằm trong trí nhớ, hãy để Hello lưu giữ cùng bạn nhé." }
+      ],
+      "sign": "— Đội ngũ Hello Chụp Ảnh"
+    },
+    {
+      "type": "cards",
+      "visible": true,
+      "eyebrow": "Concept nổi bật",
+      "heading": "Tìm concept thuộc về bạn",
+      "sub": "Đa dạng phong cách — từ chân dung hoạ báo cá tính đến beauty Hàn Quốc nhẹ nhàng.",
+      "items": [
+        { "tag": "Concept", "title": "Chân dung Hoạ Báo", "price": "Từ 3.488.000đ", "image": "https://drive.google.com/thumbnail?id=13edL4MnS_T3DPSBCTzlWwsE__SMJXcbT&sz=w1200", "link": "/dich-vu/" },
+        { "tag": "Concept", "title": "Trắng Đen Cao Cấp", "price": "Từ 3.288.000đ", "image": "https://drive.google.com/thumbnail?id=18uFzhJMuChhslbMU0ektVNbZfQC5Iirw&sz=w1200", "link": "/dich-vu/" },
+        { "tag": "Concept", "title": "Beauty Hàn Quốc", "price": "Từ 3.288.000đ", "image": "https://drive.google.com/thumbnail?id=1WXUH1UEoQ-axGEcFEjbB4dcjYjn1j4uP&sz=w1200", "link": "/dich-vu/" }
+      ]
+    },
+    {
+      "type": "why",
+      "visible": true,
+      "eyebrow": "Vì sao chọn Hello",
+      "heading": "Cam kết bằng hành động",
+      "items": [
+        { "icon": "✨", "title": "Ekip tận tâm", "text": "Hỗ trợ tạo dáng, chọn góc xuyên suốt buổi chụp. Bạn không biết tạo dáng? Đừng lo, có ekip lo từ A-Z." },
+        { "icon": "⚡", "title": "Trả file gốc trong 24h", "text": "Toàn bộ ảnh gốc được trả trong vòng 24 giờ. Ảnh chỉnh sửa kỹ hoàn thành trong 5 ngày." },
+        { "icon": "📸", "title": "Khách tự chọn ảnh online", "text": "Sau buổi chụp, bạn nhận link riêng để xem & chọn ảnh yêu thích ngay trên điện thoại — tiện lợi, nhanh chóng." }
+      ]
+    },
+    {
+      "type": "cta",
+      "visible": true,
+      "heading": "Câu chuyện của bạn bắt đầu ở đây",
+      "text": "Để lại thông tin, ekip Hello sẽ liên hệ tư vấn concept phù hợp với bạn — không vội vàng, không áp lực.",
+      "btn_label": "Đặt lịch & tư vấn →",
+      "btn_url": "/lien-he/"
+    }
+  ]
+}

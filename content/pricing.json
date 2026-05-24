@@ -1,8 +1,14 @@
 {
+  "header": {
+    "eyebrow": "Bảng giá",
+    "title": "Chọn gói phù hợp với bạn",
+    "sub": "Giá trọn gói, minh bạch. Đang có ưu đãi — tiết kiệm đến 1.200.000đ.",
+    "note": "💡 Giá có thể thay đổi theo concept đặc biệt và dịp lễ. Liên hệ để được tư vấn chi tiết."
+  },
   "packages": [
     {
       "name": "Chân dung Hoạ Báo Chất",
-      "now": "1.288.000",
+      "now": "3.488.000đ",
       "was": "4.488.000đ",
       "save": "Tiết kiệm 1.000.000",
       "features": [

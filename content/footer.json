@@ -1,0 +1,12 @@
+{
+  "tagline": "Hoạ dấu ấn riêng bằng ánh sáng",
+  "services_title": "Dịch vụ",
+  "services": [
+    { "label": "Chân dung Concept Hoạ Báo", "url": "/dich-vu/" },
+    { "label": "Chân dung Trắng Đen", "url": "/dich-vu/" },
+    { "label": "Beauty Hàn Quốc", "url": "/dich-vu/" },
+    { "label": "Bảng giá", "url": "/bang-gia/" }
+  ],
+  "contact_title": "Liên hệ",
+  "copyright": "© 2026 Hello Chụp Ảnh. Mọi quyền được bảo lưu."
+}
