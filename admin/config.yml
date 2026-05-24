@@ -1,0 +1,63 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+
+locale: "vi"
+
+collections:
+  - name: "blog"
+    label: "Bài viết / Tin tức"
+    label_singular: "Bài viết"
+    description: "Viết, sửa, xoá bài đăng trên trang Tin tức."
+    folder: "posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    summary: "{{title}}"
+    sortable_fields: ["date", "title"]
+    fields:
+      - { label: "Tiêu đề", name: "title", widget: "string" }
+      - { label: "Ngày đăng", name: "date", widget: "datetime", date_format: "DD/MM/YYYY", time_format: "HH:mm", format: "YYYY-MM-DD HH:mm" }
+      - { label: "Ảnh bìa", name: "thumbnail", widget: "image", required: false }
+      - { label: "Mô tả ngắn", name: "excerpt", widget: "text", required: false }
+      - { label: "Nội dung", name: "body", widget: "markdown" }
+
+  - name: "settings"
+    label: "Cài đặt chung (Logo & Liên hệ)"
+    files:
+      - name: "general"
+        label: "Logo & Thông tin liên hệ"
+        file: "content/settings.json"
+        fields:
+          - { label: "Logo (ảnh)", name: "logo", widget: "image", required: false, hint: "Tải logo mới lên; để trống nếu giữ logo hiện tại" }
+          - { label: "Số điện thoại", name: "phone", widget: "string", default: "08.5687.0001" }
+          - { label: "Email", name: "email", widget: "string", default: "hellochupanh@gmail.com" }
+          - { label: "Facebook (đường dẫn)", name: "facebook", widget: "string", default: "https://www.facebook.com/hellochupanh/" }
+          - { label: "Địa chỉ", name: "address", widget: "text", required: false, default: "371 Huỳnh Văn Bánh, Phường Phú Nhuận, TP.HCM" }
+          - { label: "Giờ mở cửa", name: "hours", widget: "string", required: false, default: "9:00 – 21:00 hằng ngày" }
+
+  - name: "pricing"
+    label: "Bảng giá"
+    files:
+      - name: "packages"
+        label: "Các gói chụp"
+        file: "content/pricing.json"
+        fields:
+          - label: "Các gói"
+            name: "packages"
+            widget: "list"
+            fields:
+              - { label: "Tên gói", name: "name", widget: "string" }
+              - { label: "Giá hiện tại", name: "now", widget: "string" }
+              - { label: "Giá gốc (gạch ngang)", name: "was", widget: "string", required: false }
+              - { label: "Nhãn tiết kiệm", name: "save", widget: "string", required: false }
+              - label: "Quyền lợi"
+                name: "features"
+                widget: "list"
+                field: { label: "Dòng", name: "item", widget: "string" }
+            default:
+              - { name: "Chân dung Hoạ Báo Chất", now: "3.488.000đ", was: "4.488.000đ", save: "Tiết kiệm 1.000.000", features: [ {item: "1 layout makeup & 1 tóc theo concept"}, {item: "1 trang phục & phụ kiện theo concept"}, {item: "10 ảnh chỉnh sửa kỹ (file mềm)"}, {item: "Thời gian hậu kỳ 5 ngày"}, {item: "Ekip hỗ trợ tạo dáng xuyên suốt"}, {item: "Trả toàn bộ file gốc trong 24h"} ] }
+              - { name: "Trắng Đen Cao Cấp", now: "3.288.000đ", was: "4.488.000đ", save: "Tiết kiệm 1.200.000", features: [ {item: "1 layout makeup & 1 tóc theo concept"}, {item: "1 trang phục & phụ kiện theo concept"}, {item: "10 ảnh chỉnh sửa kỹ (file mềm)"}, {item: "Thời gian hậu kỳ 5 ngày"}, {item: "Ekip hỗ trợ tạo dáng xuyên suốt"}, {item: "Trả toàn bộ file gốc trong 24h"} ] }
+              - { name: "Beauty Hàn Quốc Tạp Chí", now: "3.288.000đ", was: "4.488.000đ", save: "Tiết kiệm 1.200.000", features: [ {item: "1 layout makeup & tóc theo concept"}, {item: "1 trang phục & phụ kiện theo concept"}, {item: "8 ảnh chỉnh sửa kỹ (file mềm)"}, {item: "Thời gian hậu kỳ 5 ngày"}, {item: "Ekip hỗ trợ tạo dáng xuyên suốt"}, {item: "Trả toàn bộ file gốc trong 24h"} ] }

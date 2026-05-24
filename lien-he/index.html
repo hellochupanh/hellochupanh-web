@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Liên hệ & Đặt lịch — Hello Chụp Ảnh</title>
+<meta name="description" content="Đặt lịch chụp ảnh tại Hello Chụp Ảnh. 371 Huỳnh Văn Bánh, Phú Nhuận, TP.HCM. Hotline 08.5687.0001." />
+<meta name="theme-color" content="#F4A14F" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+  .contact-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 50px; align-items: start; }
+  .form-card { background: #fff; border: 1.5px solid var(--line); border-radius: 20px; padding: 34px; }
+  .form-card h2 { font-family: var(--serif); font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  .form-card p.sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  .fld { margin-bottom: 16px; }
+  .fld label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+  .fld input, .fld select, .fld textarea {
+    width: 100%; padding: 13px 15px; font-size: 15px; border: 1.5px solid var(--line);
+    border-radius: 11px; font-family: var(--sans); background: #fff; color: var(--ink);
+  }
+  .fld input:focus, .fld select:focus, .fld textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 4px rgba(244,161,79,0.15); }
+  .form-card .btn { width: 100%; justify-content: center; margin-top: 6px; }
+  .info-block { margin-bottom: 28px; }
+  .info-block h3 { font-family: var(--serif); font-size: 20px; font-weight: 700; margin-bottom: 12px; }
+  .info-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; font-size: 15px; color: #4a443b; }
+  .info-row .ic { color: var(--gold-dark); font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .info-row a { color: var(--gold-dark); font-weight: 600; }
+  .quick-btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .quick-btns a { flex: 1; min-width: 120px; justify-content: center; padding: 13px; border-radius: 12px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; color: #fff; }
+  .qb-call { background: #2ecc71; }
+  .qb-zalo { background: #0068ff; }
+  .qb-fb { background: #1877f2; }
+  .map-embed { border-radius: 16px; overflow: hidden; border: 1.5px solid var(--line); margin-top: 22px; }
+  .map-embed iframe { width: 100%; height: 240px; border: 0; display: block; }
+  @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; gap: 32px; } }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="nav-logo" href="/"><img src="https://drive.google.com/thumbnail?id=1ZozURa0rg25I18bU8aI4ErT081EttNzN&sz=w400" alt="Hello Chụp Ảnh" referrerpolicy="no-referrer" /></a>
+    <nav class="nav-links">
+      <a href="/">Trang chủ</a>
+      <a href="/dich-vu/">Dịch vụ</a>
+      <a href="/bang-gia/">Bảng giá</a>
+      <a href="/lien-he/" class="active">Liên hệ</a>
+      <a href="/blog/">Tin tức</a>
+      <a href="/khachhangchonanh/" class="nav-cta">Khách chọn ảnh</a>
+    </nav>
+    <button class="nav-toggle" onclick="document.getElementById('mm').classList.toggle('open')">☰</button>
+  </div>
+  <div class="mobile-menu" id="mm">
+    <a href="/">Trang chủ</a><a href="/dich-vu/">Dịch vụ</a><a href="/bang-gia/">Bảng giá</a><a href="/lien-he/">Liên hệ</a><a href="/blog/">Tin tức</a><a href="/khachhangchonanh/">Khách hàng chọn ảnh →</a>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">Liên hệ & Đặt lịch</div>
+    <h1>Câu chuyện của bạn bắt đầu ở đây</h1>
+    <p>Để lại thông tin, ekip Hello sẽ liên hệ tư vấn concept phù hợp — không vội vàng, không áp lực.</p>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap contact-grid">
+
+    <div class="form-card">
+      <h2>Đặt lịch chụp</h2>
+      <p class="sub">Điền thông tin, Hello sẽ gọi lại tư vấn trong thời gian sớm nhất.</p>
+      <form id="bookForm">
+        <div class="fld">
+          <label>Họ và tên *</label>
+          <input type="text" id="f_name" required placeholder="Nguyễn Văn A" />
+        </div>
+        <div class="fld">
+          <label>Số điện thoại *</label>
+          <input type="tel" id="f_phone" required placeholder="09xx xxx xxx" />
+        </div>
+        <div class="fld">
+          <label>Concept yêu thích</label>
+          <select id="f_service">
+            <option>Chân dung Concept Hoạ Báo</option>
+            <option>Chân dung Trắng Đen Cao Cấp</option>
+            <option>Beauty Hàn Quốc - Tạp Chí</option>
+            <option>Chưa rõ — cần tư vấn</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label>Ngày muốn chụp (dự kiến)</label>
+          <input type="date" id="f_date" />
+        </div>
+        <div class="fld">
+          <label>Ghi chú thêm</label>
+          <textarea id="f_note" rows="3" placeholder="Số người, yêu cầu đặc biệt..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-gold">Gửi yêu cầu đặt lịch →</button>
+      </form>
+    </div>
+
+    <div>
+      <div class="info-block">
+        <h3>Thông tin liên hệ</h3>
+        <div class="info-row"><span class="ic">📍</span><span>371 Huỳnh Văn Bánh, Phường Phú Nhuận, TP.HCM<br/><small style="color:var(--muted)">(cũ Phường 11, Quận Phú Nhuận)</small></span></div>
+        <div class="info-row"><span class="ic">🕐</span><span>Mở cửa: 9:00 – 21:00 (Thứ 2 – Chủ nhật)</span></div>
+        <div class="info-row"><span class="ic">☎</span><span><a href="tel:0856870001">08.5687.0001</a></span></div>
+        <div class="info-row"><span class="ic">✉</span><span><a href="mailto:hellochupanh@gmail.com">hellochupanh@gmail.com</a></span></div>
+      </div>
+
+      <div class="quick-btns">
+        <a class="qb-call" href="tel:0856870001">☎ Gọi ngay</a>
+        <a class="qb-zalo" href="https://zalo.me/0856870001" target="_blank" rel="noopener">💬 Zalo</a>
+        <a class="qb-fb" href="https://www.facebook.com/hellochupanh/" target="_blank" rel="noopener">f Messenger</a>
+      </div>
+
+      <div class="map-embed">
+        <iframe src="https://www.google.com/maps?q=371+Hu%E1%BB%B3nh+V%C4%83n+B%C3%A1nh+Ph%C3%BA+Nhu%E1%BA%ADn+TP+HCM&output=embed" loading="lazy" title="Bản đồ Hello Chụp Ảnh"></iframe>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft-grid">
+      <div>
+        <div class="ft-logo"><img src="https://drive.google.com/thumbnail?id=1ZozURa0rg25I18bU8aI4ErT081EttNzN&sz=w400" alt="Hello Chụp Ảnh" referrerpolicy="no-referrer" /></div>
+        <p class="tagline">Hoạ dấu ấn riêng bằng ánh sáng</p>
+        <p style="font-size:14px;margin-top:10px">371 Huỳnh Văn Bánh, P. Phú Nhuận, TP.HCM<br/>Mở cửa: 9:00 – 21:00 hằng ngày</p>
+      </div>
+      <div class="ft">
+        <h4>Dịch vụ</h4>
+        <ul>
+          <li><a href="/dich-vu/">Chân dung Concept Hoạ Báo</a></li>
+          <li><a href="/dich-vu/">Chân dung Trắng Đen</a></li>
+          <li><a href="/dich-vu/">Beauty Hàn Quốc</a></li>
+          <li><a href="/bang-gia/">Bảng giá</a></li>
+        </ul>
+      </div>
+      <div class="ft">
+        <h4>Liên hệ</h4>
+        <ul>
+          <li><a href="tel:0856870001">☎ 08.5687.0001</a></li>
+          <li><a href="https://zalo.me/0856870001" target="_blank" rel="noopener">💬 Zalo</a></li>
+          <li><a href="https://www.facebook.com/hellochupanh/" target="_blank" rel="noopener">f Facebook</a></li>
+          <li><a href="/khachhangchonanh/">📸 Khách hàng chọn ảnh</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ft-bottom">
+      <div>© 2026 Hello Chụp Ảnh. Mọi quyền được bảo lưu.</div>
+      <div class="ft-social"><a href="https://www.facebook.com/hellochupanh/" target="_blank" rel="noopener">Facebook</a><a href="tel:0856870001">Hotline</a></div>
+    </div>
+  </div>
+</footer>
+
+<div class="float-contact">
+  <a class="fc-phone" href="tel:0856870001" title="Gọi">☎</a>
+  <a class="fc-zalo" href="https://zalo.me/0856870001" target="_blank" rel="noopener" title="Zalo">Zalo</a>
+  <a class="fc-fb" href="https://www.facebook.com/hellochupanh/" target="_blank" rel="noopener" title="Facebook">f</a>
+</div>
+
+<script>
+document.getElementById('bookForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var name = document.getElementById('f_name').value.trim();
+  var phone = document.getElementById('f_phone').value.trim();
+  var svc = document.getElementById('f_service').value;
+  var date = document.getElementById('f_date').value;
+  var note = document.getElementById('f_note').value.trim();
+  if (!name || !phone) { alert('Vui lòng nhập họ tên và số điện thoại.'); return; }
+  var subject = 'Đặt lịch chụp - ' + name;
+  var body = 'Họ tên: ' + name + '\n'
+    + 'SĐT: ' + phone + '\n'
+    + 'Concept: ' + svc + '\n'
+    + 'Ngày dự kiến: ' + (date || 'chưa chọn') + '\n'
+    + 'Ghi chú: ' + (note || 'không có');
+  var mailto = 'mailto:hellochupanh@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  window.location.href = mailto;
+  setTimeout(function(){
+    alert('Cảm ơn ' + name + '! Yêu cầu của bạn đã được chuẩn bị gửi qua email. Nếu email không tự mở, bạn vui lòng gọi 08.5687.0001 hoặc nhắn Zalo nhé.');
+  }, 600);
+});
+</script>
+
+<script src="/content-loader.js"></script>
+</body>
+</html>

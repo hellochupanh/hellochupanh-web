@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<title>Chọn ảnh - Hello Chụp Ảnh</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #faf7f2; --ink: #2a2a2a; --muted: #888;
+    --accent: #e63946; --accent-soft: #ffe3e6;
+    --card: #ffffff; --line: #ececec; --blue: #2563eb;
+    --gold: #F4A14F;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg); color: var(--ink);
+    min-height: 100vh; -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  #login {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, #fff1f2 0%, transparent 60%),
+      radial-gradient(900px 500px at 110% 110%, #fef3c7 0%, transparent 55%),
+      var(--bg);
+  }
+  .card {
+    background: var(--card); border-radius: 20px; padding: 40px 36px;
+    width: 100%; max-width: 460px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.06); text-align: center;
+  }
+  .brand-logo { margin: 0 auto 14px; max-width: 160px; }
+  .brand-logo img { width: 100%; height: auto; display: block; }
+  .gallery-brand { height: 28px; display: inline-flex; align-items: center; }
+  .gallery-brand img { height: 100%; width: auto; display: block; }
+
+  .card h1 { font-size: 26px; font-weight: 700; margin: 6px 0 8px; letter-spacing: -0.5px; }
+  .card p.sub { color: var(--muted); margin-bottom: 22px; line-height: 1.55; font-size: 15px; }
+  .field { text-align: left; margin-bottom: 18px; }
+  .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+  .field input, .field textarea {
+    width: 100%; padding: 14px 16px; font-size: 16px;
+    border: 1.5px solid var(--line); border-radius: 12px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    font-family: inherit; background: #fff;
+  }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+  .btn {
+    width: 100%; padding: 14px 20px;
+    background: var(--ink); color: #fff; font-size: 16px; font-weight: 600;
+    border: none; border-radius: 12px; cursor: pointer;
+    transition: transform 0.1s, opacity 0.15s; font-family: inherit;
+  }
+  .btn:hover { opacity: 0.9; }
+  .btn:active { transform: scale(0.98); }
+  .btn.accent { background: var(--accent); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .err { color: var(--accent); font-size: 14px; margin-top: 12px; min-height: 20px; }
+  .hint { margin-top: 22px; font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+  /* Scroll cue after login */
+  .scroll-cue {
+    position: fixed;
+    left: 50%; bottom: 24px;
+    transform: translateX(-50%);
+    z-index: 60;
+    display: none; flex-direction: column; align-items: center;
+    cursor: pointer; user-select: none;
+    animation: bobble 1.6s infinite ease-in-out;
+  }
+  .scroll-cue.show { display: flex; }
+  .scroll-cue .arrow {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--ink); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+    font-size: 20px;
+  }
+  .scroll-cue .label {
+    margin-top: 6px; font-size: 12px; color: var(--ink);
+    background: rgba(255,255,255,0.85);
+    padding: 3px 10px; border-radius: 10px;
+    backdrop-filter: blur(6px);
+  }
+  @keyframes bobble {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(8px); }
+  }
+
+  header.gallery-head {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(250, 247, 242, 0.94);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--line);
+    padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .gallery-head .title { font-weight: 700; font-size: 18px; }
+  .gallery-head .title small { display: block; font-weight: 400; color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .head-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .counter {
+    background: var(--accent); color: #fff;
+    padding: 8px 14px; border-radius: 999px;
+    font-size: 14px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-sm {
+    padding: 8px 14px; font-size: 14px; border-radius: 10px;
+    border: 1.5px solid var(--line); background: #fff;
+    cursor: pointer; font-weight: 500; font-family: inherit; color: var(--ink);
+    text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-sm.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .btn-sm.blue { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .btn-sm:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .tabs {
+    display: flex; gap: 6px; padding: 12px 20px 0;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .tab {
+    padding: 10px 18px; border-radius: 10px 10px 0 0;
+    cursor: pointer; font-size: 14px; font-weight: 500;
+    background: transparent; border: none; color: var(--muted);
+    font-family: inherit;
+  }
+  .tab.active { background: #fff; color: var(--ink); }
+  .tab .badge {
+    background: var(--accent); color: #fff; font-size: 11px;
+    padding: 2px 7px; border-radius: 999px; margin-left: 6px;
+  }
+
+  .grid {
+    padding: 20px; display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px; max-width: 1400px; margin: 0 auto;
+  }
+  .tile {
+    position: relative; aspect-ratio: 1 / 1;
+    background: #efe9e1; border-radius: 14px; overflow: hidden;
+    cursor: pointer; transition: transform 0.12s ease;
+  }
+  .tile:hover { transform: translateY(-2px); }
+  .tile.last-viewed {
+    box-shadow: 0 0 0 3px var(--gold);
+    animation: pulse-gold 1.5s 2;
+  }
+  @keyframes pulse-gold {
+    0%, 100% { box-shadow: 0 0 0 3px var(--gold); }
+    50% { box-shadow: 0 0 0 6px var(--gold); }
+  }
+  .tile img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: opacity 0.25s; opacity: 0;
+  }
+  .tile img.loaded { opacity: 1; }
+  .tile .skeleton {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, #efe9e1 0%, #f7f2eb 50%, #efe9e1 100%);
+    background-size: 200% 100%; animation: shimmer 1.4s infinite linear;
+  }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .tile .name {
+    position: absolute; left: 10px; bottom: 10px;
+    background: rgba(0,0,0,0.55); color: #fff;
+    font-size: 12px; padding: 4px 8px; border-radius: 6px; backdrop-filter: blur(4px);
+    max-width: calc(100% - 20px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .video-overlay {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  .video-overlay svg {
+    width: 48px; height: 48px;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+  }
+  .video-tag {
+    position: absolute; top: 10px; left: 10px;
+    background: rgba(0,0,0,0.7); color: #fff;
+    font-size: 11px; padding: 3px 8px; border-radius: 4px;
+    font-weight: 600; letter-spacing: 1px;
+  }
+
+  .tile-btn {
+    position: absolute; width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(255,255,255,0.92);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: transform 0.12s, background 0.15s;
+    border: none; user-select: none; padding: 0;
+  }
+  .tile-btn:hover { transform: scale(1.08); }
+  .tile-btn:active { transform: scale(0.92); }
+  .tile-btn svg { width: 20px; height: 20px; }
+  .heart { top: 10px; right: 10px; }
+  .download { bottom: 10px; right: 10px; }
+  .note-btn { top: 56px; right: 10px; display: none; }
+  .tile.selected .note-btn { display: flex; }
+  .note-btn.has-note { background: #fef08a; }
+  .h-empty { stroke: #444; fill: none; stroke-width: 2.2; }
+  .h-fill { fill: var(--accent); display: none; }
+  .tile.selected .heart { background: #fff; }
+  .tile.selected .heart .h-empty { display: none; }
+  .tile.selected .heart .h-fill { display: block; animation: pop 0.35s; }
+  @keyframes pop { 0% { transform: scale(0.5); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+  .tile.selected::after {
+    content: ''; position: absolute; inset: 0;
+    border: 3px solid var(--accent); border-radius: 14px; pointer-events: none;
+  }
+  .empty { text-align: center; padding: 80px 20px; color: var(--muted); }
+  .empty .big { font-size: 42px; margin-bottom: 12px; }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed; inset: 0; background: #000;
+    display: none; flex-direction: column; z-index: 100;
+    overscroll-behavior: contain;
+  }
+  .lightbox.active { display: flex; }
+  .lb-top {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px; color: #fff;
+    background: linear-gradient(rgba(0,0,0,0.7), transparent);
+    position: absolute; top: 0; left: 0; right: 0; z-index: 101;
+  }
+  .lb-counter { font-size: 13px; opacity: 0.85; }
+  .lb-icon-btn {
+    background: rgba(255,255,255,0.15); color: #fff; border: none;
+    width: 40px; height: 40px; border-radius: 50%;
+    font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lb-stage {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    position: relative; padding: 50px 16px 16px;
+    overflow: hidden;
+    touch-action: pan-y pinch-zoom;
+  }
+  .lb-stage img, .lb-stage iframe {
+    max-width: 100%; max-height: 100%; border-radius: 4px;
+    display: block;
+  }
+  .lb-stage iframe { width: 100%; height: 60vh; aspect-ratio: 16/9; border: none; background: #111; }
+  .lb-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,0.12); color: #fff; border: none;
+    width: 44px; height: 44px; border-radius: 50%;
+    font-size: 22px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 102;
+  }
+  .lb-nav:hover { background: rgba(255,255,255,0.25); }
+  .lb-nav.prev { left: 8px; }
+  .lb-nav.next { right: 8px; }
+  .lb-bottom {
+    padding: 12px 16px 16px;
+    display: flex; flex-direction: column; gap: 10px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.85) 30%);
+  }
+  .lb-note {
+    width: 100%; padding: 10px 12px;
+    border-radius: 10px; border: none;
+    background: rgba(255,255,255,0.96);
+    font-family: inherit; font-size: 14px;
+    resize: none; min-height: 50px;
+    display: none;
+  }
+  .lb-note.show { display: block; }
+  .lb-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .lb-btn {
+    background: rgba(255,255,255,0.15); color: #fff;
+    border: none; padding: 10px 18px; border-radius: 999px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    text-decoration: none; font-family: inherit;
+  }
+  .lb-btn:active { transform: scale(0.96); }
+  .lb-btn.heart-btn.selected { background: var(--accent); }
+  .lb-hint {
+    position: absolute; bottom: 110px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.7); color: #fff;
+    padding: 10px 18px; border-radius: 999px;
+    font-size: 13px; line-height: 1.4; text-align: center;
+    z-index: 103;
+    backdrop-filter: blur(6px);
+    pointer-events: none;
+    opacity: 0; transition: opacity 0.4s;
+  }
+  .lb-hint.show { opacity: 1; }
+
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+    display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px;
+  }
+  .modal-backdrop.active { display: flex; }
+  .modal {
+    background: #fff; border-radius: 20px; padding: 32px;
+    max-width: 520px; width: 100%; max-height: 86vh; overflow-y: auto;
+  }
+  .modal h2 { font-size: 22px; margin-bottom: 6px; }
+  .modal p.modal-sub { color: var(--muted); margin-bottom: 18px; font-size: 14px; line-height: 1.5; }
+  .order-code-box {
+    background: #f5f2ec; border: 1.5px dashed #d6cfc1;
+    border-radius: 12px; padding: 16px; margin-bottom: 16px;
+  }
+  .order-id { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  .order-id strong {
+    color: var(--ink); font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-size: 16px; letter-spacing: 0.5px;
+  }
+  .success-icon { font-size: 48px; text-align: center; margin-bottom: 8px; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 8px; }
+  .modal-actions .btn-sm { flex: 1; padding: 12px; justify-content: center; }
+
+  .toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: #fff; padding: 12px 22px; border-radius: 999px;
+    font-size: 14px; opacity: 0; transition: opacity 0.25s, transform 0.25s;
+    z-index: 300; pointer-events: none; max-width: 92vw; text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.dl { background: var(--gold); color: #2a1a00; }
+
+  @media (max-width: 600px) {
+    .card { padding: 30px 22px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; padding: 12px; }
+    .tile-btn { width: 32px; height: 32px; }
+    .tile-btn svg { width: 16px; height: 16px; }
+    .note-btn { top: 48px; }
+    .download { bottom: 8px; right: 8px; }
+    .gallery-head { padding: 10px 12px; }
+    .gallery-head .title { font-size: 15px; }
+    .gallery-head .title small { font-size: 11px; }
+    .modal { padding: 24px; }
+    .head-actions { gap: 6px; }
+    .head-actions .btn-sm { padding: 6px 10px; font-size: 13px; }
+    .counter { padding: 6px 12px; font-size: 13px; }
+    .lb-stage { padding: 60px 8px 10px; }
+    .lb-stage iframe { height: 50vh; }
+    .lb-nav { width: 40px; height: 40px; font-size: 20px; }
+    .lb-bottom { padding: 10px 12px 14px; }
+    .lb-actions { gap: 6px; }
+    .lb-btn { padding: 9px 14px; font-size: 13px; }
+    .video-overlay svg { width: 36px; height: 36px; }
+    .scroll-cue { bottom: 16px; }
+    .scroll-cue .arrow { width: 40px; height: 40px; font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<section id="login" class="screen active">
+  <div class="card">
+    <div class="brand-logo">
+      <img src="https://drive.google.com/thumbnail?id=1ZozURa0rg25I18bU8aI4ErT081EttNzN&sz=w800" alt="Hello Chụp Ảnh" referrerpolicy="no-referrer" />
+    </div>
+    <h1>Chọn ảnh của bạn</h1>
+    <p class="sub">Nhập mã đơn để xem và chọn ảnh bạn yêu thích.</p>
+    <form id="loginForm" autocomplete="off">
+      <div class="field">
+        <label for="code">Mã đơn của bạn</label>
+        <input type="text" id="code" placeholder="Ví dụ: 1905-COANH" autocomplete="off" />
+      </div>
+      <button type="submit" class="btn accent" id="loginBtn">Xem ảnh →</button>
+      <div class="err" id="loginErr"></div>
+    </form>
+    <p class="hint">Nếu chưa có mã, vui lòng liên hệ <a href="https://www.facebook.com/hellochupanh/" target="_blank" rel="noopener" style="color:var(--gold);font-weight:600;text-decoration:none;">Hello Chụp Ảnh</a>.<br/>Hotline/Zalo: <a href="tel:0856870001" style="color:var(--gold);font-weight:600;text-decoration:none;">08.5687.0001</a></p>
+  </div>
+</section>
+
+<section id="gallery" class="screen">
+  <header class="gallery-head">
+    <div class="title" style="display:flex;align-items:center;gap:12px;">
+      <span class="gallery-brand"><img src="https://drive.google.com/thumbnail?id=1ZozURa0rg25I18bU8aI4ErT081EttNzN&sz=w400" alt="Hello Chụp Ảnh" referrerpolicy="no-referrer" /></span>
+      <div>
+        <span id="clientName">Bộ ảnh</span>
+        <small id="clientHint">Bấm trái tim để chọn ảnh</small>
+      </div>
+    </div>
+    <div class="head-actions">
+      <a class="btn-sm blue" id="dlAllBtn" target="_blank" rel="noopener" style="display:none">📥 Tải toàn bộ</a>
+      <span class="counter" id="counterWrap">❤ <span id="count">0</span></span>
+      <button class="btn-sm primary" id="finishBtn">Hoàn tất</button>
+      <button class="btn-sm" id="logoutBtn">Thoát</button>
+    </div>
+  </header>
+  <div class="tabs">
+    <button class="tab active" data-view="original">Ảnh gốc</button>
+    <button class="tab" data-view="edited">Ảnh đã chỉnh <span class="badge" id="editedBadge" style="display:none">0</span></button>
+  </div>
+  <div id="content"></div>
+</section>
+
+<!-- Scroll cue - shows after login until user scrolls -->
+<div class="scroll-cue" id="scrollCue">
+  <div class="arrow">↓</div>
+  <div class="label">Cuộn xuống để xem ảnh</div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <div class="lb-top">
+    <span class="lb-counter" id="lbCounter"></span>
+    <button class="lb-icon-btn" id="lbClose">✕</button>
+  </div>
+  <div class="lb-stage" id="lbStage">
+    <button class="lb-nav prev" id="lbPrev">‹</button>
+    <button class="lb-nav next" id="lbNext">›</button>
+    <img id="lbImg" alt="" style="display:none" />
+    <iframe id="lbVideo" allow="autoplay" style="display:none"></iframe>
+    <div class="lb-hint" id="lbHint">Vuốt ngang để xem ảnh khác · Vuốt xuống để đóng</div>
+  </div>
+  <div class="lb-bottom">
+    <textarea class="lb-note" id="lbNote" placeholder="Yêu cầu chỉnh sửa (vd: làm sáng, da mịn, xoá nền...)"></textarea>
+    <div class="lb-actions">
+      <button class="lb-btn" id="lbDl">⬇ Tải</button>
+      <button class="lb-btn heart-btn" id="lbHeart">❤ <span id="lbHeartLabel">Chọn ảnh</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <div class="success-icon">✓</div>
+    <h2 style="text-align:center">Đã gửi đơn thành công!</h2>
+    <p class="modal-sub" style="text-align:center">Photographer đã nhận được danh sách + ghi chú. Sau khi chỉnh xong, bạn quay lại link cũ để xem ảnh đã chỉnh.</p>
+    <div class="order-code-box">
+      <div class="order-id">Mã đơn: <strong id="orderId">—</strong></div>
+      <div class="order-id">Khách hàng: <strong id="orderClient">—</strong></div>
+      <div class="order-id">Số ảnh: <strong id="orderCount">0</strong></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm primary" id="modalClose">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxoPFgtMxB5oz3x2G1koBakKvii3JSal8AYtUbkGpfAWFafs3yHopFRQOSHV3ANoBh78w/exec";
+const CACHE_TTL_MS = 10 * 60 * 1000; // 10 phút
+
+const $ = (id) => document.getElementById(id);
+const driveThumb = (id, w) => `https://drive.google.com/thumbnail?id=${id}&sz=w${w||400}`;
+const driveFull  = (id) => `https://drive.google.com/thumbnail?id=${id}&sz=w1600`;
+const driveDownload = (id) => `https://drive.google.com/uc?export=download&id=${id}&confirm=t`;
+const driveVideoPreview = (id) => `https://drive.google.com/file/d/${id}/preview`;
+
+let state = {
+  code: null, client: null, photos: [], edited: [],
+  view: "original", selected: new Set(), notes: {},
+  lbIndex: 0, sourceFolderUrl: "", lastViewedIdx: -1
+};
+
+async function apiGet(action, params = {}) {
+  const url = new URL(API_URL);
+  url.searchParams.set("action", action);
+  Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  try {
+    const r = await fetch(url.toString(), { method: "GET" });
+    return await r.json();
+  } catch (err) { return { ok: false, error: "Lỗi kết nối: " + err.message }; }
+}
+async function apiPost(body) {
+  try {
+    const r = await fetch(API_URL, {
+      method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(body)
+    });
+    return await r.json();
+  } catch (err) { return { ok: false, error: "Lỗi kết nối: " + err.message }; }
+}
+function cacheKey(code) { return `cache:${code}`; }
+function readCache(code) {
+  try {
+    const raw = localStorage.getItem(cacheKey(code)); if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (Date.now() - data.timestamp > CACHE_TTL_MS) return null;
+    return data.payload;
+  } catch (_) { return null; }
+}
+function writeCache(code, payload) {
+  try { localStorage.setItem(cacheKey(code), JSON.stringify({ timestamp: Date.now(), payload })); } catch (_) {}
+}
+
+$('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const code = $('code').value.trim().toUpperCase();
+  if (!code) return;
+  $('loginBtn').disabled = true;
+  $('loginBtn').textContent = 'Đang tải...';
+  $('loginErr').textContent = '';
+
+  // Hit cache FIRST for instant view
+  let res = readCache(code);
+  if (res) enterGallery(code, res);
+
+  // Then fetch fresh in background
+  const fresh = await apiGet('list', { code });
+  $('loginBtn').disabled = false;
+  $('loginBtn').textContent = 'Xem ảnh →';
+  if (!fresh.ok) {
+    if (!res) { $('loginErr').textContent = fresh.error || 'Có lỗi xảy ra.'; }
+    return;
+  }
+  writeCache(code, fresh);
+  if (!res) {
+    enterGallery(code, fresh);
+  } else {
+    state.photos = fresh.photos || [];
+    state.sourceFolderUrl = fresh.sourceFolderUrl || "";
+    if (state.view === 'original') renderGrid();
+  }
+});
+
+function enterGallery(code, res) {
+  state.code = code;
+  state.client = res.client;
+  state.photos = res.photos || [];
+  state.sourceFolderUrl = res.sourceFolderUrl || "";
+  state.selected = new Set();
+  state.notes = {};
+  state.view = "original";
+  state.lastViewedIdx = -1;
+  const savedSel = localStorage.getItem('sel:' + code);
+  if (savedSel) { try { state.selected = new Set(JSON.parse(savedSel)); } catch(_){} }
+  const savedNotes = localStorage.getItem('notes:' + code);
+  if (savedNotes) { try { state.notes = JSON.parse(savedNotes); } catch(_){} }
+  openGallery();
+  loadEdited();
+  // Show scroll cue
+  showScrollCue();
+}
+
+function showScrollCue() {
+  setTimeout(() => {
+    const cue = $('scrollCue');
+    cue.classList.add('show');
+    const hide = () => { cue.classList.remove('show'); window.removeEventListener('scroll', hide); };
+    window.addEventListener('scroll', hide);
+    cue.addEventListener('click', () => {
+      const grid = document.querySelector('.grid');
+      if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      cue.classList.remove('show');
+    });
+    // Auto hide after 8s
+    setTimeout(() => cue.classList.remove('show'), 8000);
+  }, 500);
+}
+
+function openGallery() {
+  $('login').classList.remove('active');
+  $('gallery').classList.add('active');
+  $('clientName').textContent = state.client.name;
+  const vCount = state.photos.filter(p => p.type === 'video').length;
+  const iCount = state.photos.length - vCount;
+  $('clientHint').textContent = `${iCount} ảnh${vCount > 0 ? ' + ' + vCount + ' video' : ''} · Bấm ❤ chọn, ⬇ tải`;
+  if (state.sourceFolderUrl) {
+    $('dlAllBtn').style.display = '';
+    $('dlAllBtn').href = state.sourceFolderUrl;
+  }
+  switchView('original');
+}
+
+$('logoutBtn').addEventListener('click', () => {
+  $('gallery').classList.remove('active');
+  $('login').classList.add('active');
+  $('code').value = '';
+  closeLightbox();
+});
+
+async function loadEdited() {
+  const res = await apiGet('edited', { code: state.code });
+  state.edited = res.ok ? (res.photos || []) : [];
+  const badge = $('editedBadge');
+  if (state.edited.length > 0) { badge.style.display = 'inline-block'; badge.textContent = state.edited.length; }
+  else badge.style.display = 'none';
+}
+
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => switchView(btn.dataset.view));
+});
+function switchView(view) {
+  state.view = view;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
+  const isOriginal = view === 'original';
+  $('counterWrap').style.display = isOriginal ? '' : 'none';
+  $('finishBtn').style.display = isOriginal ? '' : 'none';
+  renderGrid();
+  updateCount();
+}
+
+function renderGrid() {
+  const list = state.view === 'original' ? state.photos : state.edited;
+  const content = $('content');
+  content.innerHTML = '';
+  if (state.view === 'edited' && list.length === 0) {
+    content.innerHTML = `<div class="empty"><div class="big">🎨</div><h3 style="font-weight:600;margin-bottom:6px">Chưa có ảnh đã chỉnh</h3><p>Photographer chưa upload ảnh chỉnh sửa.</p></div>`;
+    return;
+  }
+  if (list.length === 0) {
+    content.innerHTML = `<div class="empty"><div class="big">📭</div><p>Chưa có ảnh.</p></div>`;
+    return;
+  }
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+  list.forEach((p, idx) => {
+    const tile = document.createElement('div');
+    const isOriginalView = state.view === 'original';
+    const hasNote = state.notes[p.id] && state.notes[p.id].trim();
+    const isVideo = p.type === 'video';
+    let cls = 'tile';
+    if (isOriginalView && state.selected.has(p.id)) cls += ' selected';
+    if (idx === state.lastViewedIdx) cls += ' last-viewed';
+    tile.className = cls;
+    tile.dataset.idx = idx;
+    tile.innerHTML = `
+      <div class="skeleton"></div>
+      <img loading="lazy" src="${driveThumb(p.id, 400)}" alt="${p.name}" referrerpolicy="no-referrer" />
+      ${isVideo ? `
+        <span class="video-tag">▶ VIDEO</span>
+        <div class="video-overlay"><svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="11" fill="rgba(0,0,0,0.5)"/><path d="M9 7l9 5-9 5V7z" fill="white"/></svg></div>
+      ` : ''}
+      <span class="name">${p.name}</span>
+      <button class="tile-btn download" type="button" aria-label="Tải" data-dl="${p.id}" data-name="${p.name}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"/></svg>
+      </button>
+      ${isOriginalView ? `
+      <button class="tile-btn heart" type="button" aria-label="Chọn">
+        <svg class="h-empty" viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>
+        <svg class="h-fill" viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>
+      </button>
+      <button class="tile-btn note-btn ${hasNote ? 'has-note' : ''}" type="button" aria-label="Ghi chú">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </button>` : ''}`;
+    const img = tile.querySelector('img');
+    img.addEventListener('load', () => { img.classList.add('loaded'); const sk = tile.querySelector('.skeleton'); if (sk) sk.remove(); });
+    img.addEventListener('error', () => {
+      const sk = tile.querySelector('.skeleton');
+      if (sk) sk.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:11px;text-align:center;padding:6px;">Không tải được</div>';
+    });
+    tile.querySelector('.download').addEventListener('click', (e) => {
+      e.stopPropagation();
+      triggerDownload(p.id, p.name);
+    });
+    if (isOriginalView) {
+      tile.querySelector('.heart').addEventListener('click', (e) => { e.stopPropagation(); toggleSelect(p.id, tile); });
+      tile.querySelector('.note-btn').addEventListener('click', (e) => { e.stopPropagation(); openLightbox(idx, true); });
+    }
+    img.addEventListener('click', () => openLightbox(idx));
+    grid.appendChild(tile);
+  });
+  content.appendChild(grid);
+}
+
+function triggerDownload(fileId, fileName) {
+  const iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  iframe.src = driveDownload(fileId);
+  document.body.appendChild(iframe);
+  showToast('⬇ Đang tải ' + fileName + ' về thư mục Downloads...', 'dl');
+  setTimeout(() => { try { iframe.remove(); } catch(_){} }, 8000);
+}
+
+function toggleSelect(id, tile) {
+  if (state.selected.has(id)) {
+    state.selected.delete(id);
+    if (tile) tile.classList.remove('selected');
+  } else {
+    state.selected.add(id);
+    if (tile) tile.classList.add('selected');
+  }
+  localStorage.setItem('sel:' + state.code, JSON.stringify([...state.selected]));
+  updateCount();
+  syncLightboxState();
+}
+function updateCount() { $('count').textContent = state.selected.size; }
+
+const preloadCache = new Set();
+function preloadImage(id) {
+  if (preloadCache.has(id)) return;
+  preloadCache.add(id);
+  const img = new Image();
+  img.src = driveFull(id);
+}
+function preloadAroundIndex(idx) {
+  const list = state.view === 'original' ? state.photos : state.edited;
+  for (let off of [1, -1, 2, -2]) {
+    const i = (idx + off + list.length) % list.length;
+    const p = list[i];
+    if (p && p.type !== 'video') preloadImage(p.id);
+  }
+}
+
+function openLightbox(idx, focusNote) {
+  state.lbIndex = idx;
+  showLightboxMedia();
+  $('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+  preloadAroundIndex(idx);
+  if (!sessionStorage.getItem('hint_shown')) {
+    const hint = $('lbHint');
+    hint.classList.add('show');
+    setTimeout(() => hint.classList.remove('show'), 3500);
+    sessionStorage.setItem('hint_shown', '1');
+  }
+  if (focusNote) setTimeout(() => $('lbNote').focus(), 150);
+}
+function showLightboxMedia() {
+  const list = state.view === 'original' ? state.photos : state.edited;
+  const p = list[state.lbIndex];
+  if (!p) return;
+  const isVideo = p.type === 'video';
+  const img = $('lbImg');
+  const video = $('lbVideo');
+  if (isVideo) {
+    img.style.display = 'none'; video.style.display = '';
+    video.src = driveVideoPreview(p.id);
+  } else {
+    video.src = 'about:blank'; video.style.display = 'none';
+    img.style.display = ''; img.src = driveFull(p.id);
+  }
+  $('lbCounter').textContent = `${state.lbIndex + 1} / ${list.length} · ${p.name}`;
+  const isOriginal = state.view === 'original';
+  $('lbHeart').style.display = isOriginal ? '' : 'none';
+  $('lbNote').classList.toggle('show', isOriginal);
+  if (isOriginal) $('lbNote').value = state.notes[p.id] || '';
+  syncLightboxState();
+}
+function closeLightbox() {
+  $('lightbox').classList.remove('active');
+  $('lbVideo').src = 'about:blank';
+  document.body.style.overflow = '';
+  if (state.lbIndex >= 0) {
+    state.lastViewedIdx = state.lbIndex;
+    setTimeout(() => {
+      const tile = document.querySelector(`.tile[data-idx="${state.lbIndex}"]`);
+      if (tile) {
+        document.querySelectorAll('.tile.last-viewed').forEach(t => { if (t !== tile) t.classList.remove('last-viewed'); });
+        tile.classList.add('last-viewed');
+        tile.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 50);
+  }
+}
+function lbNav(dir) {
+  const list = state.view === 'original' ? state.photos : state.edited;
+  state.lbIndex = (state.lbIndex + dir + list.length) % list.length;
+  showLightboxMedia();
+  preloadAroundIndex(state.lbIndex);
+}
+function syncLightboxState() {
+  if (state.view !== 'original') return;
+  const p = state.photos[state.lbIndex]; if (!p) return;
+  const has = state.selected.has(p.id);
+  $('lbHeart').classList.toggle('selected', has);
+  $('lbHeartLabel').textContent = has ? 'Đã chọn' : 'Chọn ảnh';
+}
+$('lbClose').addEventListener('click', closeLightbox);
+$('lbNext').addEventListener('click', () => lbNav(1));
+$('lbPrev').addEventListener('click', () => lbNav(-1));
+$('lbHeart').addEventListener('click', () => {
+  if (state.view !== 'original') return;
+  const p = state.photos[state.lbIndex];
+  const tile = document.querySelector(`.tile[data-idx="${state.lbIndex}"]`);
+  toggleSelect(p.id, tile);
+});
+$('lbDl').addEventListener('click', () => {
+  const list = state.view === 'original' ? state.photos : state.edited;
+  const p = list[state.lbIndex];
+  if (p) triggerDownload(p.id, p.name);
+});
+$('lbNote').addEventListener('input', (e) => {
+  const p = state.photos[state.lbIndex]; if (!p) return;
+  const val = e.target.value;
+  if (val.trim()) state.notes[p.id] = val;
+  else delete state.notes[p.id];
+  localStorage.setItem('notes:' + state.code, JSON.stringify(state.notes));
+  const tile = document.querySelector(`.tile[data-idx="${state.lbIndex}"]`);
+  if (tile) {
+    const noteBtn = tile.querySelector('.note-btn');
+    if (noteBtn) noteBtn.classList.toggle('has-note', !!val.trim());
+  }
+});
+
+(function setupSwipe() {
+  const stage = $('lbStage');
+  let startX = 0, startY = 0, swiping = false;
+  stage.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    swiping = true;
+  }, {passive: true});
+  stage.addEventListener('touchend', (e) => {
+    if (!swiping) return;
+    swiping = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0) lbNav(1);
+      else lbNav(-1);
+    } else if (dy > 80 && Math.abs(dy) > Math.abs(dx)) {
+      closeLightbox();
+    }
+  });
+})();
+
+document.addEventListener('keydown', (e) => {
+  if (!$('lightbox').classList.contains('active')) return;
+  if (document.activeElement && document.activeElement.tagName === 'TEXTAREA') return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowRight') lbNav(1);
+  if (e.key === 'ArrowLeft') lbNav(-1);
+});
+
+$('finishBtn').addEventListener('click', async () => {
+  if (state.selected.size === 0) { alert('Bạn chưa chọn ảnh nào!'); return; }
+  if (!confirm(`Xác nhận gửi ${state.selected.size} ảnh đã chọn?`)) return;
+  $('finishBtn').disabled = true;
+  $('finishBtn').textContent = 'Đang gửi...';
+  const selectedPhotos = state.photos.filter(p => state.selected.has(p.id));
+  const selectedNotes = {};
+  selectedPhotos.forEach(p => {
+    if (state.notes[p.id] && state.notes[p.id].trim()) selectedNotes[p.id] = state.notes[p.id];
+  });
+  const res = await apiPost({
+    action: "submit", code: state.code,
+    ids: selectedPhotos.map(p => p.id),
+    names: selectedPhotos.map(p => p.name),
+    notes: selectedNotes
+  });
+  $('finishBtn').disabled = false;
+  $('finishBtn').textContent = 'Hoàn tất';
+  if (!res.ok) { alert('Lỗi: ' + (res.error || 'Không gửi được')); return; }
+  $('orderId').textContent = res.orderId;
+  $('orderClient').textContent = state.client.name + ' (' + state.code + ')';
+  $('orderCount').textContent = res.count;
+  $('modal').classList.add('active');
+  localStorage.removeItem('sel:' + state.code);
+  localStorage.removeItem('notes:' + state.code);
+});
+
+$('modalClose').addEventListener('click', () => $('modal').classList.remove('active'));
+$('modal').addEventListener('click', (e) => { if (e.target.id === 'modal') $('modal').classList.remove('active'); });
+
+function showToast(msg, cls) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (cls ? ' ' + cls : '');
+  setTimeout(() => t.classList.add('show'), 10);
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+(function autoLogin() {
+  const params = new URLSearchParams(window.location.search);
+  const c = params.get('code');
+  if (c) { $('code').value = c.toUpperCase(); $('loginForm').dispatchEvent(new Event('submit')); }
+})();
+</script>
+</body>
+</html>

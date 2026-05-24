@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dịch vụ & Concept — Hello Chụp Ảnh</title>
+<meta name="description" content="Các concept chụp ảnh tại Hello Chụp Ảnh: Chân dung Hoạ Báo, Trắng Đen Cao Cấp, Beauty Hàn Quốc. TP.HCM." />
+<meta name="theme-color" content="#F4A14F" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+  .svc { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; margin-bottom: 70px; }
+  .svc:nth-child(even) .svc-img { order: 2; }
+  .svc-img { aspect-ratio: 4/5; border-radius: 18px; position: relative; overflow: hidden; }
+  .svc-img .ph { position: absolute; inset: 0; }
+  .svc-img.s1 .ph { background: linear-gradient(135deg, #d8a978, #7a5638); }
+  .svc-img.s2 .ph { background: linear-gradient(135deg, #9a9a9a, #2a2a2a); }
+  .svc-img.s3 .ph { background: linear-gradient(135deg, #f0d0c8, #b87a6a); }
+  .svc-img .ph::after { content: "Ảnh concept"; position: absolute; inset: 0; display:flex; align-items:center; justify-content:center; color: rgba(255,255,255,0.65); font-size: 14px; letter-spacing:1px; }
+  .svc-body .k { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-dark); font-weight: 600; margin-bottom: 10px; }
+  .svc-body h2 { font-family: var(--serif); font-size: clamp(26px,3.5vw,38px); font-weight: 700; line-height: 1.15; margin-bottom: 14px; }
+  .svc-body p.desc { color: #5a5349; font-size: 16px; margin-bottom: 18px; }
+  .svc-body ul { list-style: none; margin-bottom: 22px; }
+  .svc-body ul li { padding: 6px 0 6px 26px; position: relative; color: #4a443b; font-size: 15px; }
+  .svc-body ul li::before { content: "✓"; position: absolute; left: 0; color: var(--gold); font-weight: 700; }
+  .svc-price { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  .svc-price .now { font-family: var(--serif); font-size: 30px; font-weight: 700; color: var(--gold-dark); }
+  .svc-price .was { text-decoration: line-through; color: var(--muted); font-size: 17px; }
+  .svc-price .save { background: #ffe9c8; color: #9a5a00; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+  @media (max-width: 900px) {
+    .svc { grid-template-columns: 1fr; gap: 24px; margin-bottom: 50px; }
+    .svc:nth-child(even) .svc-img { order: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="nav-logo" href="/"><img src="https://drive.google.com/thumbnail?id=1ZozURa0rg25I18bU8aI4ErT081EttNzN&sz=w400" alt="Hello Chụp Ảnh" referrerpolicy="no-referrer" /></a>
+    <nav class="nav-links">
+      <a href="/">Trang chủ</a>
+      <a href="/dich-vu/" class="active">Dịch vụ</a>
+      <a href="/bang-gia/">Bảng giá</a>
+      <a href="/lien-he/">Liên hệ</a>
+      <a href="/blog/">Tin tức</a>
+      <a href="/khachhangchonanh/" class="nav-cta">Khách chọn ảnh</a>
+    </nav>
+    <button class="nav-toggle" onclick="document.getElementById('mm').classList.toggle('open')">☰</button>
+  </div>
+  <div class="mobile-menu" id="mm">
+    <a href="/">Trang chủ</a><a href="/dich-vu/">Dịch vụ</a><a href="/bang-gia/">Bảng giá</a><a href="/lien-he/">Liên hệ</a><a href="/blog/">Tin tức</a><a href="/khachhangchonanh/">Khách hàng chọn ảnh →</a>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">Dịch vụ & Concept</div>
+    <h1>Câu chuyện kể bằng ánh sáng</h1>
+    <p>Mỗi concept là một cá tính riêng. Bạn muốn hoạ dấu ấn nào?</p>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+
+    <div class="svc">
+      <div class="svc-img s1"><div class="ph"></div></div>
+      <div class="svc-body">
+        <div class="k">Concept</div>
+        <h2>Chân dung Concept — Hoạ Báo Chất</h2>
+        <p class="desc">Phong cách hoạ báo cá tính, sang trọng. Tôn lên thần thái và nét riêng của bạn qua từng khung hình được dàn dựng tỉ mỉ.</p>
+        <ul>
+          <li>1 layout makeup & làm tóc theo concept</li>
+          <li>1 bộ trang phục & phụ kiện theo concept</li>
+          <li>10 ảnh chỉnh sửa kỹ (file mềm)</li>
+          <li>Trả toàn bộ file gốc trong 24h</li>
+          <li>Ekip hỗ trợ tạo dáng xuyên suốt</li>
+        </ul>
+        <div class="svc-price"><span class="now">3.488.000đ</span><span class="was">4.488.000đ</span><span class="save">Tiết kiệm 1.000.000</span></div>
+        <a class="btn btn-gold" href="/lien-he/">Đặt lịch concept này →</a>
+      </div>
+    </div>
+
+    <div class="svc">
+      <div class="svc-img s2"><div class="ph"></div></div>
+      <div class="svc-body">
+        <div class="k">Concept</div>
+        <h2>Chân dung Trắng Đen Cao Cấp</h2>
+        <p class="desc">Vẻ đẹp vượt thời gian qua sắc trắng đen tinh tế. Tập trung vào ánh sáng, đường nét và cảm xúc thật.</p>
+        <ul>
+          <li>1 layout makeup & làm tóc theo concept</li>
+          <li>1 bộ trang phục & phụ kiện theo concept</li>
+          <li>10 ảnh chỉnh sửa kỹ (file mềm)</li>
+          <li>Trả toàn bộ file gốc trong 24h</li>
+          <li>Ekip hỗ trợ tạo dáng xuyên suốt</li>
+        </ul>
+        <div class="svc-price"><span class="now">3.288.000đ</span><span class="was">4.488.000đ</span><span class="save">Tiết kiệm 1.200.000</span></div>
+        <a class="btn btn-gold" href="/lien-he/">Đặt lịch concept này →</a>
+      </div>
+    </div>
+
+    <div class="svc">
+      <div class="svc-img s3"><div class="ph"></div></div>
+      <div class="svc-body">
+        <div class="k">Concept</div>
+        <h2>Beauty Hàn Quốc — Tạp Chí</h2>
+        <p class="desc">Phong cách beauty Hàn Quốc nhẹ nhàng, trong trẻo như ảnh tạp chí. Makeup tự nhiên, lên hình rạng rỡ.</p>
+        <ul>
+          <li>1 layout makeup & làm tóc theo concept</li>
+          <li>1 bộ trang phục & phụ kiện theo concept</li>
+          <li>8 ảnh chỉnh sửa kỹ (file mềm)</li>
+          <li>Trả toàn bộ file gốc trong 24h</li>
+          <li>Ekip hỗ trợ tạo dáng xuyên suốt</li>
+        </ul>
+        <div class="svc-price"><span class="now">3.288.000đ</span><span class="was">4.488.000đ</span><span class="save">Tiết kiệm 1.200.000</span></div>
+        <a class="btn btn-gold" href="/lien-he/">Đặt lịch concept này →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft-grid">
+      <div>
+        <div class="ft-logo"><img src="https://drive.google.com/thumbnail?id=1ZozURa0rg25I18bU8aI4ErT081EttNzN&sz=w400" alt="Hello Chụp Ảnh" referrerpolicy="no-referrer" /></div>
+        <p class="tagline">Hoạ dấu ấn riêng bằng ánh sáng</p>
+        <p style="font-size:14px;margin-top:10px">371 Huỳnh Văn Bánh, P. Phú Nhuận, TP.HCM<br/>Mở cửa: 9:00 – 21:00 hằng ngày</p>
+      </div>
+      <div class="ft">
+        <h4>Dịch vụ</h4>
+        <ul>
+          <li><a href="/dich-vu/">Chân dung Concept Hoạ Báo</a></li>
+          <li><a href="/dich-vu/">Chân dung Trắng Đen</a></li>
+          <li><a href="/dich-vu/">Beauty Hàn Quốc</a></li>
+          <li><a href="/bang-gia/">Bảng giá</a></li>
+        </ul>
+      </div>
+      <div class="ft">
+        <h4>Liên hệ</h4>
+        <ul>
+          <li><a href="tel:0856870001">☎ 08.5687.0001</a></li>
+          <li><a href="https://zalo.me/0856870001" target="_blank" rel="noopener">💬 Zalo</a></li>
+          <li><a href="https://www.facebook.com/hellochupanh/" target="_blank" rel="noopener">f Facebook</a></li>
+          <li><a href="/khachhangchonanh/">📸 Khách hàng chọn ảnh</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ft-bottom">
+      <div>© 2026 Hello Chụp Ảnh. Mọi quyền được bảo lưu.</div>
+      <div class="ft-social"><a href="https://www.facebook.com/hellochupanh/" target="_blank" rel="noopener">Facebook</a><a href="tel:0856870001">Hotline</a></div>
+    </div>
+  </div>
+</footer>
+
+<div class="float-contact">
+  <a class="fc-phone" href="tel:0856870001" title="Gọi">☎</a>
+  <a class="fc-zalo" href="https://zalo.me/0856870001" target="_blank" rel="noopener" title="Zalo">Zalo</a>
+  <a class="fc-fb" href="https://www.facebook.com/hellochupanh/" target="_blank" rel="noopener" title="Facebook">f</a>
+</div>
+
+<script src="/content-loader.js"></script>
+</body>
+</html>

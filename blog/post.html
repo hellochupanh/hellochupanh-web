@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bài viết — Hello Chụp Ảnh</title>
+<meta name="theme-color" content="#F4A14F" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+  .post-wrap{max-width:760px;margin:0 auto;padding:60px 24px 80px}
+  .post-back{display:inline-flex;align-items:center;gap:6px;color:var(--gold-dark);font-weight:600;font-size:14px;margin-bottom:24px}
+  .post-hero-img{aspect-ratio:16/9;background-size:cover;background-position:center;border-radius:18px;margin-bottom:28px;background-color:#efe7da}
+  #post h1{font-family:var(--serif);font-size:clamp(28px,4.5vw,42px);font-weight:700;line-height:1.15;margin-bottom:12px}
+  .post-meta{color:var(--gold-dark);font-size:13px;letter-spacing:1px;text-transform:uppercase;font-weight:600;margin-bottom:30px}
+  .post-content{font-size:17px;line-height:1.8;color:#33302b}
+  .post-content h2{font-family:var(--serif);font-size:26px;font-weight:700;margin:32px 0 12px}
+  .post-content h3{font-family:var(--serif);font-size:21px;font-weight:700;margin:26px 0 10px}
+  .post-content p{margin-bottom:18px}
+  .post-content img{border-radius:14px;margin:18px 0}
+  .post-content ul,.post-content ol{margin:0 0 18px 22px}
+  .post-content li{margin-bottom:8px}
+  .post-content a{color:var(--gold-dark);text-decoration:underline}
+  .post-content blockquote{border-left:3px solid var(--gold);padding-left:16px;color:#5a5349;font-style:italic;margin:18px 0}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="nav-logo" href="/"><img src="https://drive.google.com/thumbnail?id=1ZozURa0rg25I18bU8aI4ErT081EttNzN&sz=w400" alt="Hello Chụp Ảnh" referrerpolicy="no-referrer" /></a>
+    <nav class="nav-links">
+      <a href="/">Trang chủ</a>
+      <a href="/dich-vu/" class="active">Dịch vụ</a>
+      <a href="/bang-gia/">Bảng giá</a>
+      <a href="/lien-he/">Liên hệ</a>
+      <a href="/blog/" class="active">Tin tức</a>
+      <a href="/khachhangchonanh/" class="nav-cta">Khách chọn ảnh</a>
+    </nav>
+    <button class="nav-toggle" onclick="document.getElementById('mm').classList.toggle('open')">☰</button>
+  </div>
+  <div class="mobile-menu" id="mm">
+    <a href="/">Trang chủ</a><a href="/dich-vu/">Dịch vụ</a><a href="/bang-gia/">Bảng giá</a><a href="/lien-he/">Liên hệ</a><a href="/blog/" class="active">Tin tức</a><a href="/khachhangchonanh/">Khách hàng chọn ảnh →</a>
+  </div>
+</header>
+
+<article class="post-wrap">
+  <a class="post-back" href="/blog/">← Quay lại Tin tức</a>
+  <div id="post"><p>Đang tải…</p></div>
+</article>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft-grid">
+      <div>
+        <div class="ft-logo"><img src="https://drive.google.com/thumbnail?id=1ZozURa0rg25I18bU8aI4ErT081EttNzN&sz=w400" alt="Hello Chụp Ảnh" referrerpolicy="no-referrer" /></div>
+        <p class="tagline">Hoạ dấu ấn riêng bằng ánh sáng</p>
+        <p style="font-size:14px;margin-top:10px">371 Huỳnh Văn Bánh, P. Phú Nhuận, TP.HCM<br/>Mở cửa: 9:00 – 21:00 hằng ngày</p>
+      </div>
+      <div class="ft">
+        <h4>Dịch vụ</h4>
+        <ul>
+          <li><a href="/dich-vu/">Chân dung Concept Hoạ Báo</a></li>
+          <li><a href="/dich-vu/">Chân dung Trắng Đen</a></li>
+          <li><a href="/dich-vu/">Beauty Hàn Quốc</a></li>
+          <li><a href="/bang-gia/">Bảng giá</a></li>
+        </ul>
+      </div>
+      <div class="ft">
+        <h4>Liên hệ</h4>
+        <ul>
+          <li><a href="tel:0856870001">☎ 08.5687.0001</a></li>
+          <li><a href="https://zalo.me/0856870001" target="_blank" rel="noopener">💬 Zalo</a></li>
+          <li><a href="https://www.facebook.com/hellochupanh/" target="_blank" rel="noopener">f Facebook</a></li>
+          <li><a href="/khachhangchonanh/">📸 Khách hàng chọn ảnh</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ft-bottom">
+      <div>© 2026 Hello Chụp Ảnh. Mọi quyền được bảo lưu.</div>
+      <div class="ft-social"><a href="https://www.facebook.com/hellochupanh/" target="_blank" rel="noopener">Facebook</a><a href="tel:0856870001">Hotline</a></div>
+    </div>
+  </div>
+</footer>
+
+<div class="float-contact">
+  <a class="fc-phone" href="tel:0856870001" title="Gọi">☎</a>
+  <a class="fc-zalo" href="https://zalo.me/0856870001" target="_blank" rel="noopener" title="Zalo">Zalo</a>
+  <a class="fc-fb" href="https://www.facebook.com/hellochupanh/" target="_blank" rel="noopener" title="Facebook">f</a>
+</div>
+
+
+
+<script>
+const REPO="hellochupanh/hellochupanh-web",BRANCH="main";
+function raw(p){return "https://raw.githubusercontent.com/"+REPO+"/"+BRANCH+"/"+String(p).replace(/^\//,"");}
+function esc(s){return String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));}
+function fixImg(p){if(!p)return"";if(/^https?:/.test(p))return p;return raw(p);}
+function fmtDate(d){if(!d)return"";var m=String(d).match(/(\d{4})-(\d{2})-(\d{2})/);return m?(m[3]+"/"+m[2]+"/"+m[1]):d;}
+function fm(txt){var m=txt.match(/^---\s*([\s\S]*?)\s*---\s*([\s\S]*)$/);var o={},b=txt;if(m){b=m[2];m[1].split(/\r?\n/).forEach(function(l){var i=l.indexOf(":");if(i>0){var k=l.slice(0,i).trim();var v=l.slice(i+1).trim().replace(/^["']|["']$/g,"");o[k]=v;}});}return{fm:o,body:b};}
+function slugOf(){return new URLSearchParams(location.search).get("slug");}
+async function load(){
+  var c=document.getElementById("post");var slug=slugOf();
+  if(!slug){c.innerHTML='<p>Không tìm thấy bài viết.</p>';return;}
+  try{
+    var r=await fetch(raw("posts/"+slug+".md"));if(!r.ok)throw 0;
+    var t=await r.text();var p=fm(t);
+    document.title=(p.fm.title||"Bài viết")+" — Hello Chụp Ảnh";
+    var h="";
+    if(p.fm.thumbnail)h+='<div class="post-hero-img" style="background-image:url(\''+fixImg(p.fm.thumbnail)+'\')"></div>';
+    h+='<h1>'+esc(p.fm.title||"")+'</h1><div class="post-meta">'+fmtDate(p.fm.date)+'</div>';
+    var body=p.body.replace(/!\[([^\]]*)\]\((\/images\/[^)]+)\)/g,function(m,a,pp){return "!["+a+"]("+raw(pp)+")";});
+    h+='<div class="post-content">'+marked.parse(body)+'</div>';
+    c.innerHTML=h;
+  }catch(e){c.innerHTML='<p>Chưa thể tải bài viết này. Có thể bài vừa đăng, vui lòng thử lại sau ít phút.</p>';}
+}
+load();
+</script>
+<script src="/content-loader.js"></script>
+</body>
+</html>

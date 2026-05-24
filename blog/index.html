@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tin tức — Hello Chụp Ảnh</title>
+<meta name="description" content="Tin tức, chia sẻ và câu chuyện hậu trường từ Hello Chụp Ảnh." />
+<meta name="theme-color" content="#F4A14F" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+  .blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+  .post-card{background:#fff;border:1.5px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s}
+  .post-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.08)}
+  .pc-img{aspect-ratio:16/10;background-size:cover;background-position:center;background-color:#efe7da}
+  .pc-noimg{background:linear-gradient(135deg,#f0d9b8,#d9863a)}
+  .pc-body{padding:20px 22px;display:flex;flex-direction:column;flex:1}
+  .pc-date{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--gold-dark);font-weight:600;margin-bottom:8px}
+  .post-card h3{font-family:var(--serif);font-size:21px;font-weight:700;line-height:1.25;margin-bottom:10px;color:var(--ink)}
+  .post-card p{color:#5a5349;font-size:14.5px;flex:1}
+  .empty{text-align:center;color:var(--muted);font-size:16px;padding:40px 0}
+  @media(max-width:900px){.blog-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="nav-logo" href="/"><img src="https://drive.google.com/thumbnail?id=1ZozURa0rg25I18bU8aI4ErT081EttNzN&sz=w400" alt="Hello Chụp Ảnh" referrerpolicy="no-referrer" /></a>
+    <nav class="nav-links">
+      <a href="/">Trang chủ</a>
+      <a href="/dich-vu/" class="active">Dịch vụ</a>
+      <a href="/bang-gia/">Bảng giá</a>
+      <a href="/lien-he/">Liên hệ</a>
+      <a href="/blog/" class="active">Tin tức</a>
+      <a href="/khachhangchonanh/" class="nav-cta">Khách chọn ảnh</a>
+    </nav>
+    <button class="nav-toggle" onclick="document.getElementById('mm').classList.toggle('open')">☰</button>
+  </div>
+  <div class="mobile-menu" id="mm">
+    <a href="/">Trang chủ</a><a href="/dich-vu/">Dịch vụ</a><a href="/bang-gia/">Bảng giá</a><a href="/lien-he/">Liên hệ</a><a href="/blog/" class="active">Tin tức</a><a href="/khachhangchonanh/">Khách hàng chọn ảnh →</a>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="eyebrow">Tin tức</div>
+    <h1>Câu chuyện &amp; chia sẻ</h1>
+    <p>Hậu trường, mẹo chụp đẹp và những cập nhật mới nhất từ Hello.</p>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div id="postlist" class="blog-grid"><p class="empty">Đang tải bài viết…</p></div>
+  </div>
+</section>
+
+<footer class="ft">
+  <div class="wrap">
+    <div class="ft-grid">
+      <div>
+        <div class="ft-logo"><img src="https://drive.google.com/thumbnail?id=1ZozURa0rg25I18bU8aI4ErT081EttNzN&sz=w400" alt="Hello Chụp Ảnh" referrerpolicy="no-referrer" /></div>
+        <p class="tagline">Hoạ dấu ấn riêng bằng ánh sáng</p>
+        <p style="font-size:14px;margin-top:10px">371 Huỳnh Văn Bánh, P. Phú Nhuận, TP.HCM<br/>Mở cửa: 9:00 – 21:00 hằng ngày</p>
+      </div>
+      <div class="ft">
+        <h4>Dịch vụ</h4>
+        <ul>
+          <li><a href="/dich-vu/">Chân dung Concept Hoạ Báo</a></li>
+          <li><a href="/dich-vu/">Chân dung Trắng Đen</a></li>
+          <li><a href="/dich-vu/">Beauty Hàn Quốc</a></li>
+          <li><a href="/bang-gia/">Bảng giá</a></li>
+        </ul>
+      </div>
+      <div class="ft">
+        <h4>Liên hệ</h4>
+        <ul>
+          <li><a href="tel:0856870001">☎ 08.5687.0001</a></li>
+          <li><a href="https://zalo.me/0856870001" target="_blank" rel="noopener">💬 Zalo</a></li>
+          <li><a href="https://www.facebook.com/hellochupanh/" target="_blank" rel="noopener">f Facebook</a></li>
+          <li><a href="/khachhangchonanh/">📸 Khách hàng chọn ảnh</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ft-bottom">
+      <div>© 2026 Hello Chụp Ảnh. Mọi quyền được bảo lưu.</div>
+      <div class="ft-social"><a href="https://www.facebook.com/hellochupanh/" target="_blank" rel="noopener">Facebook</a><a href="tel:0856870001">Hotline</a></div>
+    </div>
+  </div>
+</footer>
+
+<div class="float-contact">
+  <a class="fc-phone" href="tel:0856870001" title="Gọi">☎</a>
+  <a class="fc-zalo" href="https://zalo.me/0856870001" target="_blank" rel="noopener" title="Zalo">Zalo</a>
+  <a class="fc-fb" href="https://www.facebook.com/hellochupanh/" target="_blank" rel="noopener" title="Facebook">f</a>
+</div>
+
+
+
+<script>
+const REPO="hellochupanh/hellochupanh-web",BRANCH="main";
+function raw(p){return "https://raw.githubusercontent.com/"+REPO+"/"+BRANCH+"/"+String(p).replace(/^\//,"");}
+function esc(s){return String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));}
+function fixImg(p){if(!p)return"";if(/^https?:/.test(p))return p;return raw(p);}
+function fmtDate(d){if(!d)return"";var m=String(d).match(/(\d{4})-(\d{2})-(\d{2})/);return m?(m[3]+"/"+m[2]+"/"+m[1]):d;}
+function fm(txt){var m=txt.match(/^---\s*([\s\S]*?)\s*---\s*([\s\S]*)$/);var o={},b=txt;if(m){b=m[2];m[1].split(/\r?\n/).forEach(function(l){var i=l.indexOf(":");if(i>0){var k=l.slice(0,i).trim();var v=l.slice(i+1).trim().replace(/^["']|["']$/g,"");o[k]=v;}});}return{fm:o,body:b};}
+async function load(){
+  var cont=document.getElementById("postlist");
+  try{
+    var r=await fetch("https://api.github.com/repos/"+REPO+"/contents/posts?ref="+BRANCH);
+    if(r.status===404){cont.innerHTML='<p class="empty">Chưa có bài viết nào. Hãy vào trang quản trị để đăng bài đầu tiên.</p>';return;}if(!r.ok)throw 0;
+    var list=await r.json();
+    var md=list.filter(function(f){return /\.md$/.test(f.name);});
+    if(!md.length){cont.innerHTML='<p class="empty">Chưa có bài viết nào. Hãy vào trang quản trị để đăng bài đầu tiên.</p>';return;}
+    var posts=await Promise.all(md.map(async function(f){var t=await(await fetch(f.download_url)).text();var p=fm(t);return{slug:f.name.replace(/\.md$/,""),title:p.fm.title||f.name,date:p.fm.date||"",thumb:fixImg(p.fm.thumbnail),excerpt:p.fm.excerpt||p.body.replace(/[#*_>`]/g,"").trim().slice(0,140)};}));
+    posts.sort(function(a,b){return(b.date||"").localeCompare(a.date||"");});
+    cont.innerHTML=posts.map(function(p){return '<a class="post-card" href="/blog/post.html?slug='+encodeURIComponent(p.slug)+'">'+(p.thumb?'<div class="pc-img" style="background-image:url(\''+p.thumb+'\')"></div>':'<div class="pc-img pc-noimg"></div>')+'<div class="pc-body"><div class="pc-date">'+fmtDate(p.date)+'</div><h3>'+esc(p.title)+'</h3><p>'+esc(p.excerpt)+'</p></div></a>';}).join("");
+  }catch(e){cont.innerHTML='<p class="empty">Chưa thể tải bài viết lúc này. Vui lòng thử lại sau.</p>';}
+}
+load();
+</script>
+<script src="/content-loader.js"></script>
+</body>
+</html>
