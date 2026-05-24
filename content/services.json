@@ -4,58 +4,88 @@
   "sub": "Mỗi concept là một cá tính riêng. Bạn muốn hoạ dấu ấn nào?",
   "items": [
     {
+      "heading": "Chân dung Concept — Hoạ Báo Chất",
+      "was": "",
+      "btn_url": "/lien-he/",
+      "desc": "Phong cách hoạ báo cá tính, sang trọng. Tôn lên thần thái và nét riêng của bạn qua từng khung hình được dàn dựng tỉ mỉ.",
+      "btn_label": "Đặt lịch concept này →",
+      "now": "",
       "tag": "Concept",
       "image": "https://drive.google.com/thumbnail?id=13edL4MnS_T3DPSBCTzlWwsE__SMJXcbT&sz=w1200",
-      "heading": "Chân dung Concept — Hoạ Báo Chất",
-      "desc": "Phong cách hoạ báo cá tính, sang trọng. Tôn lên thần thái và nét riêng của bạn qua từng khung hình được dàn dựng tỉ mỉ.",
       "features": [
-        { "item": "1 layout makeup & làm tóc theo concept" },
-        { "item": "1 bộ trang phục & phụ kiện theo concept" },
-        { "item": "10 ảnh chỉnh sửa kỹ (file mềm)" },
-        { "item": "Trả toàn bộ file gốc trong 24h" },
-        { "item": "Ekip hỗ trợ tạo dáng xuyên suốt" }
+        {
+          "item": "1 layout makeup & làm tóc theo concept"
+        },
+        {
+          "item": "1 bộ trang phục & phụ kiện theo concept"
+        },
+        {
+          "item": "10 ảnh chỉnh sửa kỹ (file mềm)"
+        },
+        {
+          "item": "Trả toàn bộ file gốc trong 24h"
+        },
+        {
+          "item": "Ekip hỗ trợ tạo dáng xuyên suốt"
+        }
       ],
-      "now": "3.488.000đ",
-      "was": "4.488.000đ",
-      "save": "Tiết kiệm 1.000.000",
-      "btn_label": "Đặt lịch concept này →",
-      "btn_url": "/lien-he/"
+      "save": ""
     },
     {
+      "heading": "Chân dung Trắng Đen Cao Cấp",
+      "was": "4.488.000đ",
+      "btn_url": "/lien-he/",
+      "desc": "Vẻ đẹp vượt thời gian qua sắc trắng đen tinh tế. Tập trung vào ánh sáng, đường nét và cảm xúc thật.",
+      "btn_label": "Đặt lịch concept này →",
+      "now": "3.288.000đ",
       "tag": "Concept",
       "image": "https://drive.google.com/thumbnail?id=18uFzhJMuChhslbMU0ektVNbZfQC5Iirw&sz=w1200",
-      "heading": "Chân dung Trắng Đen Cao Cấp",
-      "desc": "Vẻ đẹp vượt thời gian qua sắc trắng đen tinh tế. Tập trung vào ánh sáng, đường nét và cảm xúc thật.",
       "features": [
-        { "item": "1 layout makeup & làm tóc theo concept" },
-        { "item": "1 bộ trang phục & phụ kiện theo concept" },
-        { "item": "10 ảnh chỉnh sửa kỹ (file mềm)" },
-        { "item": "Trả toàn bộ file gốc trong 24h" },
-        { "item": "Ekip hỗ trợ tạo dáng xuyên suốt" }
+        {
+          "item": "1 layout makeup & làm tóc theo concept"
+        },
+        {
+          "item": "1 bộ trang phục & phụ kiện theo concept"
+        },
+        {
+          "item": "10 ảnh chỉnh sửa kỹ (file mềm)"
+        },
+        {
+          "item": "Trả toàn bộ file gốc trong 24h"
+        },
+        {
+          "item": "Ekip hỗ trợ tạo dáng xuyên suốt"
+        }
       ],
-      "now": "3.288.000đ",
-      "was": "4.488.000đ",
-      "save": "Tiết kiệm 1.200.000",
-      "btn_label": "Đặt lịch concept này →",
-      "btn_url": "/lien-he/"
+      "save": "Tiết kiệm 1.200.000"
     },
     {
+      "heading": "Beauty Hàn Quốc — Tạp Chí",
+      "was": "4.488.000đ",
+      "btn_url": "/lien-he/",
+      "desc": "Phong cách beauty Hàn Quốc nhẹ nhàng, trong trẻo như ảnh tạp chí. Makeup tự nhiên, lên hình rạng rỡ.",
+      "btn_label": "Đặt lịch concept này →",
+      "now": "3.288.000đ",
       "tag": "Concept",
       "image": "https://drive.google.com/thumbnail?id=1WXUH1UEoQ-axGEcFEjbB4dcjYjn1j4uP&sz=w1200",
-      "heading": "Beauty Hàn Quốc — Tạp Chí",
-      "desc": "Phong cách beauty Hàn Quốc nhẹ nhàng, trong trẻo như ảnh tạp chí. Makeup tự nhiên, lên hình rạng rỡ.",
       "features": [
-        { "item": "1 layout makeup & làm tóc theo concept" },
-        { "item": "1 bộ trang phục & phụ kiện theo concept" },
-        { "item": "8 ảnh chỉnh sửa kỹ (file mềm)" },
-        { "item": "Trả toàn bộ file gốc trong 24h" },
-        { "item": "Ekip hỗ trợ tạo dáng xuyên suốt" }
+        {
+          "item": "1 layout makeup & làm tóc theo concept"
+        },
+        {
+          "item": "1 bộ trang phục & phụ kiện theo concept"
+        },
+        {
+          "item": "8 ảnh chỉnh sửa kỹ (file mềm)"
+        },
+        {
+          "item": "Trả toàn bộ file gốc trong 24h"
+        },
+        {
+          "item": "Ekip hỗ trợ tạo dáng xuyên suốt"
+        }
       ],
-      "now": "3.288.000đ",
-      "was": "4.488.000đ",
-      "save": "Tiết kiệm 1.200.000",
-      "btn_label": "Đặt lịch concept này →",
-      "btn_url": "/lien-he/"
+      "save": "Tiết kiệm 1.200.000"
     }
   ]
 }
