@@ -1,0 +1,42 @@
+{
+  "header": {
+    "eyebrow": "Bộ sưu tập Concept",
+    "title": "Concept cho câu chuyện của bạn",
+    "sub": "Mỗi concept là một phong cách riêng. Chọn concept bạn thích, rồi đặt lịch cùng Hello."
+  },
+  "items": [
+    {
+      "slug": "chan-dung-hoa-bao",
+      "name": "Chân dung Hoạ Báo",
+      "eyebrow": "Cá tính · Sang trọng",
+      "desc": "Phong cách hoạ báo cá tính, tôn lên thần thái và nét riêng của bạn qua từng khung hình được dàn dựng tỉ mỉ.",
+      "cover": "https://drive.google.com/thumbnail?id=13edL4MnS_T3DPSBCTzlWwsE__SMJXcbT&sz=w1200",
+      "photos": [
+        { "image": "https://drive.google.com/thumbnail?id=13edL4MnS_T3DPSBCTzlWwsE__SMJXcbT&sz=w1600" },
+        { "image": "https://drive.google.com/thumbnail?id=16hByGg3HGzI-8syoO5wgVkhWRo9bDwqA&sz=w1600" },
+        { "image": "https://drive.google.com/thumbnail?id=1BSzkRKFdfn41Qx_-MeYDLi6jtK8YdTVl&sz=w1600" }
+      ]
+    },
+    {
+      "slug": "trang-den-cao-cap",
+      "name": "Trắng Đen Cao Cấp",
+      "eyebrow": "Tinh tế · Vượt thời gian",
+      "desc": "Vẻ đẹp vượt thời gian qua sắc trắng đen tinh tế. Tập trung vào ánh sáng, đường nét và cảm xúc thật.",
+      "cover": "https://drive.google.com/thumbnail?id=18uFzhJMuChhslbMU0ektVNbZfQC5Iirw&sz=w1200",
+      "photos": [
+        { "image": "https://drive.google.com/thumbnail?id=18uFzhJMuChhslbMU0ektVNbZfQC5Iirw&sz=w1600" },
+        { "image": "https://drive.google.com/thumbnail?id=18OvLupSCn3YqOdgMEBEDused5ONtZJpa&sz=w1600" }
+      ]
+    },
+    {
+      "slug": "beauty-han-quoc",
+      "name": "Beauty Hàn Quốc",
+      "eyebrow": "Trong trẻo · Tạp chí",
+      "desc": "Phong cách beauty Hàn Quốc nhẹ nhàng, trong trẻo như ảnh tạp chí. Makeup tự nhiên, lên hình rạng rỡ.",
+      "cover": "https://drive.google.com/thumbnail?id=1WXUH1UEoQ-axGEcFEjbB4dcjYjn1j4uP&sz=w1200",
+      "photos": [
+        { "image": "https://drive.google.com/thumbnail?id=1WXUH1UEoQ-axGEcFEjbB4dcjYjn1j4uP&sz=w1600" }
+      ]
+    }
+  ]
+}
