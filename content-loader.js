@@ -17,6 +17,19 @@
     return t.slice(0,i)+openTag+w+closeTag+t.slice(i+w.length);
   }
 
+  /* ---- Chèn CSS cho phần mới (đánh giá + nút MXH) — đảm bảo áp dụng dù style.css bị cache ---- */
+  (function(){
+    var css=".reviews-sec{background:#f3ece1}"
+      +".reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-bottom:6px}"
+      +".review-card{background:#fff;border-radius:16px;padding:26px 24px;box-shadow:0 4px 16px rgba(0,0,0,0.05)}"
+      +".rv-text{color:#4a443b;font-size:15.5px;line-height:1.7;font-style:italic;margin-bottom:14px}"
+      +".rv-name{font-family:var(--serif);font-weight:700;color:var(--gold-dark)}"
+      +"@media(max-width:760px){.reviews-grid{grid-template-columns:1fr}}"
+      +".fc-ig{background:radial-gradient(circle at 30% 110%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285AEB 90%)}"
+      +".fc-tt{background:#111}";
+    try{ var st=document.createElement('style'); st.textContent=css; (document.head||document.documentElement).appendChild(st); }catch(e){}
+  })();
+
   /* ---- GIAO DIỆN: màu + phông ---- */
   var FONT_PRESETS={
     classic:{serif:"'Playfair Display', Georgia, serif", sans:"'Be Vietnam Pro', sans-serif", url:"https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap"},
