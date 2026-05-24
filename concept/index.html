@@ -12,7 +12,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
 <style>
-  /* Lưới các concept */
   .cc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
   .cc-card { display: block; background: var(--card); border-radius: 16px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.06); transition: transform 0.18s, box-shadow 0.18s; }
   .cc-card:hover { transform: translateY(-5px); box-shadow: 0 14px 32px rgba(0,0,0,0.12); }
@@ -24,22 +23,17 @@
   .cc-more { color: var(--gold-dark); font-weight: 600; font-size: 14px; }
   .cc-count { color: var(--muted); font-size: 13px; }
 
-  /* Đầu trang khi xem 1 concept */
   .cc-back { display: inline-flex; align-items: center; gap: 6px; color: var(--gold-dark); font-weight: 600; margin-bottom: 22px; font-size: 15px; }
   .cc-detail-head { margin-bottom: 30px; }
   .cc-detail-head .k { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold-dark); font-weight: 600; margin-bottom: 8px; }
   .cc-detail-head h2 { font-family: var(--serif); font-size: clamp(28px,4vw,42px); font-weight: 700; line-height: 1.15; margin-bottom: 12px; }
   .cc-detail-head p { color: #5a5349; font-size: 16px; max-width: 680px; }
 
-  /* Lưới ảnh (bộ hình) kiểu masonry */
   .gallery-grid { column-count: 3; column-gap: 16px; }
   .gallery-grid img { width: 100%; margin-bottom: 16px; border-radius: 12px; break-inside: avoid; cursor: zoom-in; display: block; background: #efe7da; }
   .cc-empty { color: var(--muted); text-align: center; padding: 40px 0; }
-
-  /* Nút đặt lịch cuối trang concept */
   .cc-cta { text-align: center; margin-top: 44px; }
 
-  /* Lightbox */
   .lb { position: fixed; inset: 0; background: rgba(20,18,15,0.92); z-index: 500; display: none; align-items: center; justify-content: center; }
   .lb.open { display: flex; }
   .lb img { max-width: 92vw; max-height: 88vh; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
@@ -84,7 +78,7 @@
   <div class="wrap">
     <div class="eyebrow" id="cc-eyebrow">Bộ sưu tập Concept</div>
     <h1 id="cc-title">Concept cho câu chuyện của bạn</h1>
-    <p id="cc-sub">Mỗi concept là một phong cách riêng. Chọn concept bạn thích, rồi đặt lịch cùng Hello.</p>
+    <p id="cc-sub">Mỗi nhóm có nhiều concept riêng. Chọn nhóm, xem concept bạn thích, rồi đặt lịch cùng Hello.</p>
   </div>
 </section>
 
@@ -147,6 +141,8 @@
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]);}); }
   function img(p){ if(!p) return ""; if(/^https?:/.test(p)) return p; return "/"+String(p).replace(/^\//,""); }
   function getParam(n){ return new URLSearchParams(location.search).get(n); }
+  function firstPhoto(grp){ try{ return grp.concepts[0].photos[0].image; }catch(e){ return ""; } }
+  function conceptCover(cc){ if(cc.cover) return cc.cover; try{ return cc.photos[0].image||cc.photos[0]; }catch(e){ return ""; } }
   var root = document.getElementById('concept-root');
 
   fetch('/content/concepts.json?t='+Date.now()).then(function(r){ return r.ok?r.json():null; }).then(function(data){
@@ -156,45 +152,78 @@
       if(data.header.title){ document.getElementById('cc-title').textContent=data.header.title; document.title=data.header.title+' — Hello Chụp Ảnh'; }
       if(data.header.sub) document.getElementById('cc-sub').textContent=data.header.sub;
     }
-    var items = data.items || [];
-    var idx = getParam('c');
-    if(idx!==null && idx!==''){
-      var c = items[parseInt(idx,10)];
-      if(c){ renderDetail(c); return; }
+    var groups = data.items || [];
+    var g = getParam('g'), c = getParam('c');
+    if(g!==null && g!==''){
+      var grp = groups[parseInt(g,10)];
+      if(grp){
+        var gi = parseInt(g,10);
+        var concepts = grp.concepts || [];
+        if(c!==null && c!==''){
+          var cc = concepts[parseInt(c,10)];
+          if(cc){ renderPhotos(grp, cc, gi); return; }
+        }
+        renderConcepts(grp, gi); return;
+      }
     }
-    renderGrid(items);
+    renderGroups(groups);
   }).catch(function(){ root.innerHTML='<p class="cc-empty">Không tải được concept.</p>'; });
 
-  function renderGrid(items){
-    if(!items.length){ root.innerHTML='<p class="cc-empty">Chưa có concept nào. Hãy thêm trong trang quản trị.</p>'; return; }
-    var html='<div class="cc-grid">'+items.map(function(c,i){
-      var n=(c.photos||[]).length;
-      var cover=img(c.cover|| (c.photos&&c.photos[0]&&(c.photos[0].image||c.photos[0])) || '');
+  /* TẦNG 1 — các nhóm */
+  function renderGroups(groups){
+    if(!groups.length){ root.innerHTML='<p class="cc-empty">Chưa có concept nào. Hãy thêm trong trang quản trị.</p>'; return; }
+    root.innerHTML='<div class="cc-grid">'+groups.map(function(grp,i){
+      var n=(grp.concepts||[]).length;
+      var cover=img(grp.cover||firstPhoto(grp));
       var cv = cover ? (" style=\"background-image:url('"+cover+"')\"") : "";
-      return '<a class="cc-card" href="?c='+i+'">'
+      return '<a class="cc-card" href="?g='+i+'">'
         +'<div class="cc-cover"'+cv+'></div>'
         +'<div class="cc-body">'
-        +(c.eyebrow?'<div class="k">'+esc(c.eyebrow)+'</div>':'')
-        +'<h3>'+esc(c.name)+'</h3>'
-        +(c.desc?'<p>'+esc(c.desc)+'</p>':'')
-        +'<span class="cc-more">Xem bộ ảnh →</span>'+(n?' <span class="cc-count">· '+n+' ảnh</span>':'')
+        +(grp.eyebrow?'<div class="k">'+esc(grp.eyebrow)+'</div>':'')
+        +'<h3>'+esc(grp.name)+'</h3>'
+        +(grp.desc?'<p>'+esc(grp.desc)+'</p>':'')
+        +'<span class="cc-more">Xem concept →</span>'+(n?' <span class="cc-count">· '+n+' concept</span>':'')
         +'</div></a>';
     }).join('')+'</div>';
-    root.innerHTML=html;
   }
 
-  var current=[]; // ảnh của concept đang xem
-  function renderDetail(c){
-    var photos=(c.photos||[]).map(function(p){ return img(p.image!==undefined?p.image:p); }).filter(Boolean);
+  /* TẦNG 2 — các concept trong nhóm */
+  function renderConcepts(grp, gi){
+    var concepts = grp.concepts || [];
+    var grid = concepts.length
+      ? '<div class="cc-grid">'+concepts.map(function(cc,i){
+          var n=(cc.photos||[]).length;
+          var cover=img(conceptCover(cc));
+          var cv = cover ? (" style=\"background-image:url('"+cover+"')\"") : "";
+          return '<a class="cc-card" href="?g='+gi+'&c='+i+'">'
+            +'<div class="cc-cover"'+cv+'></div>'
+            +'<div class="cc-body"><h3>'+esc(cc.name)+'</h3>'
+            +(cc.desc?'<p>'+esc(cc.desc)+'</p>':'')
+            +'<span class="cc-more">Xem bộ ảnh →</span>'+(n?' <span class="cc-count">· '+n+' ảnh</span>':'')
+            +'</div></a>';
+        }).join('')+'</div>'
+      : '<p class="cc-empty">Nhóm này chưa có concept. Hãy thêm trong trang quản trị.</p>';
+    root.innerHTML='<a class="cc-back" href="/concept/">← Quay lại các nhóm</a>'
+      +'<div class="cc-detail-head">'
+      +(grp.eyebrow?'<div class="k">'+esc(grp.eyebrow)+'</div>':'')
+      +'<h2>'+esc(grp.name)+'</h2>'
+      +(grp.desc?'<p>'+esc(grp.desc)+'</p>':'')
+      +'</div>'+grid;
+  }
+
+  /* TẦNG 3 — bộ ảnh của concept */
+  var current=[];
+  function renderPhotos(grp, cc, gi){
+    var photos=(cc.photos||[]).map(function(p){ return img(p.image!==undefined?p.image:p); }).filter(Boolean);
     current=photos;
     var grid = photos.length
-      ? '<div class="gallery-grid">'+photos.map(function(src,i){ return '<img loading="lazy" referrerpolicy="no-referrer" src="'+src+'" data-i="'+i+'" alt="'+esc(c.name)+'" />'; }).join('')+'</div>'
+      ? '<div class="gallery-grid">'+photos.map(function(src,i){ return '<img loading="lazy" referrerpolicy="no-referrer" src="'+src+'" data-i="'+i+'" alt="'+esc(cc.name)+'" />'; }).join('')+'</div>'
       : '<p class="cc-empty">Concept này chưa có ảnh. Hãy thêm ảnh trong trang quản trị.</p>';
-    root.innerHTML='<a class="cc-back" href="/concept/">← Quay lại các concept</a>'
+    root.innerHTML='<a class="cc-back" href="?g='+gi+'">← Quay lại '+esc(grp.name)+'</a>'
       +'<div class="cc-detail-head">'
-      +(c.eyebrow?'<div class="k">'+esc(c.eyebrow)+'</div>':'')
-      +'<h2>'+esc(c.name)+'</h2>'
-      +(c.desc?'<p>'+esc(c.desc)+'</p>':'')
+      +(grp.name?'<div class="k">'+esc(grp.name)+'</div>':'')
+      +'<h2>'+esc(cc.name)+'</h2>'
+      +(cc.desc?'<p>'+esc(cc.desc)+'</p>':'')
       +'</div>'+grid
       +'<div class="cc-cta"><a class="btn btn-gold" href="/lien-he/">Đặt lịch concept này →</a></div>';
     root.querySelectorAll('.gallery-grid img').forEach(function(im){
