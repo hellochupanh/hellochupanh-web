@@ -65,6 +65,16 @@ footer.ft { background: var(--black); color: #cabfb0; padding: 56px 0 28px; }
 .fc-phone { background: #2ecc71; }
 .fc-zalo { background: #0068ff; font-size: 15px; font-weight: 700; }
 .fc-fb { background: #1877f2; }
+.fc-ig { background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
+.fc-tt { background: #111; }
+
+/* Đánh giá khách hàng */
+.reviews-sec { background: #f3ece1; }
+.reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-bottom: 6px; }
+.review-card { background: #fff; border-radius: 16px; padding: 26px 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.05); }
+.rv-text { color: #4a443b; font-size: 15.5px; line-height: 1.7; font-style: italic; margin-bottom: 14px; }
+.rv-name { font-family: var(--serif); font-weight: 700; color: var(--gold-dark); }
+@media (max-width: 760px) { .reviews-grid { grid-template-columns: 1fr; } }
 
 @media (max-width: 900px) {
   .nav-links { display: none; }

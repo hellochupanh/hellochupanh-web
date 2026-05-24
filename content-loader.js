@@ -68,9 +68,27 @@
     }
     if(s.email){ document.querySelectorAll('a[href^="mailto:"]').forEach(function(a){ a.setAttribute("href","mailto:"+s.email); if(/@/.test(a.textContent)) a.textContent=s.email; }); setText('[data-edit="email"]', s.email); }
     if(s.facebook){ document.querySelectorAll('a[href*="facebook.com"]').forEach(function(a){ a.setAttribute("href", s.facebook); }); }
+    if(s.instagram){ document.querySelectorAll('a[href*="instagram.com"]').forEach(function(a){ a.setAttribute("href", s.instagram); }); }
+    if(s.tiktok){ document.querySelectorAll('a[href*="tiktok.com"]').forEach(function(a){ a.setAttribute("href", s.tiktok); }); }
+    addSocial(s);
     setText('[data-edit="address"]', s.address);
     setText('[data-edit="hours"]', s.hours);
   });
+
+  /* ---- MẠNG XÃ HỘI: thêm Instagram + TikTok vào chân trang & nút nổi (mọi trang) ---- */
+  function addSocial(s){
+    var ct=document.querySelector('[data-ft="contact-title"]');
+    var ul=(ct && ct.parentNode && ct.parentNode.querySelector) ? ct.parentNode.querySelector('ul') : null;
+    if(ul){
+      if(s.instagram && !ul.querySelector('a[href*="instagram.com"]')){ var li=document.createElement('li'); var a0=document.createElement('a'); a0.target="_blank"; a0.rel="noopener"; a0.setAttribute("href", s.instagram); a0.textContent="📷 Instagram"; li.appendChild(a0); ul.appendChild(li); }
+      if(s.tiktok && !ul.querySelector('a[href*="tiktok.com"]')){ var li2=document.createElement('li'); var a1=document.createElement('a'); a1.target="_blank"; a1.rel="noopener"; a1.setAttribute("href", s.tiktok); a1.textContent="🎵 TikTok"; li2.appendChild(a1); ul.appendChild(li2); }
+    }
+    var fc=document.querySelector('.float-contact');
+    if(fc){
+      if(s.instagram && !fc.querySelector('a[href*="instagram.com"]')){ var ig=document.createElement('a'); ig.className="fc-ig"; ig.target="_blank"; ig.rel="noopener"; ig.title="Instagram"; ig.setAttribute("href", s.instagram); ig.textContent="📷"; fc.appendChild(ig); }
+      if(s.tiktok && !fc.querySelector('a[href*="tiktok.com"]')){ var tt=document.createElement('a'); tt.className="fc-tt"; tt.target="_blank"; tt.rel="noopener"; tt.title="TikTok"; tt.setAttribute("href", s.tiktok); tt.textContent="🎵"; fc.appendChild(tt); }
+    }
+  }
 
   /* ---- CHÂN TRANG (footer) — mọi trang ---- */
   getJSON("content/footer.json").then(function(f){
@@ -149,7 +167,31 @@
     return '<section class="block"><div class="wrap">'+head
       +'<div style="max-width:760px;margin:0 auto;color:#5a5349;font-size:16px;line-height:1.85">'+nl2br(b.body)+'</div></div></section>';
   }
-  var BLOCKS={ stats:blockStats, intro:blockIntro, cards:blockCards, why:blockWhy, cta:blockCta, richtext:blockRichtext };
+  function blockReviews(b){
+    var head='<div class="sec-head">'
+      +(b.eyebrow?'<div class="eyebrow">'+esc(b.eyebrow)+'</div>':'')
+      +(b.heading?'<h2>'+esc(b.heading)+'</h2>':'')+'</div>';
+    var lim = b.limit ? (' data-reviews-limit="'+esc(b.limit)+'"') : '';
+    return '<section class="block reviews-sec"><div class="wrap">'+head
+      +'<div class="reviews-grid" data-reviews'+lim+'></div>'
+      +'<div style="text-align:center;margin-top:6px"><a href="/danh-gia/" style="color:var(--gold-dark);font-weight:600">Xem tất cả đánh giá →</a></div>'
+      +'</div></section>';
+  }
+  var BLOCKS={ stats:blockStats, intro:blockIntro, cards:blockCards, why:blockWhy, cta:blockCta, richtext:blockRichtext, reviews:blockReviews };
+
+  function reviewCard(r){ return '<div class="review-card"><p class="rv-text">“'+esc(r.text)+'”</p><div class="rv-name">— '+esc(r.name)+'</div></div>'; }
+  function fillReviews(){
+    var boxes=document.querySelectorAll('.reviews-grid[data-reviews]');
+    if(!boxes.length) return;
+    getJSON("content/reviews.json").then(function(rv){
+      var items=(rv&&rv.items)||[];
+      boxes.forEach(function(box){
+        var lim=parseInt(box.getAttribute('data-reviews-limit')||'3',10) || 3;
+        var list=items.slice(0,lim);
+        box.innerHTML=list.length?list.map(reviewCard).join(''):'<p style="text-align:center;color:var(--muted);grid-column:1/-1">Chưa có đánh giá nào.</p>';
+      });
+    });
+  }
 
   var homeBox=document.getElementById('home-blocks');
   if(homeBox){
@@ -161,7 +203,7 @@
           if(!b || b.visible===false) return '';
           var fn=BLOCKS[b.type]; return fn?fn(b):'';
         }).join('');
-        if(html) homeBox.innerHTML=html;
+        if(html){ homeBox.innerHTML=html; fillReviews(); }
       }
     });
   }
