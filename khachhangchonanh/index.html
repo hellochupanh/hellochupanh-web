@@ -894,5 +894,19 @@ function showToast(msg, cls) {
   if (c) { $('code').value = c.toUpperCase(); $('loginForm').dispatchEvent(new Event('submit')); }
 })();
 </script>
+<script>
+/* Ảnh nền màn hình đăng nhập — đổi được trong /admin (Cài đặt chung). Phòng thủ: lỗi thì giữ ảnh mặc định. */
+(function(){
+  function resolveImg(p){ if(!p) return ""; if(/^https?:/.test(p)) return p; return "/"+String(p).replace(/^\//,""); }
+  try {
+    fetch('/content/settings.json?t='+Date.now()).then(function(r){ return r.ok?r.json():null; }).then(function(s){
+      if(s && s.photoapp_bg){
+        var el=document.getElementById('login');
+        if(el) el.style.background="linear-gradient(rgba(26,23,20,0.42),rgba(26,23,20,0.55)),url('"+resolveImg(s.photoapp_bg)+"') center/cover no-repeat";
+      }
+    }).catch(function(){});
+  } catch(e){}
+})();
+</script>
 </body>
 </html>
