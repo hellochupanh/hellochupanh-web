@@ -11,57 +11,63 @@ collections:
   - name: "blog"
     label: "Bài viết / Tin tức"
     label_singular: "Bài viết"
-    description: "Viết, sửa, xoá bài đăng trên trang Tin tức."
+    description: "Viết, sửa, xoá bài đăng. Bài hiện ở trang Tin tức (hellochupanh.com/blog/). Sửa xong bấm 'Publish' → ~1 phút web cập nhật."
     folder: "posts"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     summary: "{{title}}"
     sortable_fields: ["date", "title"]
     fields:
-      - { label: "Tiêu đề", name: "title", widget: "string" }
-      - { label: "Ngày đăng", name: "date", widget: "datetime", date_format: "DD/MM/YYYY", time_format: "HH:mm", format: "YYYY-MM-DD HH:mm" }
-      - { label: "Ảnh bìa", name: "thumbnail", widget: "image", required: false }
-      - { label: "Mô tả ngắn", name: "excerpt", widget: "text", required: false }
-      - { label: "Nội dung", name: "body", widget: "markdown" }
+      - { label: "Tiêu đề bài viết", name: "title", widget: "string", hint: "Tên bài, hiện to ở đầu bài & ngoài danh sách Tin tức" }
+      - { label: "Ngày đăng", name: "date", widget: "datetime", date_format: "DD/MM/YYYY", time_format: "HH:mm", format: "YYYY-MM-DD HH:mm", hint: "Bài mới nhất xếp lên đầu" }
+      - { label: "Ảnh bìa", name: "thumbnail", widget: "image", required: false, hint: "Ảnh hiện ngoài danh sách + đầu bài (không bắt buộc)" }
+      - { label: "Mô tả ngắn", name: "excerpt", widget: "text", required: false, hint: "1-2 câu tóm tắt, hiện ngoài danh sách Tin tức" }
+      - { label: "Nội dung bài", name: "body", widget: "markdown", hint: "Phần thân bài. Gõ như Word: in đậm, danh sách, chèn ảnh..." }
 
   - name: "settings"
     label: "Cài đặt chung (Logo & Liên hệ)"
+    description: "Logo + thông tin liên hệ. Áp dụng TOÀN web: đầu trang, chân trang, nút gọi/Zalo/Facebook & trang Liên hệ."
+    editor: { preview: false }
     files:
       - name: "general"
         label: "Logo & Thông tin liên hệ"
         file: "content/settings.json"
         fields:
-          - { label: "Logo (ảnh)", name: "logo", widget: "image", required: false, hint: "Tải logo mới; để trống nếu giữ logo hiện tại" }
-          - { label: "Số điện thoại", name: "phone", widget: "string", default: "08.5687.0001" }
-          - { label: "Email", name: "email", widget: "string", default: "hellochupanh@gmail.com" }
-          - { label: "Facebook (đường dẫn)", name: "facebook", widget: "string", default: "https://www.facebook.com/hellochupanh/" }
-          - { label: "Địa chỉ", name: "address", widget: "text", required: false, default: "371 Huỳnh Văn Bánh, Phường Phú Nhuận, TP.HCM" }
-          - { label: "Giờ mở cửa", name: "hours", widget: "string", required: false, default: "9:00 – 21:00 hằng ngày" }
+          - { label: "Logo (ảnh)", name: "logo", widget: "image", required: false, hint: "Hiện ở GÓC TRÁI đầu trang + chân trang. Để trống = giữ logo hiện tại." }
+          - { label: "Số điện thoại", name: "phone", widget: "string", hint: "Hiện ở chân trang, trang Liên hệ, nút Gọi & Zalo (góc phải)" }
+          - { label: "Email", name: "email", widget: "string", hint: "Hiện ở chân trang & trang Liên hệ" }
+          - { label: "Facebook (đường dẫn)", name: "facebook", widget: "string", hint: "Link trang Facebook — gắn vào nút 'f' / Messenger" }
+          - { label: "Địa chỉ", name: "address", widget: "text", required: false, hint: "Hiện ở chân trang & trang Liên hệ" }
+          - { label: "Giờ mở cửa", name: "hours", widget: "string", required: false, hint: "Hiện ở chân trang & trang Liên hệ" }
 
   - name: "homepage_images"
     label: "Ảnh trang chủ (Hero & Studio)"
+    description: "2 ảnh lớn ở trang chủ. Để trống = giữ ảnh hiện tại."
+    editor: { preview: false }
     files:
       - name: "imgs"
         label: "Ảnh Hero & Ảnh khối Giới thiệu"
         file: "content/homepage_images.json"
         fields:
-          - { label: "Ảnh nền đầu trang (Hero)", name: "hero", widget: "image", required: false, hint: "Ảnh lớn làm nền banner đầu trang chủ" }
-          - { label: "Ảnh khối Giới thiệu (Chào bạn)", name: "intro", widget: "image", required: false, hint: "Ảnh ở khối 'Chào bạn! Chúng tớ là Hello'" }
+          - { label: "Ảnh nền đầu trang (Hero)", name: "hero", widget: "image", required: false, hint: "Ảnh nền LỚN ở banner trên cùng trang chủ (sau dòng 'Hoạ dấu ấn riêng bằng ánh sáng')" }
+          - { label: "Ảnh khối Giới thiệu (Chào bạn)", name: "intro", widget: "image", required: false, hint: "Ảnh bên trái khối 'Chào bạn! Chúng tớ là Hello'" }
 
   - name: "theme"
     label: "Giao diện (Màu & Phông)"
+    description: "Màu sắc & phông chữ — áp dụng cho TOÀN BỘ web."
+    editor: { preview: false }
     files:
       - name: "theme"
         label: "Màu sắc & Phông chữ"
         file: "content/theme.json"
         fields:
-          - { label: "Màu chính (nút, điểm nhấn)", name: "primary", widget: "color", default: "#F4A14F" }
-          - { label: "Màu chính đậm (khi rê chuột)", name: "primary_dark", widget: "color", default: "#d9863a" }
-          - { label: "Màu nền tối (header/footer)", name: "dark", widget: "color", default: "#1a1714" }
+          - { label: "Màu chính (nút, điểm nhấn)", name: "primary", widget: "color", hint: "Màu các nút, chữ điểm nhấn, giá tiền... (mặc định cam vàng)" }
+          - { label: "Màu chính đậm (khi rê chuột)", name: "primary_dark", widget: "color", hint: "Phiên bản đậm hơn của màu chính" }
+          - { label: "Màu nền tối (header/footer)", name: "dark", widget: "color", hint: "Màu nền khối tối: chân trang, banner phụ" }
           - label: "Bộ phông chữ"
             name: "font"
             widget: "select"
-            default: "classic"
+            hint: "Kiểu chữ tiêu đề toàn web"
             options:
               - { label: "Sang trọng (Playfair)", value: "classic" }
               - { label: "Hiện đại (Montserrat)", value: "modern" }
@@ -69,14 +75,17 @@ collections:
 
   - name: "homepage"
     label: "Sắp xếp trang chủ"
+    description: "Đổi THỨ TỰ các khối trên trang chủ (kéo–thả mục trong danh sách) hoặc ẩn khối (tắt 'Hiển thị'). Khối Hero luôn ở trên cùng."
+    editor: { preview: false }
     files:
       - name: "sections"
         label: "Thứ tự & ẩn/hiện các khối"
         file: "content/sections.json"
         fields:
-          - label: "Các khối (kéo để đổi thứ tự, tắt 'Hiển thị' để ẩn)"
+          - label: "Các khối (kéo biểu tượng ⠿ để đổi thứ tự)"
             name: "order"
             widget: "list"
+            hint: "Kéo để sắp xếp; tắt 'Hiển thị' để ẩn khối khỏi trang chủ"
             fields:
               - label: "Khối"
                 name: "key"
@@ -88,55 +97,45 @@ collections:
                   - { label: "Vì sao chọn Hello", value: "why" }
                   - { label: "Kêu gọi liên hệ (cuối trang)", value: "cta" }
               - { label: "Hiển thị", name: "visible", widget: "boolean", default: true }
-            default:
-              - { key: "stats", visible: true }
-              - { key: "intro", visible: true }
-              - { key: "concepts", visible: true }
-              - { key: "why", visible: true }
-              - { key: "cta", visible: true }
 
   - name: "menu"
     label: "Menu (thanh điều hướng)"
+    description: "Các mục trên thanh menu trên cùng (hiện ở MỌI trang). Kéo–thả để đổi thứ tự."
+    editor: { preview: false }
     files:
       - name: "menu"
         label: "Các mục menu"
         file: "content/menu.json"
         fields:
-          - label: "Các mục (kéo để đổi thứ tự)"
+          - label: "Các mục (kéo biểu tượng ⠿ để đổi thứ tự)"
             name: "items"
             widget: "list"
+            hint: "Mỗi dòng là 1 mục trên thanh menu"
             fields:
-              - { label: "Tên hiển thị", name: "label", widget: "string" }
-              - { label: "Đường dẫn", name: "url", widget: "string", hint: "vd: / hoặc /bang-gia/" }
-              - { label: "Nút nổi bật (như 'Khách chọn ảnh')", name: "cta", widget: "boolean", default: false }
-            default:
-              - { label: "Trang chủ", url: "/", cta: false }
-              - { label: "Dịch vụ", url: "/dich-vu/", cta: false }
-              - { label: "Bảng giá", url: "/bang-gia/", cta: false }
-              - { label: "Liên hệ", url: "/lien-he/", cta: false }
-              - { label: "Tin tức", url: "/blog/", cta: false }
-              - { label: "Khách chọn ảnh", url: "/khachhangchonanh/", cta: true }
+              - { label: "Tên hiển thị", name: "label", widget: "string", hint: "Chữ hiện trên menu, vd: Bảng giá" }
+              - { label: "Đường dẫn", name: "url", widget: "string", hint: "Trang khi bấm vào. vd: / (trang chủ), /bang-gia/, /blog/" }
+              - { label: "Nút nổi bật (như 'Khách chọn ảnh')", name: "cta", widget: "boolean", default: false, hint: "Bật = mục này thành nút màu cam nổi bật" }
 
   - name: "pricing"
     label: "Bảng giá"
+    description: "Sửa các gói chụp. Hiện ở trang Bảng giá (hellochupanh.com/bang-gia/) và giá tham khảo ngoài trang chủ."
+    editor: { preview: false }
     files:
       - name: "packages"
         label: "Các gói chụp"
         file: "content/pricing.json"
         fields:
-          - label: "Các gói"
+          - label: "Các gói (kéo ⠿ để đổi thứ tự)"
             name: "packages"
             widget: "list"
+            hint: "Mỗi mục là 1 thẻ giá trên trang Bảng giá"
             fields:
-              - { label: "Tên gói", name: "name", widget: "string" }
-              - { label: "Giá hiện tại", name: "now", widget: "string" }
-              - { label: "Giá gốc (gạch ngang)", name: "was", widget: "string", required: false }
-              - { label: "Nhãn tiết kiệm", name: "save", widget: "string", required: false }
-              - label: "Quyền lợi"
+              - { label: "Tên gói", name: "name", widget: "string", hint: "Tên thẻ giá, vd: Trắng Đen Cao Cấp" }
+              - { label: "Giá hiện tại", name: "now", widget: "string", hint: "Giá in to, vd: 3.288.000đ" }
+              - { label: "Giá gốc (gạch ngang)", name: "was", widget: "string", required: false, hint: "Giá cũ bị gạch ngang (không bắt buộc)" }
+              - { label: "Nhãn tiết kiệm", name: "save", widget: "string", required: false, hint: "Vd: Tiết kiệm 1.200.000 (không bắt buộc)" }
+              - label: "Quyền lợi (mỗi dòng 1 ý)"
                 name: "features"
                 widget: "list"
-                field: { label: "Dòng", name: "item", widget: "string" }
-            default:
-              - { name: "Chân dung Hoạ Báo Chất", now: "3.488.000đ", was: "4.488.000đ", save: "Tiết kiệm 1.000.000", features: [ {item: "1 layout makeup & 1 tóc theo concept"}, {item: "1 trang phục & phụ kiện theo concept"}, {item: "10 ảnh chỉnh sửa kỹ (file mềm)"}, {item: "Thời gian hậu kỳ 5 ngày"}, {item: "Ekip hỗ trợ tạo dáng xuyên suốt"}, {item: "Trả toàn bộ file gốc trong 24h"} ] }
-              - { name: "Trắng Đen Cao Cấp", now: "3.288.000đ", was: "4.488.000đ", save: "Tiết kiệm 1.200.000", features: [ {item: "1 layout makeup & 1 tóc theo concept"}, {item: "1 trang phục & phụ kiện theo concept"}, {item: "10 ảnh chỉnh sửa kỹ (file mềm)"}, {item: "Thời gian hậu kỳ 5 ngày"}, {item: "Ekip hỗ trợ tạo dáng xuyên suốt"}, {item: "Trả toàn bộ file gốc trong 24h"} ] }
-              - { name: "Beauty Hàn Quốc Tạp Chí", now: "3.288.000đ", was: "4.488.000đ", save: "Tiết kiệm 1.200.000", features: [ {item: "1 layout makeup & tóc theo concept"}, {item: "1 trang phục & phụ kiện theo concept"}, {item: "8 ảnh chỉnh sửa kỹ (file mềm)"}, {item: "Thời gian hậu kỳ 5 ngày"}, {item: "Ekip hỗ trợ tạo dáng xuyên suốt"}, {item: "Trả toàn bộ file gốc trong 24h"} ] }
+                hint: "Danh sách gạch đầu dòng trong thẻ giá"
+                field: { label: "Dòng quyền lợi", name: "item", widget: "string" }
