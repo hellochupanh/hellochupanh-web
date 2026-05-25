@@ -50,7 +50,8 @@
       +".ccc-cap .k{font-size:11px;letter-spacing:2px;color:var(--gold-dark);font-weight:600}"
       +".ccc-cap .nm{font-family:var(--serif);font-weight:700;font-size:18px;color:var(--ink);margin-top:2px}"
       +".ccc-prev,.ccc-next{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.92);cursor:pointer;font-size:22px;color:var(--ink);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.12)}"
-      +".ccc-prev{left:8px}.ccc-next{right:8px}";
+      +".ccc-prev{left:8px}.ccc-next{right:8px}"
+      +".float-contact a svg{width:24px;height:24px}";
     try{ var st=document.createElement('style'); st.textContent=css; (document.head||document.documentElement).appendChild(st); }catch(e){}
   })();
 
@@ -141,8 +142,15 @@
     }
     var fc=document.querySelector('.float-contact');
     if(fc){
-      if(s.instagram && !fc.querySelector('a[href*="instagram.com"]')){ var ig=document.createElement('a'); ig.className="fc-ig"; ig.target="_blank"; ig.rel="noopener"; ig.title="Instagram"; ig.setAttribute("href", s.instagram); ig.textContent="📷"; fc.appendChild(ig); }
-      if(s.tiktok && !fc.querySelector('a[href*="tiktok.com"]')){ var tt=document.createElement('a'); tt.className="fc-tt"; tt.target="_blank"; tt.rel="noopener"; tt.title="TikTok"; tt.setAttribute("href", s.tiktok); tt.textContent="🎵"; fc.appendChild(tt); }
+      var fd=String(s.phone||'').replace(/[^0-9]/g,'');
+      function fbtn(href,cls,svg,title,blank){ return '<a class="'+cls+'" href="'+esc(href)+'"'+(blank?' target="_blank" rel="noopener"':'')+' title="'+esc(title)+'">'+svg+'</a>'; }
+      var fb='';
+      if(s.phone) fb+=fbtn('tel:'+fd,'fc-phone',IC.phone,'Gọi',false);
+      if(fd) fb+=fbtn('https://zalo.me/'+fd,'fc-zalo',IC.chat,'Zalo',true);
+      if(s.facebook) fb+=fbtn(s.facebook,'fc-fb',IC.fb,'Facebook',true);
+      if(s.instagram) fb+=fbtn(s.instagram,'fc-ig',IC.ig,'Instagram',true);
+      if(s.tiktok) fb+=fbtn(s.tiktok,'fc-tt',IC.tt,'TikTok',true);
+      if(fb) fc.innerHTML=fb;
     }
   }
 
