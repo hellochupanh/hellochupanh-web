@@ -65,6 +65,12 @@
       "limit": 3
     },
     {
+      "type": "logos",
+      "visible": true,
+      "heading": "Khách hàng & Đối tác",
+      "items": []
+    },
+    {
       "type": "cta",
       "visible": true,
       "heading": "Câu chuyện của bạn bắt đầu ở đây",
