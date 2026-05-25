@@ -8,9 +8,9 @@
   "packages": [
     {
       "name": "Chân dung Hoạ Báo Chất",
-      "now": "3.488.000đ",
-      "was": "4.488.000đ",
-      "save": "Tiết kiệm 1.000.000",
+      "now": "",
+      "was": "",
+      "save": "",
       "features": [
         {
           "item": "1 layout makeup & 1 tóc theo concept"
@@ -34,9 +34,9 @@
     },
     {
       "name": "Trắng Đen Cao Cấp",
-      "now": "3.288.000đ",
-      "was": "4.488.000đ",
-      "save": "Tiết kiệm 1.200.000",
+      "now": "",
+      "was": "",
+      "save": "",
       "featured": true,
       "badge": "Phổ biến nhất",
       "features": [
@@ -61,9 +61,9 @@
       ]
     },
     {
-      "name": "Beauty Hàn Quốc Tạp Chí",
-      "now": "3.288.000đ",
-      "was": "4.488.000đ",
+      "name": "",
+      "now": "",
+      "was": "",
       "save": "Tiết kiệm 1.200.000",
       "features": [
         {
