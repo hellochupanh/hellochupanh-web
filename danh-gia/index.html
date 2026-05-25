@@ -97,6 +97,7 @@
 <script>
 (function(){
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]);}); }
+  function img(p){ if(!p) return ""; if(/^https?:/.test(p)) return p; return "/"+String(p).replace(/^\//,""); }
   var list=document.getElementById('dg-list');
   fetch('/content/reviews.json?t='+Date.now()).then(function(r){ return r.ok?r.json():null; }).then(function(rv){
     if(!rv){ list.innerHTML='<p class="dg-empty">Chưa có đánh giá nào.</p>'; return; }
@@ -107,7 +108,13 @@
     }
     var items=rv.items||[];
     list.innerHTML=items.length
-      ? items.map(function(r){ return '<div class="review-card"><p class="rv-text">“'+esc(r.text)+'”</p><div class="rv-name">— '+esc(r.name)+'</div></div>'; }).join('')
+      ? items.map(function(r){
+          var im=r.image?'<img class="rv-img" referrerpolicy="no-referrer" src="'+img(r.image)+'" alt="Đánh giá khách hàng"/>':'';
+          var txt=r.text?'<p class="rv-text">“'+esc(r.text)+'”</p>':'';
+          var stars='<div class="rv-stars">★★★★★</div>';
+          var nm=r.name?'<div class="rv-name">— '+esc(r.name)+'</div>':'';
+          return '<div class="review-card">'+im+txt+stars+nm+'</div>';
+        }).join('')
       : '<p class="dg-empty">Chưa có đánh giá nào.</p>';
   }).catch(function(){ list.innerHTML='<p class="dg-empty">Không tải được đánh giá.</p>'; });
 })();
