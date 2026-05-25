@@ -210,21 +210,28 @@ collections:
               - { label: "Tiêu đề trang", name: "title", widget: "string", hint: "Vd: Chọn gói phù hợp với bạn" }
               - { label: "Mô tả ngắn", name: "sub", widget: "text", required: false }
               - { label: "Ghi chú cuối trang", name: "note", widget: "text", required: false, hint: "Dòng lưu ý dưới các gói" }
-          - label: "Các gói chụp (kéo ⠿ đổi thứ tự, × để xoá, + để thêm)"
+          - label: "Các gói chụp (kéo ⠿ đổi thứ tự, × để xoá, + để thêm — xoá hết cũng được)"
             name: "packages"
             label_singular: "gói"
             widget: "list"
-            hint: "Mỗi mục là 1 thẻ giá trên trang Bảng giá"
+            required: false
+            hint: "Mỗi mục là 1 thẻ giá trên trang Bảng giá. Xoá hết thì trang sẽ trống (không lỗi)."
             fields:
-              - { label: "Tên gói", name: "name", widget: "string", hint: "Tên thẻ giá, vd: Trắng Đen Cao Cấp" }
-              - { label: "Giá hiện tại", name: "now", widget: "string", hint: "Giá in to, vd: 3.288.000đ" }
+              - { label: "Tên gói", name: "name", widget: "string", required: false, hint: "Tên thẻ giá, vd: Trắng Đen Cao Cấp" }
+              - { label: "Chữ nhỏ phía trên tên", name: "tag", widget: "string", required: false, default: "Concept", hint: "Vd: Concept (để trống nếu không muốn hiện)" }
+              - { label: "Giá hiện tại", name: "now", widget: "string", required: false, hint: "Giá in to, vd: 3.288.000đ" }
               - { label: "Giá gốc (gạch ngang)", name: "was", widget: "string", required: false, hint: "Giá cũ bị gạch ngang (không bắt buộc)" }
               - { label: "Nhãn tiết kiệm", name: "save", widget: "string", required: false, hint: "Vd: Tiết kiệm 1.200.000 (không bắt buộc)" }
+              - { label: "Gói nổi bật?", name: "featured", widget: "boolean", required: false, default: false, hint: "Bật để thẻ này viền vàng + có nhãn nổi bật" }
+              - { label: "Chữ nhãn nổi bật", name: "badge", widget: "string", required: false, default: "Phổ biến nhất", hint: "Chỉ hiện khi bật 'Gói nổi bật'" }
+              - { label: "Chữ trên nút", name: "btn_label", widget: "string", required: false, default: "Đặt gói này →", hint: "Vd: Đặt gói này →" }
+              - { label: "Nút dẫn tới", name: "btn_url", widget: "string", required: false, default: "/lien-he/", hint: "Vd: /lien-he/ (trang Liên hệ)" }
               - label: "Quyền lợi (mỗi dòng 1 ý)"
                 name: "features"
                 label_singular: "dòng"
                 widget: "list"
-                hint: "Danh sách gạch đầu dòng trong thẻ giá"
+                required: false
+                hint: "Danh sách gạch đầu dòng trong thẻ giá. Có thể xoá hết."
                 field: { label: "Dòng quyền lợi", name: "item", widget: "string" }
 
   # ============ TRANG DỊCH VỤ ============
