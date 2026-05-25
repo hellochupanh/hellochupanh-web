@@ -72,18 +72,20 @@
     <div class="form-card">
       <h2 data-edit="contact.form_title">Đặt lịch chụp</h2>
       <p class="sub" data-edit="contact.form_sub">Điền thông tin, Hello sẽ gọi lại tư vấn trong thời gian sớm nhất.</p>
-      <form id="bookForm">
+      <form id="bookForm" name="booking" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="booking" />
+        <p hidden><label>Đừng điền ô này: <input name="bot-field" /></label></p>
         <div class="fld">
           <label>Họ và tên *</label>
-          <input type="text" id="f_name" required placeholder="Nguyễn Văn A" />
+          <input type="text" id="f_name" name="name" required placeholder="Nguyễn Văn A" />
         </div>
         <div class="fld">
           <label>Số điện thoại *</label>
-          <input type="tel" id="f_phone" required placeholder="09xx xxx xxx" />
+          <input type="tel" id="f_phone" name="phone" required placeholder="09xx xxx xxx" />
         </div>
         <div class="fld">
           <label>Concept yêu thích</label>
-          <select id="f_service">
+          <select id="f_service" name="service">
             <option>Chân dung Concept Hoạ Báo</option>
             <option>Chân dung Trắng Đen Cao Cấp</option>
             <option>Beauty Hàn Quốc - Tạp Chí</option>
@@ -92,11 +94,11 @@
         </div>
         <div class="fld">
           <label>Ngày muốn chụp (dự kiến)</label>
-          <input type="date" id="f_date" />
+          <input type="date" id="f_date" name="date" />
         </div>
         <div class="fld">
           <label>Ghi chú thêm</label>
-          <textarea id="f_note" rows="3" placeholder="Số người, yêu cầu đặc biệt..."></textarea>
+          <textarea id="f_note" name="note" rows="3" placeholder="Số người, yêu cầu đặc biệt..."></textarea>
         </div>
         <button type="submit" class="btn btn-gold">Gửi yêu cầu đặt lịch →</button>
       </form>
@@ -168,23 +170,23 @@
 <script>
 document.getElementById('bookForm').addEventListener('submit', function(e) {
   e.preventDefault();
+  var form = this;
   var name = document.getElementById('f_name').value.trim();
   var phone = document.getElementById('f_phone').value.trim();
-  var svc = document.getElementById('f_service').value;
-  var date = document.getElementById('f_date').value;
-  var note = document.getElementById('f_note').value.trim();
   if (!name || !phone) { alert('Vui lòng nhập họ tên và số điện thoại.'); return; }
-  var subject = 'Đặt lịch chụp - ' + name;
-  var body = 'Họ tên: ' + name + '\n'
-    + 'SĐT: ' + phone + '\n'
-    + 'Concept: ' + svc + '\n'
-    + 'Ngày dự kiến: ' + (date || 'chưa chọn') + '\n'
-    + 'Ghi chú: ' + (note || 'không có');
-  var mailto = 'mailto:hellochupanh@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-  window.location.href = mailto;
-  setTimeout(function(){
-    alert('Cảm ơn ' + name + '! Yêu cầu của bạn đã được chuẩn bị gửi qua email. Nếu email không tự mở, bạn vui lòng gọi 08.5687.0001 hoặc nhắn Zalo nhé.');
-  }, 600);
+  var btn = form.querySelector('button[type=submit]');
+  var oldTxt = btn.textContent; btn.disabled = true; btn.textContent = 'Đang gửi...';
+  var fd = new FormData(form);
+  var body = new URLSearchParams(fd).toString();
+  fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body })
+    .then(function(){
+      btn.disabled = false; btn.textContent = oldTxt; form.reset();
+      alert('Cảm ơn ' + name + '! Yêu cầu đặt lịch đã được gửi tới Hello. Bọn mình sẽ liên hệ lại sớm nhất nhé.');
+    })
+    .catch(function(){
+      btn.disabled = false; btn.textContent = oldTxt;
+      alert('Có lỗi khi gửi. Bạn vui lòng gọi 08.5687.0001 hoặc nhắn Zalo giúp nhé.');
+    });
 });
 </script>
 
