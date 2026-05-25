@@ -121,6 +121,14 @@ collections:
                   - { label: "Dòng chữ nhỏ phía trên", name: "eyebrow", widget: "string", required: false, hint: "Vd: Cảm nhận khách hàng" }
                   - { label: "Tiêu đề khối", name: "heading", widget: "string", hint: "Vd: Khách hàng nói gì về Hello" }
                   - { label: "Số đánh giá hiện ở trang chủ", name: "limit", widget: "number", required: false, default: 3, hint: "Nội dung từng đánh giá sửa ở mục '⑪ Đánh giá khách hàng'." }
+              - label: "Carousel concept (trượt qua lại)"
+                name: "carousel"
+                widget: "object"
+                summary: "Carousel concept"
+                fields:
+                  - { label: "Hiển thị khối này", name: "visible", widget: "boolean", default: true }
+                  - { label: "Dòng chữ nhỏ phía trên", name: "eyebrow", widget: "string", required: false }
+                  - { label: "Tiêu đề khối", name: "heading", widget: "string", hint: "Các concept lấy tự động từ mục '⑤ Thư viện Concept'. Vd: Tìm concept thuộc về bạn" }
               - label: "Logo khách hàng / đối tác"
                 name: "logos"
                 widget: "object"
