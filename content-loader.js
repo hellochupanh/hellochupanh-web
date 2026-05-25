@@ -414,7 +414,7 @@
   }
 
   /* ===================== BẢNG GIÁ ===================== */
-  if(document.querySelector('[data-price-card]') || document.querySelector('[data-edit="pricing.title"]')){
+  if(document.querySelector('.pricing') || document.querySelector('[data-edit="pricing.title"]')){
     getJSON("content/pricing.json").then(function(p){
       if(!p) return;
       if(p.header){
@@ -422,16 +422,40 @@
         setText('[data-edit="pricing.title"]', p.header.title);
         setText('[data-edit="pricing.sub"]', p.header.sub);
         setText('[data-edit="pricing.note"]', p.header.note);
+        var noteEl=document.querySelector('[data-edit="pricing.note"]');
+        if(noteEl) noteEl.style.display = p.header.note ? "" : "none";
       }
-      if(p.packages){
-        document.querySelectorAll('[data-price-card]').forEach(function(card){
-          var pk=p.packages[parseInt(card.getAttribute('data-price-card'),10)]; if(!pk) return;
-          var h=card.querySelector('h3'); if(h&&pk.name) h.innerHTML=String(pk.name).replace(/\n/g,"<br/>");
-          var now=card.querySelector('.now'); if(now&&pk.now) now.textContent=pk.now;
-          var was=card.querySelector('.was'); if(was) was.textContent=pk.was||"";
-          var save=card.querySelector('.save'); if(save) save.textContent=pk.save||"";
-          var ul=card.querySelector('ul'); if(ul&&pk.features){ ul.innerHTML=""; pk.features.forEach(function(f){ var li=document.createElement('li'); li.textContent=(f&&f.item!==undefined?f.item:f); ul.appendChild(li); }); }
-        });
+      var grid=document.querySelector('.pricing');
+      if(grid && p.packages){
+        var pks = p.packages || [];
+        if(!pks.length){
+          grid.innerHTML='<p style="grid-column:1/-1;text-align:center;color:var(--muted);padding:36px 0">Chưa có gói nào. Vào trang quản trị để thêm gói chụp.</p>';
+        } else {
+          grid.innerHTML = pks.map(function(pk){
+            pk = pk || {};
+            var feats = ((pk.features)||[]).map(function(f){
+              var t = (f && f.item!==undefined) ? f.item : f;
+              return t ? '<li>'+esc(t)+'</li>' : '';
+            }).join('');
+            var badge = pk.featured ? '<div class="badge-pop">'+esc(pk.badge||'Phổ biến nhất')+'</div>' : '';
+            var was   = pk.was  ? '<span class="was">'+esc(pk.was)+'</span>' : '';
+            var save  = pk.save ? '<span class="save">'+esc(pk.save)+'</span>' : '';
+            var tag   = (pk.tag!==undefined && pk.tag!==null) ? esc(pk.tag) : 'Concept';
+            var name  = esc(pk.name||'').replace(/\n/g,'<br/>');
+            var now   = pk.now ? '<span class="now">'+esc(pk.now)+'</span>' : '';
+            var btnL  = esc(pk.btn_label || 'Đặt gói này →');
+            var btnU  = esc(pk.btn_url || '/lien-he/');
+            return '<div class="price-card'+(pk.featured?' featured':'')+'">'
+              + badge
+              + (tag ? '<div class="pk">'+tag+'</div>' : '')
+              + '<h3>'+name+'</h3>'
+              + '<div class="price">'+now+was+'</div>'
+              + save
+              + '<ul>'+feats+'</ul>'
+              + '<a class="btn btn-gold" href="'+btnU+'">'+btnL+'</a>'
+              + '</div>';
+          }).join('');
+        }
       }
     });
   }
