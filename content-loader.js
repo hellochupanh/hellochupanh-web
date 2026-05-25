@@ -24,6 +24,7 @@
       +".review-card{background:#fff;border-radius:16px;padding:26px 24px;box-shadow:0 4px 16px rgba(0,0,0,0.05)}"
       +".rv-text{color:#4a443b;font-size:15.5px;line-height:1.7;font-style:italic;margin-bottom:14px}"
       +".rv-name{font-family:var(--serif);font-weight:700;color:var(--gold-dark)}"
+      +".rv-img{width:100%;border-radius:10px;margin-bottom:14px;display:block}"
       +"@media(max-width:760px){.reviews-grid{grid-template-columns:1fr}}"
       +".fc-ig{background:radial-gradient(circle at 30% 110%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285AEB 90%)}"
       +".fc-tt{background:#111}";
@@ -192,7 +193,12 @@
   }
   var BLOCKS={ stats:blockStats, intro:blockIntro, cards:blockCards, why:blockWhy, cta:blockCta, richtext:blockRichtext, reviews:blockReviews };
 
-  function reviewCard(r){ return '<div class="review-card"><p class="rv-text">“'+esc(r.text)+'”</p><div class="rv-name">— '+esc(r.name)+'</div></div>'; }
+  function reviewCard(r){
+    var im=r.image?'<img class="rv-img" referrerpolicy="no-referrer" src="'+resolveImg(r.image)+'" alt="Đánh giá khách hàng"/>':'';
+    var txt=r.text?'<p class="rv-text">“'+esc(r.text)+'”</p>':'';
+    var nm=r.name?'<div class="rv-name">— '+esc(r.name)+'</div>':'';
+    return '<div class="review-card">'+im+txt+nm+'</div>';
+  }
   function fillReviews(){
     var boxes=document.querySelectorAll('.reviews-grid[data-reviews]');
     if(!boxes.length) return;
