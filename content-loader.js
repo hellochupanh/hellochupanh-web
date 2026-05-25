@@ -37,7 +37,20 @@
       +"@media(max-width:900px){.nav-social{display:none}}"
       +".logos-row{display:flex;flex-wrap:wrap;gap:34px;align-items:center;justify-content:center}"
       +".logos-row img{height:46px;width:auto;opacity:.65;filter:grayscale(1);transition:.2s}"
-      +".logos-row img:hover{opacity:1;filter:none}";
+      +".logos-row img:hover{opacity:1;filter:none}"
+      +".ft-ico{display:inline-flex;align-items:center;gap:8px}"
+      +".ft-ico svg{width:16px;height:16px;flex:none}"
+      +".cc-carousel{position:relative}"
+      +".ccc-view{overflow:hidden}"
+      +".ccc-track{display:flex;gap:22px;transition:transform .45s ease;will-change:transform;padding:18px 0}"
+      +".ccc-card{flex:0 0 300px;max-width:80vw;position:relative;border-radius:16px;overflow:hidden;opacity:.45;transform:scale(.88);transition:opacity .45s,transform .45s;text-decoration:none}"
+      +".ccc-card.on{opacity:1;transform:scale(1)}"
+      +".ccc-img{aspect-ratio:3/4;background:linear-gradient(135deg,#e8d4b8,#c9a06a);background-size:cover;background-position:center}"
+      +".ccc-cap{position:absolute;left:0;right:0;bottom:0;padding:16px;text-align:center;background:linear-gradient(transparent,rgba(255,255,255,.92))}"
+      +".ccc-cap .k{font-size:11px;letter-spacing:2px;color:var(--gold-dark);font-weight:600}"
+      +".ccc-cap .nm{font-family:var(--serif);font-weight:700;font-size:18px;color:var(--ink);margin-top:2px}"
+      +".ccc-prev,.ccc-next{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.92);cursor:pointer;font-size:22px;color:var(--ink);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.12)}"
+      +".ccc-prev{left:8px}.ccc-next{right:8px}";
     try{ var st=document.createElement('style'); st.textContent=css; (document.head||document.documentElement).appendChild(st); }catch(e){}
   })();
 
@@ -101,12 +114,30 @@
   });
 
   /* ---- MẠNG XÃ HỘI: thêm Instagram + TikTok vào chân trang & nút nổi (mọi trang) ---- */
+  var IC={
+    phone:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.4.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>',
+    chat:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16c.6 0 1 .4 1 1v10c0 .6-.4 1-1 1H9l-4 4v-4H4c-.6 0-1-.4-1-1V5c0-.6.4-1 1-1z"/></svg>',
+    fb:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 8.4h-2V7.1c0-.5.3-.6.5-.6h1.4V4.1L13.5 4.1c-2.1 0-2.6 1.6-2.6 2.6v1.7H9.4V11h1.5v7h2.6v-7h1.7z"/></svg>',
+    mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M4 7l8 5 8-5"/></svg>',
+    cam:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5h3L7.5 6h9L18 8.5h3v10H3z"/><circle cx="12" cy="13" r="3.2"/></svg>',
+    ig:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r="1.1" fill="currentColor" stroke="none"/></svg>',
+    tt:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 4c.3 1.6 1.4 2.8 3 3v2.3c-1.1 0-2.1-.3-3-.9v5.1A4.8 4.8 0 1 1 9.2 9v2.4A2.4 2.4 0 1 0 11.6 14V4H14z"/></svg>'
+  };
   function addSocial(s){
+    function row(href,svg,label,blank){ return '<li><a class="ft-ico" href="'+esc(href)+'"'+(blank?' target="_blank" rel="noopener"':'')+'>'+svg+'<span>'+esc(label)+'</span></a></li>'; }
     var ct=document.querySelector('[data-ft="contact-title"]');
     var ul=(ct && ct.parentNode && ct.parentNode.querySelector) ? ct.parentNode.querySelector('ul') : null;
     if(ul){
-      if(s.instagram && !ul.querySelector('a[href*="instagram.com"]')){ var li=document.createElement('li'); var a0=document.createElement('a'); a0.target="_blank"; a0.rel="noopener"; a0.setAttribute("href", s.instagram); a0.textContent="📷 Instagram"; li.appendChild(a0); ul.appendChild(li); }
-      if(s.tiktok && !ul.querySelector('a[href*="tiktok.com"]')){ var li2=document.createElement('li'); var a1=document.createElement('a'); a1.target="_blank"; a1.rel="noopener"; a1.setAttribute("href", s.tiktok); a1.textContent="🎵 TikTok"; li2.appendChild(a1); ul.appendChild(li2); }
+      var digits=String(s.phone||'').replace(/[^0-9]/g,'');
+      var rows='';
+      if(s.phone) rows+=row('tel:'+digits, IC.phone, s.phone, false);
+      if(digits) rows+=row('https://zalo.me/'+digits, IC.chat, 'Zalo', true);
+      if(s.facebook) rows+=row(s.facebook, IC.fb, 'Facebook', true);
+      if(s.email) rows+=row('mailto:'+s.email, IC.mail, s.email, false);
+      rows+=row('/khachhangchonanh/', IC.cam, 'Khách hàng chọn ảnh', false);
+      if(s.instagram) rows+=row(s.instagram, IC.ig, 'Instagram', true);
+      if(s.tiktok) rows+=row(s.tiktok, IC.tt, 'TikTok', true);
+      if(rows) ul.innerHTML=rows;
     }
     var fc=document.querySelector('.float-contact');
     if(fc){
@@ -225,7 +256,49 @@
     var head=b.heading?'<div class="sec-head"><h2>'+esc(b.heading)+'</h2></div>':'';
     return '<section class="block"><div class="wrap">'+head+'<div class="logos-row">'+imgs+'</div></div></section>';
   }
-  var BLOCKS={ stats:blockStats, intro:blockIntro, cards:blockCards, why:blockWhy, cta:blockCta, richtext:blockRichtext, reviews:blockReviews, logos:blockLogos };
+  function blockCarousel(b){
+    var head='<div class="sec-head">'
+      +(b.eyebrow?'<div class="eyebrow">'+esc(b.eyebrow)+'</div>':'')
+      +(b.heading?'<h2>'+esc(b.heading)+'</h2>':'')+'</div>';
+    return '<section class="block"><div class="wrap">'+head
+      +'<div class="cc-carousel" data-carousel><button class="ccc-prev" aria-label="Trước">‹</button><div class="ccc-view"><div class="ccc-track"></div></div><button class="ccc-next" aria-label="Sau">›</button></div>'
+      +'<div style="text-align:center;margin-top:26px"><a class="btn btn-gold" href="/concept/">Xem thêm concept →</a></div>'
+      +'</div></section>';
+  }
+  var BLOCKS={ stats:blockStats, intro:blockIntro, cards:blockCards, why:blockWhy, cta:blockCta, richtext:blockRichtext, reviews:blockReviews, logos:blockLogos, carousel:blockCarousel };
+
+  function fillCarousel(){
+    var boxes=document.querySelectorAll('[data-carousel]');
+    if(!boxes.length) return;
+    getJSON("content/concepts.json").then(function(data){
+      var groups=(data&&data.items)||[];
+      boxes.forEach(function(box){
+        var track=box.querySelector('.ccc-track'), view=box.querySelector('.ccc-view');
+        if(!track||!view) return;
+        if(!groups.length){ box.style.display='none'; return; }
+        track.innerHTML=groups.map(function(g,i){
+          var first=g.concepts&&g.concepts[0];
+          var cover=resolveImg(g.cover||(first&&(first.cover||(first.photos&&first.photos[0]&&(first.photos[0].image||first.photos[0]))))||'');
+          var cv=cover?(" style=\"background-image:url('"+cover+"')\""):'';
+          return '<a class="ccc-card" href="/concept/?g='+i+'"><div class="ccc-img"'+cv+'></div><div class="ccc-cap"><div class="k">CONCEPT</div><div class="nm">'+esc(g.name)+'</div></div></a>';
+        }).join('');
+        var cards=track.querySelectorAll('.ccc-card');
+        var idx=cards.length>1?1:0;
+        function update(){
+          cards.forEach(function(c,i){ c.classList.toggle('on', i===idx); });
+          var card=cards[idx]; if(!card) return;
+          var off=card.offsetLeft-(view.clientWidth-card.offsetWidth)/2;
+          track.style.transform='translateX('+(-off)+'px)';
+        }
+        var prev=box.querySelector('.ccc-prev'), next=box.querySelector('.ccc-next');
+        if(prev) prev.addEventListener('click',function(){ if(idx>0){ idx--; update(); } });
+        if(next) next.addEventListener('click',function(){ if(idx<cards.length-1){ idx++; update(); } });
+        cards.forEach(function(c,i){ c.addEventListener('click',function(e){ if(i!==idx){ e.preventDefault(); idx=i; update(); } }); });
+        update();
+        window.addEventListener('resize', update);
+      });
+    }).catch(function(){});
+  }
 
   function reviewCard(r){
     var im=r.image?'<img class="rv-img" referrerpolicy="no-referrer" src="'+resolveImg(r.image)+'" alt="Đánh giá khách hàng"/>':'';
@@ -257,7 +330,7 @@
           if(!b || b.visible===false) return '';
           var fn=BLOCKS[b.type]; return fn?fn(b):'';
         }).join('');
-        if(html){ homeBox.innerHTML=html; fillReviews(); }
+        if(html){ homeBox.innerHTML=html; fillReviews(); fillCarousel(); }
       }
     });
   }
