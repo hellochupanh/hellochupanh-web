@@ -129,6 +129,23 @@ collections:
                   - { label: "Hiển thị khối này", name: "visible", widget: "boolean", default: true }
                   - { label: "Dòng chữ nhỏ phía trên", name: "eyebrow", widget: "string", required: false }
                   - { label: "Tiêu đề khối", name: "heading", widget: "string", hint: "Các concept lấy tự động từ mục '⑤ Thư viện Concept'. Vd: Tìm concept thuộc về bạn" }
+              - label: "Bộ ảnh / Thư viện (tiêu đề + nhiều ảnh)"
+                name: "gallery"
+                widget: "object"
+                summary: "Bộ ảnh / Thư viện"
+                fields:
+                  - { label: "Hiển thị khối này", name: "visible", widget: "boolean", default: true }
+                  - { label: "Dòng chữ nhỏ phía trên", name: "eyebrow", widget: "string", required: false, hint: "Vd: Thư viện ảnh" }
+                  - { label: "Tiêu đề", name: "heading", widget: "string", required: false, hint: "Vd: Bộ sưu tập ảnh đã chụp" }
+                  - { label: "Mô tả", name: "sub", widget: "text", required: false }
+                  - { label: "Nút — chữ trên nút", name: "btn_label", widget: "string", required: false, hint: "Vd: Xem toàn bộ →. Để trống = không hiện nút." }
+                  - { label: "Nút — bấm vào đi tới", name: "btn_url", widget: "string", required: false, default: "/concept/" }
+                  - label: "Các ảnh (kéo ⠿ đổi thứ tự, × để xoá, + để thêm)"
+                    name: "items"
+                    label_singular: "ảnh"
+                    widget: "list"
+                    hint: "Tải ảnh lên. Hiện thành lưới đẹp 4 cột."
+                    field: { label: "Ảnh", name: "image", widget: "image" }
               - label: "Logo khách hàng / đối tác"
                 name: "logos"
                 widget: "object"
