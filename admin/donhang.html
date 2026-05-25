@@ -7,7 +7,7 @@
 <title>Đơn đặt lịch — Hello Chụp Ảnh</title>
 <style>
   body{font-family:-apple-system,"Be Vietnam Pro",sans-serif;background:#faf7f2;color:#23201c;margin:0;padding:24px;}
-  .wrap{max-width:960px;margin:0 auto;}
+  .wrap{max-width:1040px;margin:0 auto;}
   a.back{color:#8a8175;text-decoration:none;font-size:14px;}
   h1{font-family:"Playfair Display",Georgia,serif;font-size:26px;margin:6px 0 4px;}
   .sub{color:#8a8175;font-size:14px;margin-bottom:20px;}
@@ -25,7 +25,28 @@
   td a{color:#d9863a;text-decoration:none;font-weight:600;}
   .when{color:#8a8175;font-size:12px;white-space:nowrap;}
   .row{display:flex;gap:10px;align-items:center;margin:16px 0;flex-wrap:wrap;}
-  @media(max-width:680px){ table,thead,tbody,th,td,tr{display:block;} thead{display:none;} tr{border:1px solid #ece6dc;border-radius:12px;margin-bottom:12px;padding:6px;} td{border:none;padding:6px 10px;} }
+  .hint{color:#a89e8f;font-size:12.5px;margin:-6px 0 14px;}
+  /* trạng thái + xoá */
+  .st-cell{display:flex;flex-direction:column;gap:6px;}
+  .chip{display:inline-flex;align-items:center;gap:6px;border:1.5px solid #ece6dc;background:#fff;color:#8a8175;border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;user-select:none;}
+  .chip:hover{border-color:#d9cbb6;}
+  .chip .dot{width:8px;height:8px;border-radius:50%;background:#cfc6b8;flex-shrink:0;}
+  .chip.on-consult{background:#eaf6ee;border-color:#bfe3cb;color:#1f7a44;}
+  .chip.on-consult .dot{background:#28a35a;}
+  .chip.on-book{background:#fff0db;border-color:#f4c98a;color:#b3650a;}
+  .chip.on-book .dot{background:#e08a2e;}
+  .del{background:#fff;border:1.5px solid #f3c7c7;color:#c0392b;border-radius:9px;padding:7px 13px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
+  .del:hover{background:#fff1f1;border-color:#e89b9b;}
+  .del:disabled{opacity:.6;cursor:default;}
+  tr.is-booked td{background:#fbfdf9;}
+  @media(max-width:760px){
+    table,thead,tbody,th,td,tr{display:block;}
+    thead{display:none;}
+    tr{border:1px solid #ece6dc;border-radius:12px;margin-bottom:12px;padding:6px;}
+    td{border:none;padding:6px 10px;}
+    td[data-label]:before{content:attr(data-label);display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#a89e8f;margin-bottom:2px;}
+    .st-cell{flex-direction:row;flex-wrap:wrap;}
+  }
 </style>
 <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
@@ -39,9 +60,23 @@
 <script>
 (function(){
   var I = window.netlifyIdentity, app = document.getElementById('app');
+  var currentUser = null;
+  var SKEY = 'hello_booking_status';
+
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]);}); }
-  function login(){ app.innerHTML = '<div class="msg">Vui lòng đăng nhập để xem đơn đặt lịch.<br/><br/><button class="btn" id="lg">Đăng nhập</button></div>'; document.getElementById('lg').onclick=function(){ I.open(); }; }
   function fmtDate(s){ if(!s) return ''; try{ var d=new Date(s); return d.toLocaleString('vi-VN'); }catch(e){ return s; } }
+
+  /* ---- trạng thái lưu trên trình duyệt ---- */
+  function allStatus(){ try{ return JSON.parse(localStorage.getItem(SKEY)||'{}')||{}; }catch(e){ return {}; } }
+  function getStatus(id){ var a=allStatus(); return a[id]||{consulted:false,booked:false}; }
+  function setStatus(id,k,v){ var a=allStatus(); if(!a[id])a[id]={consulted:false,booked:false}; a[id][k]=v; localStorage.setItem(SKEY,JSON.stringify(a)); }
+  function dropStatus(id){ var a=allStatus(); if(a[id]){ delete a[id]; localStorage.setItem(SKEY,JSON.stringify(a)); } }
+
+  function login(){
+    app.innerHTML = '<div class="msg">Vui lòng đăng nhập để xem đơn đặt lịch.<br/><br/><button class="btn" id="lg">Đăng nhập</button></div>';
+    document.getElementById('lg').onclick=function(){ I.open(); };
+  }
+
   function render(data){
     if(data && data.error){
       app.innerHTML='<div class="err">Chưa xem được đơn trong trang này: <b>'+esc(data.error)+'</b>.<br/><br/>'
@@ -51,30 +86,88 @@
       return;
     }
     var b = (data && data.bookings) || [];
-    if(!b.length){ app.innerHTML='<div class="msg">Chưa có đơn đặt lịch nào.</div><div class="row"><button class="btn alt" onclick="location.reload()">↻ Tải lại</button></div>'; return; }
+    if(!b.length){
+      app.innerHTML='<div class="msg">Chưa có đơn đặt lịch nào.</div><div class="row"><button class="btn alt" onclick="location.reload()">↻ Tải lại</button></div>';
+      return;
+    }
     var rows = b.map(function(x){
       var digits=String(x.phone||'').replace(/[^0-9]/g,'');
-      return '<tr>'
-        +'<td class="when">'+esc(fmtDate(x.created_at))+'</td>'
-        +'<td class="nm">'+esc(x.name)+'</td>'
-        +'<td><a href="tel:'+digits+'">'+esc(x.phone)+'</a></td>'
-        +'<td>'+esc(x.service)+'</td>'
-        +'<td>'+esc(x.date)+'</td>'
-        +'<td>'+esc(x.note)+'</td>'
+      var id=esc(x.id);
+      var st=getStatus(x.id);
+      return '<tr data-id="'+id+'"'+(st.booked?' class="is-booked"':'')+'>'
+        +'<td class="when" data-label="Thời gian">'+esc(fmtDate(x.created_at))+'</td>'
+        +'<td class="nm" data-label="Tên">'+esc(x.name)+'</td>'
+        +'<td data-label="SĐT"><a href="tel:'+digits+'">'+esc(x.phone)+'</a></td>'
+        +'<td data-label="Concept">'+esc(x.service)+'</td>'
+        +'<td data-label="Ngày chụp">'+esc(x.date)+'</td>'
+        +'<td data-label="Ghi chú">'+esc(x.note)+'</td>'
+        +'<td data-label="Trạng thái"><div class="st-cell">'
+          +'<span class="chip'+(st.consulted?' on-consult':'')+'" data-act="consult" data-id="'+id+'"><span class="dot"></span>Đã tư vấn</span>'
+          +'<span class="chip'+(st.booked?' on-book':'')+'" data-act="book" data-id="'+id+'"><span class="dot"></span>Đã đặt lịch</span>'
+        +'</div></td>'
+        +'<td data-label=""><button class="del" data-act="del" data-id="'+id+'" data-name="'+esc(x.name)+'">Xoá</button></td>'
         +'</tr>';
     }).join('');
     app.innerHTML='<div class="row">Tổng: <span class="cnt">'+b.length+'</span> đơn <button class="btn alt" onclick="location.reload()" style="margin-left:auto">↻ Tải lại</button></div>'
-      +'<table><thead><tr><th>Thời gian</th><th>Tên</th><th>SĐT</th><th>Concept</th><th>Ngày chụp</th><th>Ghi chú</th></tr></thead><tbody>'+rows+'</tbody></table>';
+      +'<div class="hint">Bấm “Đã tư vấn” / “Đã đặt lịch” để đánh dấu (lưu trên trình duyệt này). Nút “Xoá” gỡ đơn vĩnh viễn.</div>'
+      +'<table><thead><tr><th>Thời gian</th><th>Tên</th><th>SĐT</th><th>Concept</th><th>Ngày chụp</th><th>Ghi chú</th><th>Trạng thái</th><th>Xoá</th></tr></thead><tbody>'+rows+'</tbody></table>';
   }
+
+  function updateCount(){
+    var tbody=app.querySelector('tbody');
+    var n=tbody?tbody.querySelectorAll('tr').length:0;
+    var cnt=app.querySelector('.cnt'); if(cnt) cnt.textContent=n;
+    if(n===0) render({bookings:[]});
+  }
+
+  function delBooking(id, cb){
+    if(!currentUser){ cb(false,'Chưa đăng nhập'); return; }
+    currentUser.jwt().then(function(tok){
+      return fetch('/.netlify/functions/bookings?id='+encodeURIComponent(id), { method:'DELETE', headers:{ Authorization:'Bearer '+tok } });
+    }).then(function(r){ return r.json(); }).then(function(j){
+      if(j && j.ok) cb(true); else cb(false, (j&&j.error)||'lỗi');
+    }).catch(function(e){ cb(false, String(e)); });
+  }
+
+  /* click cho chip trạng thái + nút xoá (gắn 1 lần, ủy quyền sự kiện) */
+  app.addEventListener('click', function(e){
+    var el = e.target.closest && e.target.closest('[data-act]');
+    if(!el) return;
+    var act = el.getAttribute('data-act');
+    var id  = el.getAttribute('data-id');
+    if(act==='consult' || act==='book'){
+      var key = act==='consult' ? 'consulted' : 'booked';
+      var next = !getStatus(id)[key];
+      setStatus(id, key, next);
+      el.classList.toggle(act==='consult'?'on-consult':'on-book', next);
+      if(act==='book'){ var tr=el.closest('tr'); if(tr) tr.classList.toggle('is-booked', next); }
+    } else if(act==='del'){
+      var nm = el.getAttribute('data-name')||'';
+      if(!confirm('Xoá đơn của "'+nm+'"?\nĐơn sẽ bị gỡ vĩnh viễn, không khôi phục được.')) return;
+      el.disabled=true; el.textContent='Đang xoá…';
+      delBooking(id, function(ok, err){
+        if(ok){
+          var tr=el.closest('tr'); if(tr && tr.parentNode) tr.parentNode.removeChild(tr);
+          dropStatus(id); updateCount();
+        } else {
+          el.disabled=false; el.textContent='Xoá';
+          alert('Xoá không thành công: '+(err||'vui lòng thử lại'));
+        }
+      });
+    }
+  });
+
   function load(user){
+    currentUser = user;
     app.innerHTML='<div class="msg">Đang tải đơn…</div>';
     user.jwt().then(function(tok){
       return fetch('/.netlify/functions/bookings', { headers:{ Authorization:'Bearer '+tok } });
     }).then(function(r){ return r.json(); }).then(render).catch(function(e){ app.innerHTML='<div class="err">Lỗi tải: '+esc(e)+'</div>'; });
   }
-  I.on('init', function(user){ if(user) load(user); else login(); });
-  I.on('login', function(user){ load(user); });
-  I.on('logout', function(){ login(); });
+
+  I.on('init', function(user){ if(user){ currentUser=user; load(user); } else login(); });
+  I.on('login', function(user){ currentUser=user; load(user); });
+  I.on('logout', function(){ currentUser=null; login(); });
   I.init();
 })();
 </script>
