@@ -154,10 +154,10 @@
       if(s.phone) rows+=row('tel:'+digits, IC.phone, s.phone, false);
       if(digits) rows+=row('https://zalo.me/'+digits, IC.chat, 'Zalo', true);
       if(s.facebook) rows+=row(s.facebook, IC.fb, 'Facebook', true);
-      if(s.email) rows+=row('mailto:'+s.email, IC.mail, s.email, false);
-      rows+=row('/khachhangchonanh/', IC.cam, 'Khách hàng chọn ảnh', false);
       if(s.instagram) rows+=row(s.instagram, IC.ig, 'Instagram', true);
       if(s.tiktok) rows+=row(s.tiktok, IC.tt, 'TikTok', true);
+      if(s.email) rows+=row('mailto:'+s.email, IC.mail, s.email, false);
+      rows+=row('/khachhangchonanh/', IC.cam, 'Khách hàng chọn ảnh', false);
       if(rows) ul.innerHTML=rows;
     }
     var fc=document.querySelector('.float-contact');
