@@ -9,7 +9,8 @@ exports.handler = async function (event, context) {
     return { statusCode: 200, body: JSON.stringify({ error: "Chưa cấu hình NETLIFY_TOKEN trên Netlify" }) };
   }
   try {
-    var resp = await fetch("https://api.netlify.com/api/v1/submissions?per_page=200", {
+    var siteId = process.env.SITE_ID || "938a8072-c4e4-43f7-8e78-bbdabfbe01b0";
+    var resp = await fetch("https://api.netlify.com/api/v1/sites/" + siteId + "/submissions?per_page=200", {
       headers: { Authorization: "Bearer " + token }
     });
     if (!resp.ok) {
