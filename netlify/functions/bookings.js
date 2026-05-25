@@ -1,4 +1,6 @@
-// Lấy danh sách đơn đặt lịch (Netlify Forms) — chỉ cho người đã đăng nhập /admin.
+// Quản lý đơn đặt lịch (Netlify Forms) — chỉ cho người đã đăng nhập /admin.
+//   GET            -> danh sách đơn (kèm id)
+//   DELETE ?id=XXX -> xoá 1 đơn
 exports.handler = async function (event, context) {
   var user = context.clientContext && context.clientContext.user;
   if (!user) {
@@ -8,8 +10,31 @@ exports.handler = async function (event, context) {
   if (!token) {
     return { statusCode: 200, body: JSON.stringify({ error: "Chưa cấu hình NETLIFY_TOKEN trên Netlify" }) };
   }
+  var siteId = process.env.SITE_ID || "938a8072-c4e4-43f7-8e78-bbdabfbe01b0";
+
+  // ===== Xoá 1 đơn =====
+  if (event.httpMethod === "DELETE") {
+    var id = (event.queryStringParameters && event.queryStringParameters.id) || "";
+    if (!id) {
+      return { statusCode: 400, body: JSON.stringify({ error: "Thiếu mã đơn (id)" }) };
+    }
+    try {
+      var del = await fetch("https://api.netlify.com/api/v1/submissions/" + encodeURIComponent(id), {
+        method: "DELETE",
+        headers: { Authorization: "Bearer " + token }
+      });
+      if (!del.ok) {
+        var dt = await del.text();
+        return { statusCode: 200, body: JSON.stringify({ error: "Xoá lỗi " + del.status, detail: dt.slice(0, 200) }) };
+      }
+      return { statusCode: 200, body: JSON.stringify({ ok: true, deleted: id }) };
+    } catch (e) {
+      return { statusCode: 502, body: JSON.stringify({ error: e.message }) };
+    }
+  }
+
+  // ===== Danh sách đơn =====
   try {
-    var siteId = process.env.SITE_ID || "938a8072-c4e4-43f7-8e78-bbdabfbe01b0";
     var resp = await fetch("https://api.netlify.com/api/v1/sites/" + siteId + "/submissions?per_page=200", {
       headers: { Authorization: "Bearer " + token }
     });
@@ -22,6 +47,7 @@ exports.handler = async function (event, context) {
     var bookings = list.map(function (s) {
       var d = s.data || {};
       return {
+        id: s.id || "",
         name: d.name || "",
         phone: d.phone || "",
         service: d.service || "",
