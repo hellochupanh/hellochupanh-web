@@ -51,7 +51,14 @@
       +".ccc-cap .nm{font-family:var(--serif);font-weight:700;font-size:18px;color:var(--ink);margin-top:2px}"
       +".ccc-prev,.ccc-next{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.92);cursor:pointer;font-size:22px;color:var(--ink);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.12)}"
       +".ccc-prev{left:8px}.ccc-next{right:8px}"
-      +".float-contact a svg{width:24px;height:24px}";
+      +".float-contact a svg{width:24px;height:24px}"
+      +"@keyframes fcPulse{0%{transform:scale(1);box-shadow:0 6px 18px rgba(0,0,0,.22),0 0 0 0 rgba(255,255,255,.55)}50%{transform:scale(1.09)}100%{transform:scale(1);box-shadow:0 6px 18px rgba(0,0,0,.22),0 0 0 15px rgba(255,255,255,0)}}"
+      +".float-contact a{animation:fcPulse 1.5s ease-in-out infinite}"
+      +".float-contact a:nth-child(2){animation-delay:.15s}"
+      +".float-contact a:nth-child(3){animation-delay:.3s}"
+      +".float-contact a:nth-child(4){animation-delay:.45s}"
+      +".float-contact a:nth-child(5){animation-delay:.6s}"
+      +".float-contact a:hover{animation-play-state:paused}";
     try{ var st=document.createElement('style'); st.textContent=css; (document.head||document.documentElement).appendChild(st); }catch(e){}
   })();
 
