@@ -36,7 +36,7 @@
     },
     {
       "type": "cards",
-      "visible": true,
+      "visible": false,
       "eyebrow": "Concept nổi bật",
       "heading": "Tìm concept thuộc về bạn",
       "sub": "Đa dạng phong cách — từ chân dung hoạ báo cá tính đến beauty Hàn Quốc nhẹ nhàng.",
@@ -45,6 +45,12 @@
         { "tag": "Concept", "title": "Trắng Đen Cao Cấp", "price": "Từ 3.288.000đ", "image": "https://drive.google.com/thumbnail?id=18uFzhJMuChhslbMU0ektVNbZfQC5Iirw&sz=w1200", "link": "/dich-vu/" },
         { "tag": "Concept", "title": "Beauty Hàn Quốc", "price": "Từ 3.288.000đ", "image": "https://drive.google.com/thumbnail?id=1WXUH1UEoQ-axGEcFEjbB4dcjYjn1j4uP&sz=w1200", "link": "/dich-vu/" }
       ]
+    },
+    {
+      "type": "carousel",
+      "visible": true,
+      "eyebrow": "Concept nổi bật",
+      "heading": "Tìm concept thuộc về bạn"
     },
     {
       "type": "why",
