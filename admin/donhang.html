@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>Đơn đặt lịch — Hello Chụp Ảnh</title>
+<style>
+  body{font-family:-apple-system,"Be Vietnam Pro",sans-serif;background:#faf7f2;color:#23201c;margin:0;padding:24px;}
+  .wrap{max-width:960px;margin:0 auto;}
+  a.back{color:#8a8175;text-decoration:none;font-size:14px;}
+  h1{font-family:"Playfair Display",Georgia,serif;font-size:26px;margin:6px 0 4px;}
+  .sub{color:#8a8175;font-size:14px;margin-bottom:20px;}
+  .msg{background:#fff;border:1.5px solid #ece6dc;border-radius:14px;padding:24px;text-align:center;color:#5a5349;}
+  .err{background:#fff1f2;border:1px solid #fecaca;color:#b91c1c;border-radius:12px;padding:16px;font-size:14px;line-height:1.6;}
+  .err b{color:#7f1d1d;}
+  .btn{background:#F4A14F;color:#fff;border:none;padding:10px 18px;border-radius:999px;font-weight:600;cursor:pointer;font-size:14px;text-decoration:none;display:inline-block;}
+  .btn.alt{background:#fff;color:#23201c;border:1.5px solid #ece6dc;}
+  .cnt{font-weight:700;color:#d9863a;}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.05);}
+  th,td{text-align:left;padding:12px 14px;border-bottom:1px solid #f0eadf;font-size:14px;vertical-align:top;}
+  th{background:#f3ece1;color:#5a5349;font-size:12px;text-transform:uppercase;letter-spacing:.5px;}
+  tr:last-child td{border-bottom:none;}
+  td .nm{font-weight:600;}
+  td a{color:#d9863a;text-decoration:none;font-weight:600;}
+  .when{color:#8a8175;font-size:12px;white-space:nowrap;}
+  .row{display:flex;gap:10px;align-items:center;margin:16px 0;flex-wrap:wrap;}
+  @media(max-width:680px){ table,thead,tbody,th,td,tr{display:block;} thead{display:none;} tr{border:1px solid #ece6dc;border-radius:12px;margin-bottom:12px;padding:6px;} td{border:none;padding:6px 10px;} }
+</style>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/admin/">← Về trang quản trị</a>
+  <h1>Đơn đặt lịch</h1>
+  <div class="sub">Danh sách khách đặt lịch qua trang Liên hệ.</div>
+  <div id="app"><div class="msg">Đang tải…</div></div>
+</div>
+<script>
+(function(){
+  var I = window.netlifyIdentity, app = document.getElementById('app');
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]);}); }
+  function login(){ app.innerHTML = '<div class="msg">Vui lòng đăng nhập để xem đơn đặt lịch.<br/><br/><button class="btn" id="lg">Đăng nhập</button></div>'; document.getElementById('lg').onclick=function(){ I.open(); }; }
+  function fmtDate(s){ if(!s) return ''; try{ var d=new Date(s); return d.toLocaleString('vi-VN'); }catch(e){ return s; } }
+  function render(data){
+    if(data && data.error){
+      app.innerHTML='<div class="err">Chưa xem được đơn trong trang này: <b>'+esc(data.error)+'</b>.<br/><br/>'
+        +'Để hiện đơn ngay tại đây, cần thêm <b>khoá Netlify (NETLIFY_TOKEN)</b> — tương tự lúc cài số liệu Clarity. '
+        +'Trong lúc đó, mọi đơn vẫn được lưu đầy đủ: vào <a href="https://app.netlify.com" target="_blank" rel="noopener">app.netlify.com</a> → chọn web → mục <b>Forms</b> → <b>booking</b> để xem.</div>'
+        +'<div class="row"><a class="btn" href="https://app.netlify.com" target="_blank" rel="noopener">↗ Mở Netlify Forms</a> <button class="btn alt" onclick="location.reload()">↻ Tải lại</button></div>';
+      return;
+    }
+    var b = (data && data.bookings) || [];
+    if(!b.length){ app.innerHTML='<div class="msg">Chưa có đơn đặt lịch nào.</div><div class="row"><button class="btn alt" onclick="location.reload()">↻ Tải lại</button></div>'; return; }
+    var rows = b.map(function(x){
+      var digits=String(x.phone||'').replace(/[^0-9]/g,'');
+      return '<tr>'
+        +'<td class="when">'+esc(fmtDate(x.created_at))+'</td>'
+        +'<td class="nm">'+esc(x.name)+'</td>'
+        +'<td><a href="tel:'+digits+'">'+esc(x.phone)+'</a></td>'
+        +'<td>'+esc(x.service)+'</td>'
+        +'<td>'+esc(x.date)+'</td>'
+        +'<td>'+esc(x.note)+'</td>'
+        +'</tr>';
+    }).join('');
+    app.innerHTML='<div class="row">Tổng: <span class="cnt">'+b.length+'</span> đơn <button class="btn alt" onclick="location.reload()" style="margin-left:auto">↻ Tải lại</button></div>'
+      +'<table><thead><tr><th>Thời gian</th><th>Tên</th><th>SĐT</th><th>Concept</th><th>Ngày chụp</th><th>Ghi chú</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  }
+  function load(user){
+    app.innerHTML='<div class="msg">Đang tải đơn…</div>';
+    user.jwt().then(function(tok){
+      return fetch('/.netlify/functions/bookings', { headers:{ Authorization:'Bearer '+tok } });
+    }).then(function(r){ return r.json(); }).then(render).catch(function(e){ app.innerHTML='<div class="err">Lỗi tải: '+esc(e)+'</div>'; });
+  }
+  I.on('init', function(user){ if(user) load(user); else login(); });
+  I.on('login', function(user){ load(user); });
+  I.on('logout', function(){ login(); });
+  I.init();
+})();
+</script>
+</body>
+</html>
