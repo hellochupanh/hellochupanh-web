@@ -58,7 +58,18 @@
       +".float-contact a:nth-child(3){animation-delay:.3s}"
       +".float-contact a:nth-child(4){animation-delay:.45s}"
       +".float-contact a:nth-child(5){animation-delay:.6s}"
-      +".float-contact a:hover{animation-play-state:paused}";
+      +".float-contact a:hover{animation-play-state:paused}"
+      +".lb-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:30px;flex-wrap:wrap}"
+      +".lb-head .eyebrow{font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-dark);font-weight:600;margin-bottom:10px}"
+      +".lb-head h2{font-family:var(--serif);font-size:clamp(30px,5vw,56px);font-weight:700;line-height:1.05;letter-spacing:-.5px}"
+      +".lb-sub{color:var(--muted);font-size:16px;margin-top:10px;max-width:560px}"
+      +".lb-btn{flex:none;background:#fff;border:1.5px solid var(--line);color:var(--ink);padding:12px 22px;border-radius:999px;font-weight:600;font-size:14px;transition:.15s;white-space:nowrap}"
+      +".lb-btn:hover{border-color:var(--gold);color:var(--gold-dark)}"
+      +".lb-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}"
+      +".lb-it{aspect-ratio:3/4;border-radius:16px;overflow:hidden;background:#efe7da}"
+      +".lb-it img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s}"
+      +".lb-it:hover img{transform:scale(1.05)}"
+      +"@media(max-width:900px){.lb-grid{grid-template-columns:repeat(2,1fr)}}";
     try{ var st=document.createElement('style'); st.textContent=css; (document.head||document.documentElement).appendChild(st); }catch(e){}
   })();
 
@@ -280,7 +291,18 @@
       +'<div style="text-align:center;margin-top:26px"><a class="btn btn-gold" href="/concept/">Xem thêm concept →</a></div>'
       +'</div></section>';
   }
-  var BLOCKS={ stats:blockStats, intro:blockIntro, cards:blockCards, why:blockWhy, cta:blockCta, richtext:blockRichtext, reviews:blockReviews, logos:blockLogos, carousel:blockCarousel };
+  function blockGallery(b){
+    var imgs=(b.items||[]).map(function(it){ var src=resolveImg(it&&it.image!==undefined?it.image:it); return src?'<div class="lb-it"><img loading="lazy" referrerpolicy="no-referrer" src="'+src+'" alt="'+esc(b.heading||'')+'"/></div>':''; }).join('');
+    if(!imgs && !b.heading) return '';
+    var btn=b.btn_label?'<a class="lb-btn" href="'+esc(b.btn_url||'/concept/')+'">'+esc(b.btn_label)+'</a>':'';
+    var head='<div class="lb-head"><div>'
+      +(b.eyebrow?'<div class="eyebrow">'+esc(b.eyebrow)+'</div>':'')
+      +(b.heading?'<h2>'+esc(b.heading)+'</h2>':'')
+      +(b.sub?'<p class="lb-sub">'+nl2br(b.sub)+'</p>':'')
+      +'</div>'+btn+'</div>';
+    return '<section class="block"><div class="wrap">'+head+(imgs?'<div class="lb-grid">'+imgs+'</div>':'')+'</div></section>';
+  }
+  var BLOCKS={ stats:blockStats, intro:blockIntro, cards:blockCards, why:blockWhy, cta:blockCta, richtext:blockRichtext, reviews:blockReviews, logos:blockLogos, carousel:blockCarousel, gallery:blockGallery };
 
   function fillCarousel(){
     var boxes=document.querySelectorAll('[data-carousel]');
