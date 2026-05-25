@@ -53,14 +53,19 @@
       "heading": "Tìm concept thuộc về bạn"
     },
     {
-      "type": "why",
+      "type": "gallery",
       "visible": true,
-      "eyebrow": "Vì sao chọn Hello",
-      "heading": "Cam kết bằng hành động",
+      "eyebrow": "Thư viện ảnh",
+      "heading": "Bộ sưu tập ảnh đã chụp",
+      "sub": "Đa dạng từ concept chân dung basic, hot-trend đến những setup chụp chuyên nghiệp.",
+      "btn_label": "Xem toàn bộ →",
+      "btn_url": "/concept/",
       "items": [
-        { "icon": "✨", "title": "Ekip tận tâm", "text": "Hỗ trợ tạo dáng, chọn góc xuyên suốt buổi chụp. Bạn không biết tạo dáng? Đừng lo, có ekip lo từ A-Z." },
-        { "icon": "⚡", "title": "Trả file gốc trong 24h", "text": "Toàn bộ ảnh gốc được trả trong vòng 24 giờ. Ảnh chỉnh sửa kỹ hoàn thành trong 5 ngày." },
-        { "icon": "📸", "title": "Khách tự chọn ảnh online", "text": "Sau buổi chụp, bạn nhận link riêng để xem & chọn ảnh yêu thích ngay trên điện thoại — tiện lợi, nhanh chóng." }
+        { "image": "https://drive.google.com/thumbnail?id=13edL4MnS_T3DPSBCTzlWwsE__SMJXcbT&sz=w1200" },
+        { "image": "https://drive.google.com/thumbnail?id=18uFzhJMuChhslbMU0ektVNbZfQC5Iirw&sz=w1200" },
+        { "image": "https://drive.google.com/thumbnail?id=1WXUH1UEoQ-axGEcFEjbB4dcjYjn1j4uP&sz=w1200" },
+        { "image": "https://drive.google.com/thumbnail?id=16hByGg3HGzI-8syoO5wgVkhWRo9bDwqA&sz=w1200" },
+        { "image": "https://drive.google.com/thumbnail?id=1BSzkRKFdfn41Qx_-MeYDLi6jtK8YdTVl&sz=w1000" }
       ]
     },
     {
@@ -75,6 +80,17 @@
       "visible": true,
       "heading": "Khách hàng & Đối tác",
       "items": []
+    },
+    {
+      "type": "why",
+      "visible": true,
+      "eyebrow": "Vì sao chọn Hello",
+      "heading": "Cam kết bằng hành động",
+      "items": [
+        { "icon": "✨", "title": "Ekip tận tâm", "text": "Hỗ trợ tạo dáng, chọn góc xuyên suốt buổi chụp. Bạn không biết tạo dáng? Đừng lo, có ekip lo từ A-Z." },
+        { "icon": "⚡", "title": "Trả file gốc trong 24h", "text": "Toàn bộ ảnh gốc được trả trong vòng 24 giờ. Ảnh chỉnh sửa kỹ hoàn thành trong 5 ngày." },
+        { "icon": "📸", "title": "Khách tự chọn ảnh online", "text": "Sau buổi chụp, bạn nhận link riêng để xem & chọn ảnh yêu thích ngay trên điện thoại — tiện lợi, nhanh chóng." }
+      ]
     },
     {
       "type": "cta",
