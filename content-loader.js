@@ -27,7 +27,17 @@
       +".rv-img{width:100%;border-radius:10px;margin-bottom:14px;display:block}"
       +"@media(max-width:760px){.reviews-grid{grid-template-columns:1fr}}"
       +".fc-ig{background:radial-gradient(circle at 30% 110%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285AEB 90%)}"
-      +".fc-tt{background:#111}";
+      +".fc-tt{background:#111}"
+      +".rv-stars{color:var(--gold);letter-spacing:2px;font-size:15px;margin-bottom:10px}"
+      +".nav-links{flex:1;justify-content:center}"
+      +".nav-social{display:flex;gap:14px;align-items:center}"
+      +".nav-social a{color:var(--ink);display:inline-flex;align-items:center;transition:color .15s}"
+      +".nav-social a:hover{color:var(--gold-dark)}"
+      +".nav-social svg{width:20px;height:20px;display:block}"
+      +"@media(max-width:900px){.nav-social{display:none}}"
+      +".logos-row{display:flex;flex-wrap:wrap;gap:34px;align-items:center;justify-content:center}"
+      +".logos-row img{height:46px;width:auto;opacity:.65;filter:grayscale(1);transition:.2s}"
+      +".logos-row img:hover{opacity:1;filter:none}";
     try{ var st=document.createElement('style'); st.textContent=css; (document.head||document.documentElement).appendChild(st); }catch(e){}
   })();
 
@@ -85,6 +95,7 @@
     if(s.instagram){ document.querySelectorAll('a[href*="instagram.com"]').forEach(function(a){ a.setAttribute("href", s.instagram); }); }
     if(s.tiktok){ document.querySelectorAll('a[href*="tiktok.com"]').forEach(function(a){ a.setAttribute("href", s.tiktok); }); }
     addSocial(s);
+    buildHeaderSocial(s);
     setText('[data-edit="address"]', s.address);
     setText('[data-edit="hours"]', s.hours);
   });
@@ -102,6 +113,23 @@
       if(s.instagram && !fc.querySelector('a[href*="instagram.com"]')){ var ig=document.createElement('a'); ig.className="fc-ig"; ig.target="_blank"; ig.rel="noopener"; ig.title="Instagram"; ig.setAttribute("href", s.instagram); ig.textContent="📷"; fc.appendChild(ig); }
       if(s.tiktok && !fc.querySelector('a[href*="tiktok.com"]')){ var tt=document.createElement('a'); tt.className="fc-tt"; tt.target="_blank"; tt.rel="noopener"; tt.title="TikTok"; tt.setAttribute("href", s.tiktok); tt.textContent="🎵"; fc.appendChild(tt); }
     }
+  }
+
+  /* ---- Icon mạng xã hội trên thanh menu (góc phải) ---- */
+  function buildHeaderSocial(s){
+    var inner=document.querySelector('.nav-inner');
+    if(!inner || inner.querySelector('.nav-social')) return;
+    var fb='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 8.4h-2V7.1c0-.5.3-.6.5-.6h1.4V4.1L13.5 4.1c-2.1 0-2.6 1.6-2.6 2.6v1.7H9.4V11h1.5v7h2.6v-7h1.7z"/></svg>';
+    var ig='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17" cy="7" r="1.1" fill="currentColor" stroke="none"/></svg>';
+    var tt='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 4c.3 1.6 1.4 2.8 3 3v2.3c-1.1 0-2.1-.3-3-.9v5.1A4.8 4.8 0 1 1 9.2 9v2.4A2.4 2.4 0 1 0 11.6 14V4H14z"/></svg>';
+    var mail='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M4 7l8 5 8-5"/></svg>';
+    var wrap=document.createElement('div'); wrap.className='nav-social';
+    function add(href,svg,title,blank){ var a=document.createElement('a'); a.setAttribute('href',href); if(blank){ a.target='_blank'; a.rel='noopener'; } a.title=title; a.innerHTML=svg; wrap.appendChild(a); }
+    if(s.facebook) add(s.facebook,fb,'Facebook',true);
+    if(s.instagram) add(s.instagram,ig,'Instagram',true);
+    if(s.tiktok) add(s.tiktok,tt,'TikTok',true);
+    if(s.email) add('mailto:'+s.email,mail,'Email',false);
+    if(wrap.children.length){ var t=inner.querySelector('.nav-toggle'); if(t){ inner.insertBefore(wrap,t); } else { inner.appendChild(wrap); } }
   }
 
   /* ---- CHÂN TRANG (footer) — mọi trang ---- */
@@ -191,13 +219,20 @@
       +'<div style="text-align:center;margin-top:6px"><a href="/danh-gia/" style="color:var(--gold-dark);font-weight:600">Xem tất cả đánh giá →</a></div>'
       +'</div></section>';
   }
-  var BLOCKS={ stats:blockStats, intro:blockIntro, cards:blockCards, why:blockWhy, cta:blockCta, richtext:blockRichtext, reviews:blockReviews };
+  function blockLogos(b){
+    var imgs=(b.items||[]).map(function(it){ var src=resolveImg(it&&it.image!==undefined?it.image:it); return src?'<img src="'+src+'" alt="'+esc((it&&it.name)||'')+'" referrerpolicy="no-referrer"/>':''; }).join('');
+    if(!imgs) return '';
+    var head=b.heading?'<div class="sec-head"><h2>'+esc(b.heading)+'</h2></div>':'';
+    return '<section class="block"><div class="wrap">'+head+'<div class="logos-row">'+imgs+'</div></div></section>';
+  }
+  var BLOCKS={ stats:blockStats, intro:blockIntro, cards:blockCards, why:blockWhy, cta:blockCta, richtext:blockRichtext, reviews:blockReviews, logos:blockLogos };
 
   function reviewCard(r){
     var im=r.image?'<img class="rv-img" referrerpolicy="no-referrer" src="'+resolveImg(r.image)+'" alt="Đánh giá khách hàng"/>':'';
     var txt=r.text?'<p class="rv-text">“'+esc(r.text)+'”</p>':'';
+    var stars='<div class="rv-stars">★★★★★</div>';
     var nm=r.name?'<div class="rv-name">— '+esc(r.name)+'</div>':'';
-    return '<div class="review-card">'+im+txt+nm+'</div>';
+    return '<div class="review-card">'+im+txt+stars+nm+'</div>';
   }
   function fillReviews(){
     var boxes=document.querySelectorAll('.reviews-grid[data-reviews]');
