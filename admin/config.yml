@@ -121,6 +121,21 @@ collections:
                   - { label: "Dòng chữ nhỏ phía trên", name: "eyebrow", widget: "string", required: false, hint: "Vd: Cảm nhận khách hàng" }
                   - { label: "Tiêu đề khối", name: "heading", widget: "string", hint: "Vd: Khách hàng nói gì về Hello" }
                   - { label: "Số đánh giá hiện ở trang chủ", name: "limit", widget: "number", required: false, default: 3, hint: "Nội dung từng đánh giá sửa ở mục '⑪ Đánh giá khách hàng'." }
+              - label: "Logo khách hàng / đối tác"
+                name: "logos"
+                widget: "object"
+                summary: "Logo khách hàng"
+                fields:
+                  - { label: "Hiển thị khối này", name: "visible", widget: "boolean", default: true }
+                  - { label: "Tiêu đề khối (không bắt buộc)", name: "heading", widget: "string", required: false, hint: "Vd: Khách hàng & Đối tác" }
+                  - label: "Các logo (kéo ⠿ đổi thứ tự, × để xoá, + để thêm)"
+                    name: "items"
+                    label_singular: "logo"
+                    widget: "list"
+                    hint: "Tải lên từng logo. Để trống thì khối tự ẩn."
+                    fields:
+                      - { label: "Logo (ảnh)", name: "image", widget: "image" }
+                      - { label: "Tên (không bắt buộc)", name: "name", widget: "string", required: false }
               - label: "Khối chữ tự do (tiêu đề + đoạn văn)"
                 name: "richtext"
                 widget: "object"
@@ -386,5 +401,6 @@ collections:
             widget: "list"
             hint: "Mỗi mục là 1 đánh giá của khách."
             fields:
-              - { label: "Tên khách", name: "name", widget: "string", hint: "Vd: Minh Anh" }
-              - { label: "Nội dung đánh giá", name: "text", widget: "text", hint: "Câu nhận xét của khách" }
+              - { label: "Tên khách", name: "name", widget: "string", required: false, hint: "Vd: Minh Anh (có thể để trống nếu chỉ đăng ảnh)" }
+              - { label: "Nội dung đánh giá", name: "text", widget: "text", required: false, hint: "Câu nhận xét của khách (có thể để trống nếu chỉ đăng ảnh)" }
+              - { label: "Ảnh chụp đánh giá (không bắt buộc)", name: "image", widget: "image", required: false, hint: "Vd: ảnh chụp màn hình tin nhắn / đánh giá của khách. Tải ảnh lên, hoặc để trống." }
