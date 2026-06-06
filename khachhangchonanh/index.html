@@ -659,36 +659,44 @@ function renderGrid() {
 }
 
 async function triggerDownload(fileId, fileName) {
-  // ===== Trên điện thoại có hỗ trợ chia sẻ tệp -> mở bảng "Lưu vào Ảnh" / "Save image"
-  // Chạy ảnh thẳng vào thư viện Ảnh điện thoại thay vì vào mục Tải về.
-  const canShareFiles = typeof navigator !== 'undefined'
-    && typeof navigator.share === 'function'
-    && typeof navigator.canShare === 'function';
-  if (canShareFiles) {
-    let prepToast = null;
+  // lh3.googleusercontent.com cho phép CORS -> fetch được; drive.google.com/thumbnail thì không.
+  const corsImgUrl = `https://lh3.googleusercontent.com/d/${fileId}=w2400`;
+  const ua = (navigator.userAgent || '').toLowerCase();
+  const isMobile = /iphone|ipad|ipod|android|mobile/.test(ua)
+    || (/macintosh|mac os/.test(ua) && (navigator.maxTouchPoints || 0) > 1); // iPadOS
+  const canShareApi = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+
+  // ===== 1) Trên di động: Web Share API -> bảng "Lưu vào Ảnh"
+  if (isMobile && canShareApi && typeof navigator.canShare === 'function') {
+    showToast('Đang chuẩn bị ảnh...', 'dl');
     try {
-      showToast('Đang chuẩn bị ảnh...', 'dl'); prepToast = true;
-      // Lấy ảnh chất lượng cao qua URL ảnh xem (cùng nguồn với lúc xem) — dễ qua CORS.
-      const fetchUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w2400`;
-      const r = await fetch(fetchUrl);
+      const r = await fetch(corsImgUrl);
       if (r.ok) {
         const blob = await r.blob();
         const base = (fileName || 'anh').replace(/\.[^.]*$/, '').replace(/[^\w\-]+/g, '_') || 'anh';
         const ext  = (blob.type && blob.type.indexOf('png') >= 0) ? '.png' : '.jpg';
         const file = new File([blob], base + ext, { type: blob.type || 'image/jpeg' });
         if (navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], title: fileName || 'Ảnh' });
-          showToast('✓ Xong — chọn "Lưu vào Ảnh" để vào thư viện', 'dl');
-          return;
+          try {
+            await navigator.share({ files: [file], title: fileName || 'Ảnh' });
+            showToast('✓ Xong — chọn "Lưu vào Ảnh" để vào thư viện', 'dl');
+            return;
+          } catch (e) {
+            if (e && (e.name === 'AbortError' || /cancell?ed|abort/i.test(e.message || ''))) return;
+            // share lỗi khác -> rơi xuống cách 2
+          }
         }
       }
-    } catch (e) {
-      // Khách đóng bảng chia sẻ -> coi như huỷ, không báo lỗi
-      if (e && (e.name === 'AbortError' || /cancell?ed|abort/i.test(e.message || ''))) return;
-      // Lỗi mạng / CORS -> rơi xuống tải iframe bên dưới
-    }
+    } catch (_) { /* CORS/mạng -> rơi xuống cách 2 */ }
+
+    // ===== 2) Dự phòng di động: mở ảnh trong tab mới để khách nhấn giữ
+    try {
+      const w = window.open(corsImgUrl, '_blank', 'noopener,noreferrer');
+      if (w) { showToast('Nhấn giữ ảnh → chọn "Lưu vào Ảnh"', 'dl'); return; }
+    } catch (_) { /* bị chặn pop-up -> rơi xuống cách 3 */ }
   }
-  // ===== Fallback (máy tính hoặc trình duyệt cũ): tải về Downloads như cũ
+
+  // ===== 3) Máy tính (hoặc fallback cuối): tải về Downloads như cũ
   const iframe = document.createElement('iframe');
   iframe.style.display = 'none';
   iframe.src = driveDownload(fileId);
