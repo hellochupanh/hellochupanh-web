@@ -142,6 +142,9 @@
     position: relative; aspect-ratio: 1 / 1;
     background: #efe9e1; border-radius: 14px; overflow: hidden;
     cursor: pointer; transition: transform 0.12s ease;
+    /* Tối ưu cuộn cho kho ảnh lớn: bỏ qua render tile chưa lên màn hình */
+    content-visibility: auto;
+    contain-intrinsic-size: 220px 220px;
   }
   .tile:hover { transform: translateY(-2px); }
   .tile.last-viewed {
@@ -712,7 +715,13 @@ function renderGrid() {
   }
   const grid = document.createElement('div');
   grid.className = 'grid';
-  list.forEach((p, idx) => {
+  content.appendChild(grid); // hiện lưới ngay để lô đầu thấy được liền
+
+  // Token để huỷ render dở dang khi khách chuyển tab khác
+  renderGrid._tok = (renderGrid._tok || 0) + 1;
+  const myTok = renderGrid._tok;
+
+  const mountTile = (p, idx) => {
     const tile = document.createElement('div');
     const isOriginalView = (state.view === 'original' || state.view === 'selected');
     const hasNote = state.notes[p.id] && state.notes[p.id].trim();
@@ -757,8 +766,23 @@ function renderGrid() {
     }
     img.addEventListener('click', () => openLightbox(idx));
     grid.appendChild(tile);
-  });
-  content.appendChild(grid);
+  };
+
+  // Render theo lô: 80 ảnh đầu hiện ngay, phần còn lại nạp dần từng khung hình
+  // để UI không bị đứng khi kho > 500 ảnh.
+  const FIRST = 80, CHUNK = 80;
+  let i = 0;
+  const cap = Math.min(FIRST, list.length);
+  for (; i < cap; i++) mountTile(list[i], i);
+  if (i < list.length) {
+    const next = () => {
+      if (myTok !== renderGrid._tok) return; // khách chuyển tab khác -> dừng
+      const end = Math.min(i + CHUNK, list.length);
+      for (; i < end; i++) mountTile(list[i], i);
+      if (i < list.length) requestAnimationFrame(next);
+    };
+    requestAnimationFrame(next);
+  }
 }
 
 async function triggerDownload(fileId, fileName) {
