@@ -35,7 +35,11 @@ exports.handler = async function (event) {
 
   let store;
   try {
-    store = getStore("hello-selections");
+    // Cấu hình thủ công cho Blobs (môi trường không tự nhận diện được).
+    const siteID = process.env.SITE_ID || "938a8072-c4e4-43f7-8e78-bbdabfbe01b0";
+    const token  = process.env.NETLIFY_TOKEN;
+    if (!token) throw new Error("Thiếu NETLIFY_TOKEN trong env vars");
+    store = getStore({ name: "hello-selections", siteID: siteID, token: token });
   } catch (e) {
     // Blobs chưa sẵn sàng -> trả về rỗng, để khách dùng tạm localStorage.
     return { statusCode: 200, headers: { ...CORS, "Content-Type": "application/json" },
