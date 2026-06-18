@@ -549,22 +549,51 @@ function persistSelections() {
     localStorage.setItem('notes:' + state.code, JSON.stringify(state.notes));
   } catch (_) {}
   clearTimeout(_selSaveTimer);
-  _selSaveTimer = setTimeout(saveSelectionsToServer, 1200);
+  _selSaveTimer = setTimeout(saveSelectionsToServer, 600);
+}
+function _selBody() {
+  return JSON.stringify({
+    code: state.code,
+    ids: [...state.selected],
+    notes: state.notes || {}
+  });
 }
 async function saveSelectionsToServer() {
   if (!state.code) return;
+  clearTimeout(_selSaveTimer);
   try {
     await fetch('/.netlify/functions/selections', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        code: state.code,
-        ids: [...state.selected],
-        notes: state.notes || {}
-      })
+      body: _selBody(),
+      keepalive: true
     });
   } catch (_) { /* mất mạng -> bỏ qua, sẽ lưu lại khi đổi tiếp */ }
 }
+// Gửi ngay khi khách thoát / đóng tab / chuyển nền (sendBeacon đảm bảo gửi xong dù trang đang đóng)
+function flushSelectionsNow() {
+  if (!state.code) return;
+  clearTimeout(_selSaveTimer);
+  const body = _selBody();
+  if (navigator.sendBeacon) {
+    try {
+      const blob = new Blob([body], { type: 'application/json' });
+      if (navigator.sendBeacon('/.netlify/functions/selections', blob)) return;
+    } catch (_) {}
+  }
+  // Dự phòng
+  try {
+    fetch('/.netlify/functions/selections', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: body, keepalive: true
+    });
+  } catch (_) {}
+}
+document.addEventListener('visibilitychange', function () {
+  if (document.visibilityState === 'hidden') flushSelectionsNow();
+});
+window.addEventListener('pagehide', flushSelectionsNow);
+window.addEventListener('beforeunload', flushSelectionsNow);
 async function loadSelectionsFromServer(code) {
   try {
     const r = await fetch('/.netlify/functions/selections?code=' + encodeURIComponent(code), { cache: 'no-store' });
