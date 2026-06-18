@@ -391,6 +391,7 @@
   </header>
   <div class="tabs">
     <button class="tab active" data-view="original">Ảnh gốc</button>
+    <button class="tab" data-view="selected">Đã chọn <span class="badge" id="selBadge" style="display:none">0</span></button>
     <button class="tab" data-view="edited">Ảnh đã chỉnh <span class="badge" id="editedBadge" style="display:none">0</span></button>
   </div>
   <div id="content"></div>
@@ -533,8 +534,75 @@ function enterGallery(code, res) {
   if (savedNotes) { try { state.notes = JSON.parse(savedNotes); } catch(_){} }
   openGallery();
   loadEdited();
+  // Tải lựa chọn đã lưu trên máy chủ (đồng bộ giữa các máy)
+  loadSelectionsFromServer(code);
   // Show scroll cue
   showScrollCue();
+}
+
+/* ===== Lưu lựa chọn ảnh: localStorage (nhanh) + máy chủ (đồng bộ) ===== */
+let _selSaveTimer = null;
+function persistSelections() {
+  if (!state.code) return;
+  try {
+    localStorage.setItem('sel:' + state.code, JSON.stringify([...state.selected]));
+    localStorage.setItem('notes:' + state.code, JSON.stringify(state.notes));
+  } catch (_) {}
+  clearTimeout(_selSaveTimer);
+  _selSaveTimer = setTimeout(saveSelectionsToServer, 1200);
+}
+async function saveSelectionsToServer() {
+  if (!state.code) return;
+  try {
+    await fetch('/.netlify/functions/selections', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        code: state.code,
+        ids: [...state.selected],
+        notes: state.notes || {}
+      })
+    });
+  } catch (_) { /* mất mạng -> bỏ qua, sẽ lưu lại khi đổi tiếp */ }
+}
+async function loadSelectionsFromServer(code) {
+  try {
+    const r = await fetch('/.netlify/functions/selections?code=' + encodeURIComponent(code), { cache: 'no-store' });
+    if (!r.ok) return;
+    const j = await r.json();
+    const d = j && j.ok && j.data;
+    if (!d) return;
+    const sIds = Array.isArray(d.ids) ? d.ids : [];
+    const sNotes = (d.notes && typeof d.notes === 'object') ? d.notes : {};
+    const localSize = state.selected.size;
+    // Máy chủ có dữ liệu -> luôn ưu tiên máy chủ (nguồn chân lý đa thiết bị)
+    if (sIds.length > 0 || Object.keys(sNotes).length > 0) {
+      state.selected = new Set(sIds);
+      state.notes = sNotes;
+      try {
+        localStorage.setItem('sel:' + code, JSON.stringify(sIds));
+        localStorage.setItem('notes:' + code, JSON.stringify(sNotes));
+      } catch (_) {}
+      updateCount();
+      if (state.view === 'original' || state.view === 'selected') renderGrid();
+      if (localSize === 0 && sIds.length > 0) {
+        showToast(`Đã khôi phục ${sIds.length} ảnh đã chọn lần trước`, 'dl');
+      }
+    } else if (state.selected.size > 0) {
+      // Máy chủ trống nhưng máy này có -> đẩy lên máy chủ
+      saveSelectionsToServer();
+    }
+  } catch (_) { /* lỗi mạng -> bỏ qua */ }
+}
+async function clearSelectionsOnServer() {
+  if (!state.code) return;
+  try {
+    await fetch('/.netlify/functions/selections', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: state.code, ids: [], notes: {} })
+    });
+  } catch (_) {}
 }
 
 function showScrollCue() {
@@ -588,19 +656,25 @@ document.querySelectorAll('.tab').forEach(btn => {
 function switchView(view) {
   state.view = view;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
-  const isOriginal = view === 'original';
-  $('counterWrap').style.display = isOriginal ? '' : 'none';
-  $('finishBtn').style.display = isOriginal ? '' : 'none';
+  const showCounter = (view === 'original' || view === 'selected');
+  $('counterWrap').style.display = showCounter ? '' : 'none';
+  $('finishBtn').style.display = showCounter ? '' : 'none';
   renderGrid();
   updateCount();
 }
 
 function renderGrid() {
-  const list = state.view === 'original' ? state.photos : state.edited;
+  const list = (state.view === 'selected')
+    ? state.photos.filter(p => state.selected.has(p.id))
+    : (state.view === 'original' ? state.photos : state.edited);
   const content = $('content');
   content.innerHTML = '';
   if (state.view === 'edited' && list.length === 0) {
     content.innerHTML = `<div class="empty"><div class="big">🎨</div><h3 style="font-weight:600;margin-bottom:6px">Chưa có ảnh đã chỉnh</h3><p>Photographer chưa upload ảnh chỉnh sửa.</p></div>`;
+    return;
+  }
+  if (state.view === 'selected' && list.length === 0) {
+    content.innerHTML = `<div class="empty"><div class="big">❤️</div><h3 style="font-weight:600;margin-bottom:6px">Bạn chưa chọn ảnh nào</h3><p>Vào tab <b>Ảnh gốc</b> và bấm ❤ vào ảnh bạn thích — chúng sẽ hiện ở đây.</p></div>`;
     return;
   }
   if (list.length === 0) {
@@ -611,7 +685,7 @@ function renderGrid() {
   grid.className = 'grid';
   list.forEach((p, idx) => {
     const tile = document.createElement('div');
-    const isOriginalView = state.view === 'original';
+    const isOriginalView = (state.view === 'original' || state.view === 'selected');
     const hasNote = state.notes[p.id] && state.notes[p.id].trim();
     const isVideo = p.type === 'video';
     let cls = 'tile';
@@ -713,11 +787,19 @@ function toggleSelect(id, tile) {
     state.selected.add(id);
     if (tile) tile.classList.add('selected');
   }
-  localStorage.setItem('sel:' + state.code, JSON.stringify([...state.selected]));
+  persistSelections();
   updateCount();
   syncLightboxState();
+  if (state.view === 'selected') renderGrid();
 }
-function updateCount() { $('count').textContent = state.selected.size; }
+function updateCount() {
+  $('count').textContent = state.selected.size;
+  const sb = $('selBadge');
+  if (sb) {
+    sb.textContent = state.selected.size;
+    sb.style.display = state.selected.size > 0 ? '' : 'none';
+  }
+}
 
 const preloadCache = new Set();
 function preloadImage(id) {
@@ -818,7 +900,7 @@ $('lbNote').addEventListener('input', (e) => {
   const val = e.target.value;
   if (val.trim()) state.notes[p.id] = val;
   else delete state.notes[p.id];
-  localStorage.setItem('notes:' + state.code, JSON.stringify(state.notes));
+  persistSelections();
   const tile = document.querySelector(`.tile[data-idx="${state.lbIndex}"]`);
   if (tile) {
     const noteBtn = tile.querySelector('.note-btn');
@@ -909,6 +991,7 @@ $('finishBtn').addEventListener('click', () => {
     showModal(res.orderId, res.count);
     localStorage.removeItem('sel:' + state.code);
     localStorage.removeItem('notes:' + state.code);
+    clearSelectionsOnServer();
   }).catch(err => {
     clearTimeout(timer);
     fail((err && err.message) || 'lỗi kết nối');
