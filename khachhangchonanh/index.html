@@ -5,6 +5,13 @@
 <meta name="referrer" content="no-referrer" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 <title>Chọn ảnh - Hello Chụp Ảnh</title>
+<!-- Mở sẵn kết nối tới các server của Google để giảm thời gian chờ khi mở kho ảnh -->
+<link rel="preconnect" href="https://script.google.com" />
+<link rel="dns-prefetch" href="https://script.google.com" />
+<link rel="preconnect" href="https://drive.google.com" crossorigin />
+<link rel="dns-prefetch" href="https://drive.google.com" />
+<link rel="preconnect" href="https://lh3.googleusercontent.com" crossorigin />
+<link rel="dns-prefetch" href="https://lh3.googleusercontent.com" />
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -447,7 +454,7 @@
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxoPFgtMxB5oz3x2G1koBakKvii3JSal8AYtUbkGpfAWFafs3yHopFRQOSHV3ANoBh78w/exec";
-const CACHE_TTL_MS = 10 * 60 * 1000; // 10 phút
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 giờ — khách quay lại trong ngày vào ngay tức thì
 
 const $ = (id) => document.getElementById(id);
 const driveThumb = (id, w) => `https://drive.google.com/thumbnail?id=${id}&sz=w${w||400}`;
@@ -497,17 +504,32 @@ $('loginForm').addEventListener('submit', async (e) => {
   const code = $('code').value.trim().toUpperCase();
   if (!code) return;
   $('loginBtn').disabled = true;
-  $('loginBtn').textContent = 'Đang tải...';
   $('loginErr').textContent = '';
 
   // Hit cache FIRST for instant view
   let res = readCache(code);
   if (res) enterGallery(code, res);
 
+  // Loading UX: animated dots + tip để khách thấy đang chạy, không lo
+  const baseMsg = res ? 'Đang làm mới' : 'Đang nạp kho ảnh';
+  let _dots = 0;
+  $('loginBtn').textContent = baseMsg + '…';
+  const _loadTick = setInterval(() => {
+    _dots = (_dots + 1) % 4;
+    $('loginBtn').textContent = baseMsg + (_dots === 0 ? '…' : '.'.repeat(_dots));
+  }, 500);
+  // Sau 1.5s vẫn chưa xong -> gợi ý cho khách lần đầu
+  const _tipTimer = setTimeout(() => {
+    if (!res) $('loginErr').innerHTML = '<span style="color:#888;font-weight:400">Lần đầu mất 5–15 giây vì kho có nhiều ảnh. Lần sau bạn vào sẽ ngay tức thì.</span>';
+  }, 1500);
+
   // Then fetch fresh in background
   const fresh = await apiGet('list', { code });
+  clearInterval(_loadTick);
+  clearTimeout(_tipTimer);
   $('loginBtn').disabled = false;
   $('loginBtn').textContent = 'Xem ảnh →';
+  $('loginErr').textContent = '';
   if (!fresh.ok) {
     if (!res) { $('loginErr').textContent = fresh.error || 'Có lỗi xảy ra.'; }
     return;
