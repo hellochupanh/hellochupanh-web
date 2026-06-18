@@ -39,7 +39,8 @@ exports.handler = async function (event) {
   } catch (e) {
     // Blobs chưa sẵn sàng -> trả về rỗng, để khách dùng tạm localStorage.
     return { statusCode: 200, headers: { ...CORS, "Content-Type": "application/json" },
-             body: JSON.stringify({ ok: true, data: { ids: [], notes: {}, updated_at: null }, warn: "blobs-unavailable" }) };
+             body: JSON.stringify({ ok: true, data: { ids: [], notes: {}, updated_at: null },
+                                    warn: "blobs-unavailable", err: (e && e.message) || String(e) }) };
   }
 
   const okHeaders = { ...CORS, "Content-Type": "application/json", "Cache-Control": "no-store" };
