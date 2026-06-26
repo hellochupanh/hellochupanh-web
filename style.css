@@ -1,4 +1,25 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ===== Chống nhấp nháy nội dung cũ ====================================
+   HTML có sẵn nội dung mặc định (giá cũ, tiêu đề mẫu...) để hiện được
+   ngay cả khi không có JS. Nhưng khi content-loader.js fetch JSON
+   xong và ghi đè, khách thấy nội dung cũ loé lên rồi mới đổi.
+   Cách xử lý: ẩn các vùng sẽ-bị-cập-nhật cho tới khi content-loader
+   đánh dấu body.cms-ready. CSS animation phía dưới bảo hiểm cho
+   trường hợp JS lỗi - sau 2.5s vẫn tự hiện ra.                       */
+[data-edit], [data-ft], .pricing, #home-blocks, #services-list {
+  visibility: hidden;
+  animation: _cmsAutoShow 0s 2.5s forwards;
+}
+@keyframes _cmsAutoShow { to { visibility: visible; } }
+body.cms-ready [data-edit],
+body.cms-ready [data-ft],
+body.cms-ready .pricing,
+body.cms-ready #home-blocks,
+body.cms-ready #services-list {
+  visibility: visible;
+  animation: none;
+}
+
 :root {
   --bg:#faf7f2; --ink:#23201c; --muted:#8a8175; --line:#ece6dc;
   --gold:#F4A14F; --gold-dark:#d9863a; --black:#1a1714; --card:#fff;

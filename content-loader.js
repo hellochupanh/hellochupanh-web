@@ -1,5 +1,14 @@
 /* Hello Chụp Ảnh — nạp nội dung & giao diện động (sửa qua /admin) */
 (function(){
+  /* Đánh dấu body.cms-ready sau khi các fetch JSON đã có thời gian xong,
+     để style.css hiện các phần đã ẩn ra (chống nhấp nháy nội dung cũ). */
+  function _markCmsReady(){ try{ if(document.body) document.body.classList.add('cms-ready'); }catch(e){} }
+  setTimeout(_markCmsReady, 500);
+  if (typeof window !== 'undefined') {
+    if (document.readyState === 'complete') { setTimeout(_markCmsReady, 50); }
+    else { window.addEventListener('load', function(){ setTimeout(_markCmsReady, 50); }); }
+  }
+
   var REPO="hellochupanh/hellochupanh-web", BRANCH="main";
   /* Đọc nội dung THẲNG từ web (Netlify) để sửa xong thấy ngay sau khi build (~1 phút),
      không bị kẹt bộ nhớ đệm 5 phút của GitHub raw. */
