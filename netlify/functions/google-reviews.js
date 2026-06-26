@@ -19,15 +19,36 @@ const CORS = {
   "Content-Type": "application/json"
 };
 
+// Toạ độ + tên doanh nghiệp Hello Chụp Ảnh (lấy từ Google Maps).
+// Dùng để tra Place ID tự động nếu chưa có GOOGLE_PLACE_ID.
+const DEFAULT_NAME = "Hello Chụp Ảnh";
+const DEFAULT_LAT  = 10.7722345;
+const DEFAULT_LNG  = 106.6797308;
+
+async function findPlaceId(apiKey) {
+  const url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json"
+    + "?input=" + encodeURIComponent(DEFAULT_NAME)
+    + "&inputtype=textquery"
+    + "&locationbias=circle%3A800%40" + DEFAULT_LAT + "%2C" + DEFAULT_LNG
+    + "&fields=place_id,name"
+    + "&key=" + encodeURIComponent(apiKey);
+  const r = await fetch(url);
+  const j = await r.json();
+  if (j.status !== "OK" || !j.candidates || !j.candidates[0]) {
+    throw new Error("Find Place: " + (j.status || "không tìm thấy"));
+  }
+  return j.candidates[0].place_id;
+}
+
 exports.handler = async function () {
-  const apiKey  = process.env.GOOGLE_API_KEY;
-  const placeId = process.env.GOOGLE_PLACE_ID;
-  if (!apiKey || !placeId) {
+  const apiKey   = process.env.GOOGLE_API_KEY;
+  let   placeId  = process.env.GOOGLE_PLACE_ID;
+  if (!apiKey) {
     return {
       statusCode: 200, headers: CORS,
       body: JSON.stringify({
         ok: false,
-        error: "Chưa cấu hình GOOGLE_API_KEY hoặc GOOGLE_PLACE_ID trên Netlify",
+        error: "Chưa cấu hình GOOGLE_API_KEY trên Netlify",
         reviews: [], total: 0, rating: 0, mapsUrl: ""
       })
     };
@@ -51,6 +72,29 @@ exports.handler = async function () {
         };
       }
     } catch (e) { /* bỏ qua lỗi cache */ }
+  }
+
+  // Tự tra Place ID nếu chưa có (chỉ làm 1 lần, cache vào Blobs)
+  if (!placeId && store) {
+    try {
+      const cachedPid = await store.get("place_id", { type: "json" });
+      if (cachedPid && cachedPid.id) placeId = cachedPid.id;
+    } catch (e) {}
+  }
+  if (!placeId) {
+    try {
+      placeId = await findPlaceId(apiKey);
+      if (store) try { await store.setJSON("place_id", { id: placeId, t: Date.now() }); } catch (e) {}
+    } catch (e) {
+      return {
+        statusCode: 200, headers: CORS,
+        body: JSON.stringify({
+          ok: false,
+          error: "Không tra được Place ID: " + e.message,
+          reviews: [], total: 0, rating: 0, mapsUrl: ""
+        })
+      };
+    }
   }
 
   // ----- Gọi Google Places API -----
