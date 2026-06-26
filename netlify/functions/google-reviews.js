@@ -35,7 +35,8 @@ async function findPlaceId(apiKey) {
   const r = await fetch(url);
   const j = await r.json();
   if (j.status !== "OK" || !j.candidates || !j.candidates[0]) {
-    throw new Error("Find Place: " + (j.status || "không tìm thấy"));
+    const msg = j.error_message ? (j.status + " — " + j.error_message) : (j.status || "không tìm thấy");
+    throw new Error("Find Place: " + msg);
   }
   return j.candidates[0].place_id;
 }
