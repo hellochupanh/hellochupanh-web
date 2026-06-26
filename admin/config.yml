@@ -186,6 +186,7 @@ collections:
           - { label: "Email", name: "email", widget: "string", hint: "Hiện ở chân trang & trang Liên hệ" }
           - { label: "Facebook (đường dẫn)", name: "facebook", widget: "string", hint: "Link trang Facebook — gắn vào nút 'f' / Messenger" }
           - { label: "Địa chỉ", name: "address", widget: "text", required: false, hint: "Hiện ở chân trang & trang Liên hệ" }
+          - { label: "Phụ đề địa chỉ (cũ là...)", name: "address_note", widget: "string", required: false, hint: "Dòng chữ nhỏ phía dưới địa chỉ ở trang Liên hệ. Vd: (cũ Phường 4, Quận 3). Để trống nếu không cần." }
           - { label: "Giờ mở cửa", name: "hours", widget: "string", required: false, hint: "Hiện ở chân trang & trang Liên hệ" }
           - { label: "Ảnh nền trang 'Khách chọn ảnh'", name: "photoapp_bg", widget: "image", required: false, hint: "Ảnh nền màn hình đăng nhập của trang Khách chọn ảnh (hellochupanh.com/khachhangchonanh/). Để trống = giữ ảnh hiện tại." }
           - { label: "Instagram (đường dẫn)", name: "instagram", widget: "string", required: false, hint: "Link trang Instagram — hiện ở chân trang & nút nổi góc phải" }
