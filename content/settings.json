@@ -1,11 +1,12 @@
 {
-  "facebook": "https://www.facebook.com/hellochupanh/",
   "logo": "",
   "phone": "08.5687.0001",
-  "hours": "9:00 – 21:00 hằng ngày",
+  "email": "hellochupanh@gmail.com",
+  "facebook": "https://www.facebook.com/hellochupanh/",
   "instagram": "https://www.instagram.com/hellochupanh/",
-  "address": "114 Cao Thắng, phường Bàn Cờ, Tp. Hồ Chí Minh ",
-  "photoapp_bg": "",
   "tiktok": "https://www.tiktok.com/@hellochupanh",
-  "email": "hellochupanh@gmail.com"
+  "address": "114 Cao Thắng, phường Bàn Cờ, Tp. Hồ Chí Minh ",
+  "address_note": "(cũ Phường 4, Quận 3)",
+  "hours": "9:00 – 21:00 hằng ngày",
+  "photoapp_bg": ""
 }
