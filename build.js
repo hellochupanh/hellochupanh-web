@@ -90,6 +90,52 @@ function applyFooter($) {
       });
     }
   }
+
+  // Đoạn địa chỉ + giờ mở cửa trong footer (đứng ngay sau .tagline)
+  const s = data.settings || {};
+  if (s.address || s.hours) {
+    const $p = $('.tagline').next('p');
+    if ($p.length) {
+      const parts = [];
+      if (s.address) parts.push(escHtml(s.address));
+      if (s.hours)   parts.push('Mở cửa: ' + escHtml(s.hours));
+      $p.html(parts.join('<br/>'));
+    }
+  }
+}
+
+/* ---------- BẢN ĐỒ GOOGLE EMBED (trang Liên hệ) ---------- */
+function applyMapEmbed($) {
+  const s = data.settings || {};
+  if (!s.address) return;
+  const $iframe = $('.map-embed iframe');
+  if (!$iframe.length) return;
+  const q = encodeURIComponent(s.address);
+  $iframe.attr('src', `https://www.google.com/maps?q=${q}&output=embed`);
+}
+
+/* ---------- DÒNG ĐỊA CHỈ / SĐT / EMAIL TRÊN TRANG LIÊN HỆ ---------- */
+function applyContactInfoRows($) {
+  const s = data.settings || {};
+  // Tìm các info-row theo icon
+  $('.info-row').each(function () {
+    const $row = $(this);
+    const ic = ($row.find('.ic').text() || '').trim();
+    const $body = $row.find('> span:not(.ic)').last();
+    if (!$body.length) return;
+    if (ic === '📍' && s.address) {
+      // Giữ lại đoạn <small> phụ nếu có
+      const $small = $body.find('small').clone();
+      $body.html(escHtml(s.address) + ($small.length ? '<br/>' + $.html($small) : ''));
+    } else if (ic === '🕐' && s.hours) {
+      $body.text('Mở cửa: ' + s.hours);
+    } else if (ic === '☎' && s.phone) {
+      const digits = String(s.phone).replace(/[^0-9]/g, '');
+      $body.html(`<a href="tel:${digits}">${escHtml(s.phone)}</a>`);
+    } else if (ic === '✉' && s.email) {
+      $body.html(`<a href="mailto:${escHtml(s.email)}">${escHtml(s.email)}</a>`);
+    }
+  });
 }
 
 /* ---------- META SEO (title + description hiện trên Google) ---------- */
@@ -208,6 +254,7 @@ function processHtml(filePath) {
   applyFooter($);
   if (filePath === path.join(ROOT, 'index.html')) { applyHomepageHero($); applyHomepageSeo($); }
   if (filePath === path.join(ROOT, 'bang-gia/index.html')) applyPricing($);
+  if (filePath === path.join(ROOT, 'lien-he/index.html')) { applyContactInfoRows($); applyMapEmbed($); }
   fs.writeFileSync(filePath, $.html());
 }
 
