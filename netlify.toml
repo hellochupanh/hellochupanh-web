@@ -4,3 +4,16 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
   external_node_modules = ["@netlify/blobs"]
+
+# Buộc trình duyệt luôn kiểm tra bản mới của các file cập nhật thường xuyên,
+# để khách hết bị nhấp nháy nội dung cũ sau khi web cập nhật.
+[[headers]]
+  for = "/style.css"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/content-loader.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+

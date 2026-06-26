@@ -3,10 +3,21 @@
   /* Đánh dấu body.cms-ready sau khi các fetch JSON đã có thời gian xong,
      để style.css hiện các phần đã ẩn ra (chống nhấp nháy nội dung cũ). */
   function _markCmsReady(){ try{ if(document.body) document.body.classList.add('cms-ready'); }catch(e){} }
-  setTimeout(_markCmsReady, 500);
+  // Theo dõi các fetch JSON đang chạy: chỉ bật cms-ready khi tất cả đã xong,
+  // để không lộ ra nội dung hardcoded cũ trước khi JSON mới về.
+  var _pending = 0, _lastEnd = 0;
+  function _onFetchEnd(){
+    _pending--;
+    _lastEnd = Date.now();
+    setTimeout(function(){
+      if (_pending === 0 && (Date.now() - _lastEnd) >= 40) _markCmsReady();
+    }, 50);
+  }
+  // Mạng lưới an toàn: nếu fetch lỗi hoặc treo quá lâu, sau 2s vẫn hiện ra
+  setTimeout(_markCmsReady, 2000);
   if (typeof window !== 'undefined') {
-    if (document.readyState === 'complete') { setTimeout(_markCmsReady, 50); }
-    else { window.addEventListener('load', function(){ setTimeout(_markCmsReady, 50); }); }
+    if (document.readyState === 'complete') { setTimeout(function(){ if(_pending===0) _markCmsReady(); }, 100); }
+    else { window.addEventListener('load', function(){ setTimeout(function(){ if(_pending===0) _markCmsReady(); }, 100); }); }
   }
 
   var REPO="hellochupanh/hellochupanh-web", BRANCH="main";
@@ -14,7 +25,13 @@
      không bị kẹt bộ nhớ đệm 5 phút của GitHub raw. */
   function raw(p){ return "/"+String(p).replace(/^\//,"")+"?t="+Date.now(); }
   function resolveImg(p){ if(!p) return ""; if(/^https?:/.test(p)) return p; return "/"+String(p).replace(/^\//,""); }
-  function getJSON(path){ return fetch(raw(path)).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }); }
+  function getJSON(path){
+    _pending++;
+    return fetch(raw(path))
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .catch(function(){ return null; })
+      .finally(function(){ _onFetchEnd(); });
+  }
   function setText(sel,val){ if(val==null) return; document.querySelectorAll(sel).forEach(function(el){ el.textContent=val; }); }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){ return ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]); }); }
   function nl2br(s){ return esc(s).replace(/\n/g,"<br/>"); }
