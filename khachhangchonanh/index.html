@@ -892,6 +892,15 @@ function preloadAroundIndex(idx) {
   }
 }
 
+/* Danh sách ảnh đang hiển thị, theo tab khách đang xem.
+   Quan trọng: index của ô ảnh (state.lbIndex, tile.dataset.idx) là index trong DANH SÁCH NÀY,
+   không phải state.photos. Mọi nơi đụng tới lightbox phải dùng currentList() để khớp với lưới. */
+function currentList() {
+  if (state.view === 'selected') return state.photos.filter(p => state.selected.has(p.id));
+  if (state.view === 'edited')   return state.edited;
+  return state.photos;
+}
+
 function openLightbox(idx, focusNote) {
   state.lbIndex = idx;
   showLightboxMedia();
@@ -907,7 +916,7 @@ function openLightbox(idx, focusNote) {
   if (focusNote) setTimeout(() => $('lbNote').focus(), 150);
 }
 function showLightboxMedia() {
-  const list = state.view === 'original' ? state.photos : state.edited;
+  const list = currentList();
   const p = list[state.lbIndex];
   if (!p) return;
   const isVideo = p.type === 'video';
@@ -921,10 +930,11 @@ function showLightboxMedia() {
     img.style.display = ''; img.src = driveFull(p.id);
   }
   $('lbCounter').textContent = `${state.lbIndex + 1} / ${list.length} · ${p.name}`;
-  const isOriginal = state.view === 'original';
-  $('lbHeart').style.display = isOriginal ? '' : 'none';
-  $('lbNote').classList.toggle('show', isOriginal);
-  if (isOriginal) $('lbNote').value = state.notes[p.id] || '';
+  // Cho phép thả tim + ghi chú cả ở tab "Đã chọn" lẫn "Ảnh gốc"
+  const canPick = (state.view === 'original' || state.view === 'selected');
+  $('lbHeart').style.display = canPick ? '' : 'none';
+  $('lbNote').classList.toggle('show', canPick);
+  if (canPick) $('lbNote').value = state.notes[p.id] || '';
   syncLightboxState();
 }
 function closeLightbox() {
@@ -944,14 +954,15 @@ function closeLightbox() {
   }
 }
 function lbNav(dir) {
-  const list = state.view === 'original' ? state.photos : state.edited;
+  const list = currentList();
+  if (!list.length) return;
   state.lbIndex = (state.lbIndex + dir + list.length) % list.length;
   showLightboxMedia();
   preloadAroundIndex(state.lbIndex);
 }
 function syncLightboxState() {
-  if (state.view !== 'original') return;
-  const p = state.photos[state.lbIndex]; if (!p) return;
+  if (state.view !== 'original' && state.view !== 'selected') return;
+  const p = currentList()[state.lbIndex]; if (!p) return;
   const has = state.selected.has(p.id);
   $('lbHeart').classList.toggle('selected', has);
   $('lbHeartLabel').textContent = has ? 'Đã chọn' : 'Chọn ảnh';
@@ -960,18 +971,21 @@ $('lbClose').addEventListener('click', closeLightbox);
 $('lbNext').addEventListener('click', () => lbNav(1));
 $('lbPrev').addEventListener('click', () => lbNav(-1));
 $('lbHeart').addEventListener('click', () => {
-  if (state.view !== 'original') return;
-  const p = state.photos[state.lbIndex];
+  if (state.view !== 'original' && state.view !== 'selected') return;
+  const p = currentList()[state.lbIndex];
+  if (!p) return;
+  const wasSelected = state.selected.has(p.id);
   const tile = document.querySelector(`.tile[data-idx="${state.lbIndex}"]`);
   toggleSelect(p.id, tile);
+  // Trong tab "Đã chọn", nếu khách vừa bỏ chọn -> đóng lightbox để khỏi rối
+  if (state.view === 'selected' && wasSelected) closeLightbox();
 });
 $('lbDl').addEventListener('click', () => {
-  const list = state.view === 'original' ? state.photos : state.edited;
-  const p = list[state.lbIndex];
+  const p = currentList()[state.lbIndex];
   if (p) triggerDownload(p.id, p.name);
 });
 $('lbNote').addEventListener('input', (e) => {
-  const p = state.photos[state.lbIndex]; if (!p) return;
+  const p = currentList()[state.lbIndex]; if (!p) return;
   const val = e.target.value;
   if (val.trim()) state.notes[p.id] = val;
   else delete state.notes[p.id];
