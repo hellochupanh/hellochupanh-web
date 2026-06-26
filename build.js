@@ -124,9 +124,12 @@ function applyContactInfoRows($) {
     const $body = $row.find('> span:not(.ic)').last();
     if (!$body.length) return;
     if (ic === '📍' && s.address) {
-      // Giữ lại đoạn <small> phụ nếu có
-      const $small = $body.find('small').clone();
-      $body.html(escHtml(s.address) + ($small.length ? '<br/>' + $.html($small) : ''));
+      // Phụ đề "(cũ ...)" lấy từ settings.address_note. Nếu trống thì không hiện.
+      const note = (s.address_note || '').trim();
+      const smallHtml = note
+        ? `<br/><small style="color:var(--muted)">${escHtml(note)}</small>`
+        : '';
+      $body.html(escHtml(s.address) + smallHtml);
     } else if (ic === '🕐' && s.hours) {
       $body.text('Mở cửa: ' + s.hours);
     } else if (ic === '☎' && s.phone) {
