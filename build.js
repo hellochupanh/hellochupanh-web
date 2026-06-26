@@ -92,6 +92,36 @@ function applyFooter($) {
   }
 }
 
+/* ---------- META SEO (title + description hiện trên Google) ---------- */
+function applyHomepageSeo($) {
+  const h = data.homepage && data.homepage.hero;
+  const s = data.homepage && data.homepage.seo;
+  // Description: ưu tiên seo.description nếu có, không thì lấy hero.lead
+  const desc = (s && s.description) || (h && h.lead);
+  if (desc) {
+    let $meta = $('meta[name="description"]');
+    if ($meta.length) $meta.attr('content', desc);
+    else $('head').append(`<meta name="description" content="${escHtml(desc)}" />`);
+    // Open Graph + Twitter cũng update để khi share lên FB/Zalo cũng đúng
+    const setOg = (sel, val) => {
+      let $m = $(sel);
+      if ($m.length) $m.attr('content', val);
+      else $('head').append(`<meta property="${sel.match(/property=\"([^\"]+)\"/)[1]}" content="${escHtml(val)}" />`);
+    };
+    let $ogd = $('meta[property="og:description"]');
+    if ($ogd.length) $ogd.attr('content', desc);
+    let $twd = $('meta[name="twitter:description"]');
+    if ($twd.length) $twd.attr('content', desc);
+  }
+  // Title: nếu seo.title có thì dùng, không thì "Hello Chụp Ảnh — " + hero.title
+  const title = (s && s.title) || (h && h.title ? `Hello Chụp Ảnh — ${h.title}` : null);
+  if (title) {
+    $('title').text(title);
+    let $ogt = $('meta[property="og:title"]');
+    if ($ogt.length) $ogt.attr('content', title);
+  }
+}
+
 /* ---------- HOMEPAGE HERO ---------- */
 function applyHomepageHero($) {
   const h = data.homepage && data.homepage.hero;
@@ -176,7 +206,7 @@ function processHtml(filePath) {
   const $ = cheerio.load(html, { decodeEntities: false });
   applyMenu($);
   applyFooter($);
-  if (filePath === path.join(ROOT, 'index.html')) applyHomepageHero($);
+  if (filePath === path.join(ROOT, 'index.html')) { applyHomepageHero($); applyHomepageSeo($); }
   if (filePath === path.join(ROOT, 'bang-gia/index.html')) applyPricing($);
   fs.writeFileSync(filePath, $.html());
 }
