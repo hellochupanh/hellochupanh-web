@@ -6,13 +6,18 @@
    Cách xử lý: ẩn các vùng sẽ-bị-cập-nhật cho tới khi content-loader
    đánh dấu body.cms-ready. CSS animation phía dưới bảo hiểm cho
    trường hợp JS lỗi - sau 2.5s vẫn tự hiện ra.                       */
-[data-edit], [data-ft], .pricing, #home-blocks, #services-list {
+[data-edit], [data-ft], [data-hero],
+.hero-content, .nav-links,
+.pricing, #home-blocks, #services-list {
   visibility: hidden;
   animation: _cmsAutoShow 0s 2.5s forwards;
 }
 @keyframes _cmsAutoShow { to { visibility: visible; } }
 body.cms-ready [data-edit],
 body.cms-ready [data-ft],
+body.cms-ready [data-hero],
+body.cms-ready .hero-content,
+body.cms-ready .nav-links,
 body.cms-ready .pricing,
 body.cms-ready #home-blocks,
 body.cms-ready #services-list {
