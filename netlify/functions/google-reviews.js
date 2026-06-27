@@ -91,7 +91,9 @@ exports.handler = async function () {
     if (token) store = getStore({ name: "google-reviews-cache", siteID, token });
   } catch (e) { /* Blobs không sẵn sàng — vẫn chạy bình thường, chỉ là không cache */ }
 
-  if (store) {
+  const params = event.queryStringParameters || {};
+  const skipCache = (params.refresh === "1");
+  if (store && !skipCache) {
     try {
       const cached = await store.get("latest", { type: "json" });
       if (cached && cached.t && (Date.now() - cached.t) < CACHE_TTL_MS) {
@@ -191,7 +193,11 @@ exports.handler = async function () {
     }
     return {
       statusCode: 200, headers: CORS,
-      body: JSON.stringify({ ok: true, cached: false, ts: Date.now(), ...data })
+      body: JSON.stringify({
+        ok: true, cached: false, ts: Date.now(),
+        debug: { rawKeys: Object.keys(json||{}), rawReviewsLen: reviewsRaw.length, filteredLen: reviews.length, keyDebug: keyDebug },
+        ...data
+      })
     };
   } catch (e) {
     return {
