@@ -25,6 +25,34 @@ const DEFAULT_NAME = "Hello Chụp Ảnh";
 const DEFAULT_LAT  = 10.7722345;
 const DEFAULT_LNG  = 106.6797308;
 
+// Places API (New) – textSearch
+async function findPlaceIdNew(apiKey) {
+  const r = await fetch("https://places.googleapis.com/v1/places:searchText", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Goog-Api-Key": apiKey,
+      "X-Goog-FieldMask": "places.id,places.displayName"
+    },
+    body: JSON.stringify({
+      textQuery: DEFAULT_NAME,
+      locationBias: {
+        circle: { center: { latitude: DEFAULT_LAT, longitude: DEFAULT_LNG }, radius: 800 }
+      }
+    })
+  });
+  const j = await r.json();
+  if (!r.ok) {
+    const m = (j && j.error && j.error.message) ? j.error.message : ("HTTP " + r.status);
+    throw new Error("searchText (new): " + m);
+  }
+  if (!j.places || !j.places[0] || !j.places[0].id) {
+    throw new Error("searchText (new): không tìm thấy");
+  }
+  return j.places[0].id;
+}
+
+// Places API (Legacy) – findplacefromtext
 async function findPlaceId(apiKey) {
   const url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json"
     + "?input=" + encodeURIComponent(DEFAULT_NAME)
@@ -82,19 +110,31 @@ exports.handler = async function () {
       if (cachedPid && cachedPid.id) placeId = cachedPid.id;
     } catch (e) {}
   }
+  // DEBUG: thông tin nhận diện khoá (chỉ đầu/cuối, không phải khoá thật)
+  var keyDebug = apiKey
+    ? (apiKey.slice(0,6) + "..." + apiKey.slice(-4) + " [" + apiKey.length + " chars]")
+    : "(không có)";
+
   if (!placeId) {
+    // Thử tra qua New Places API trước (mới, ít vấn đề billing) -> fallback legacy
     try {
-      placeId = await findPlaceId(apiKey);
+      placeId = await findPlaceIdNew(apiKey);
       if (store) try { await store.setJSON("place_id", { id: placeId, t: Date.now() }); } catch (e) {}
-    } catch (e) {
-      return {
-        statusCode: 200, headers: CORS,
-        body: JSON.stringify({
-          ok: false,
-          error: "Không tra được Place ID: " + e.message,
-          reviews: [], total: 0, rating: 0, mapsUrl: ""
-        })
-      };
+    } catch (e1) {
+      try {
+        placeId = await findPlaceId(apiKey);
+        if (store) try { await store.setJSON("place_id", { id: placeId, t: Date.now() }); } catch (e) {}
+      } catch (e2) {
+        return {
+          statusCode: 200, headers: CORS,
+          body: JSON.stringify({
+            ok: false,
+            error: "Không tra được Place ID. Mới: " + e1.message + " | Cũ: " + e2.message,
+            keyDebug: keyDebug,
+            reviews: [], total: 0, rating: 0, mapsUrl: ""
+          })
+        };
+      }
     }
   }
 
