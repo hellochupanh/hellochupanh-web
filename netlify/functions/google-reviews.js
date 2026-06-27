@@ -95,7 +95,7 @@ exports.handler = async function () {
   const skipCache = (params.refresh === "1");
   if (store && !skipCache) {
     try {
-      const cached = await store.get("latest", { type: "json" });
+      const cached = await store.get("latest_v2", { type: "json" });
       if (cached && cached.t && (Date.now() - cached.t) < CACHE_TTL_MS) {
         return {
           statusCode: 200, headers: CORS,
@@ -189,7 +189,7 @@ exports.handler = async function () {
       reviews: reviews
     };
     if (store) {
-      try { await store.setJSON("latest", { t: Date.now(), d: data }); } catch (e) {}
+      try { await store.setJSON("latest_v2", { t: Date.now(), d: data }); } catch (e) {}
     }
     return {
       statusCode: 200, headers: CORS,
