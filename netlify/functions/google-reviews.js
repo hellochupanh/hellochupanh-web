@@ -95,7 +95,7 @@ exports.handler = async function (event) {
   const skipCache = (params.refresh === "1");
   if (store && !skipCache) {
     try {
-      const cached = await store.get("latest_v4", { type: "json" });
+      const cached = await store.get("latest_v5", { type: "json" });
       if (cached && cached.t && (Date.now() - cached.t) < CACHE_TTL_MS) {
         return {
           statusCode: 200, headers: CORS,
@@ -140,10 +140,9 @@ exports.handler = async function (event) {
     }
   }
 
-  // ----- Gọi Google Places API CŨ cho Place Details (trả về reviews ổn định hơn) -----
-  // place_id từ new API có dạng "places/ChIJ..." -> phải lột bỏ "places/" để dùng với API cũ.
+  // ----- Gọi Place Details: thử CŨ trước (có reviews); nếu lỗi billing thì dùng NEW (rating+total) -----
   const cleanPid = String(placeId).replace(/^places\//, '');
-  const detailUrl = "https://maps.googleapis.com/maps/api/place/details/json"
+  const legacyUrl = "https://maps.googleapis.com/maps/api/place/details/json"
     + "?place_id=" + encodeURIComponent(cleanPid)
     + "&fields=name,rating,user_ratings_total,url,reviews"
     + "&language=vi"
@@ -152,42 +151,63 @@ exports.handler = async function (event) {
     + "&key=" + encodeURIComponent(apiKey);
 
   try {
-    const resp = await fetch(detailUrl);
-    const json = await resp.json();
-    if (json.status !== "OK") {
-      const msg = json.error_message ? (json.status + " — " + json.error_message) : (json.status || "lỗi không rõ");
-      return {
-        statusCode: 200, headers: CORS,
-        body: JSON.stringify({
-          ok: false,
-          error: "Place Details (cũ): " + msg,
-          keyDebug: keyDebug,
-          reviews: [], total: 0, rating: 0, mapsUrl: ""
-        })
+    let data;
+    let reviewsRaw = [];
+    let jsonForDebug = {};
+
+    const legacyResp = await fetch(legacyUrl);
+    const legacyJson = await legacyResp.json();
+    if (legacyJson.status === "OK") {
+      const r = legacyJson.result || {};
+      reviewsRaw = Array.isArray(r.reviews) ? r.reviews : [];
+      const reviews = reviewsRaw
+        .filter(x => x && (x.rating || 0) >= MIN_RATING)
+        .map(x => ({
+          name: x.author_name || "",
+          avatar: x.profile_photo_url || "",
+          rating: x.rating || 0,
+          text: x.text || "",
+          time_text: x.relative_time_description || "",
+          time: x.time || 0
+        }));
+      data = {
+        total: r.user_ratings_total || 0,
+        rating: r.rating || 0,
+        mapsUrl: r.url || "",
+        reviews: reviews
       };
+      jsonForDebug = r;
+    } else {
+      // Cũ fail -> dùng NEW API để ít ra có rating + total + mapsUrl
+      const resourceName = /^places\//.test(placeId) ? placeId : ("places/" + placeId);
+      const newResp = await fetch("https://places.googleapis.com/v1/" + resourceName + "?languageCode=vi", {
+        headers: { "X-Goog-Api-Key": apiKey, "X-Goog-FieldMask": "id,displayName,rating,userRatingCount,googleMapsUri" }
+      });
+      const newJson = await newResp.json();
+      if (!newResp.ok) {
+        const msg = (newJson && newJson.error && newJson.error.message) ? newJson.error.message
+                    : (legacyJson.error_message || legacyJson.status || "lỗi không rõ");
+        return {
+          statusCode: 200, headers: CORS,
+          body: JSON.stringify({
+            ok: false,
+            error: "Place Details lỗi cả 2 API: " + msg,
+            keyDebug: keyDebug,
+            reviews: [], total: 0, rating: 0, mapsUrl: ""
+          })
+        };
+      }
+      data = {
+        total: newJson.userRatingCount || 0,
+        rating: newJson.rating || 0,
+        mapsUrl: newJson.googleMapsUri || "",
+        reviews: []  // new API không trả reviews cho key này
+      };
+      jsonForDebug = newJson;
     }
-    const r = json.result || {};
-    const reviewsRaw = Array.isArray(r.reviews) ? r.reviews : [];
-    const reviews = reviewsRaw
-      .filter(x => x && (x.rating || 0) >= MIN_RATING)
-      .map(x => ({
-        name: x.author_name || "",
-        avatar: x.profile_photo_url || "",
-        rating: x.rating || 0,
-        text: x.text || "",
-        time_text: x.relative_time_description || "",
-        time: x.time || 0
-      }));
-    const data = {
-      total: r.user_ratings_total || 0,
-      rating: r.rating || 0,
-      mapsUrl: r.url || "",
-      reviews: reviews
-    };
-    var json2 = json; // alias for debug field below
-    var jsonForDebug = r;
+    const reviews = data.reviews;
     if (store) {
-      try { await store.setJSON("latest_v4", { t: Date.now(), d: data }); } catch (e) {}
+      try { await store.setJSON("latest_v5", { t: Date.now(), d: data }); } catch (e) {}
     }
     return {
       statusCode: 200, headers: CORS,
