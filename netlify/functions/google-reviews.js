@@ -138,44 +138,52 @@ exports.handler = async function () {
     }
   }
 
-  // ----- Gọi Google Places API -----
-  const url = "https://maps.googleapis.com/maps/api/place/details/json"
-    + "?place_id=" + encodeURIComponent(placeId)
-    + "&fields=name,rating,user_ratings_total,url,reviews"
-    + "&language=vi"
-    + "&reviews_no_translations=true"
-    + "&reviews_sort=newest"
-    + "&key=" + encodeURIComponent(apiKey);
+  // ----- Gọi Google Places API (New) cho Place Details -----
+  // Nếu placeId từ cache hoặc env có dạng "places/ChIJ..." giữ nguyên, không có "places/" thì thêm vào.
+  const resourceName = /^places\//.test(placeId) ? placeId : ("places/" + placeId);
+  const detailUrl = "https://places.googleapis.com/v1/" + resourceName
+    + "?languageCode=vi";
+  const fieldMask = "id,displayName,rating,userRatingCount,googleMapsUri,reviews";
 
   try {
-    const resp = await fetch(url);
+    const resp = await fetch(detailUrl, {
+      headers: {
+        "X-Goog-Api-Key": apiKey,
+        "X-Goog-FieldMask": fieldMask
+      }
+    });
     const json = await resp.json();
-    if (json.status !== "OK") {
+    if (!resp.ok) {
+      const msg = (json && json.error && json.error.message) ? json.error.message : ("HTTP " + resp.status);
       return {
         statusCode: 200, headers: CORS,
         body: JSON.stringify({
           ok: false,
-          error: "Google API: " + (json.status || "lỗi không rõ"),
-          detail: (json.error_message || "").slice(0, 200),
+          error: "Place Details (new): " + msg,
+          keyDebug: keyDebug,
           reviews: [], total: 0, rating: 0, mapsUrl: ""
         })
       };
     }
-    const r = json.result || {};
-    const reviews = (Array.isArray(r.reviews) ? r.reviews : [])
+    const reviewsRaw = Array.isArray(json.reviews) ? json.reviews : [];
+    const reviews = reviewsRaw
       .filter(x => x && (x.rating || 0) >= MIN_RATING)
-      .map(x => ({
-        name: x.author_name || "",
-        avatar: x.profile_photo_url || "",
-        rating: x.rating || 0,
-        text: x.text || "",
-        time_text: x.relative_time_description || "",
-        time: x.time || 0
-      }));
+      .map(x => {
+        const auth = x.authorAttribution || {};
+        const txt = (x.text && x.text.text) || (x.originalText && x.originalText.text) || "";
+        return {
+          name: auth.displayName || "",
+          avatar: auth.photoUri || "",
+          rating: x.rating || 0,
+          text: txt,
+          time_text: x.relativePublishTimeDescription || "",
+          time: x.publishTime || ""
+        };
+      });
     const data = {
-      total: r.user_ratings_total || 0,
-      rating: r.rating || 0,
-      mapsUrl: r.url || "",
+      total: json.userRatingCount || 0,
+      rating: json.rating || 0,
+      mapsUrl: json.googleMapsUri || "",
       reviews: reviews
     };
     if (store) {
