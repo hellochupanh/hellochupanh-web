@@ -120,6 +120,25 @@
   var $sum    = document.getElementById('dg-summary');
   var $cta    = document.getElementById('dg-cta');
 
+  function renderGoogleSummary(data){
+    // Hiện bảng tổng quan Google (rating + total + link) nếu có dữ liệu
+    if(!data || !data.ok || !data.rating) return false;
+    $sum.innerHTML =
+      '<div class="gr-summary">'
+      +'<div class="gr-logo">G</div>'
+      +'<div style="text-align:center"><div class="gr-num">'+data.rating.toFixed(1)+'</div>'
+      +'<div class="gr-stars">'+stars(data.rating)+'</div></div>'
+      +'<div><div style="font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Đánh giá Google</div>'
+      +'<div class="gr-count">'+(data.total||0)+' lượt đánh giá</div></div>'
+      +'</div>';
+    if (data.mapsUrl) {
+      $cta.innerHTML =
+        '<a class="btn btn-outline" href="'+esc(data.mapsUrl)+'" target="_blank" rel="noopener">★ Xem tất cả '+(data.total||'')+' đánh giá trên Google →</a>'
+        +'<a class="btn btn-gold" href="/lien-he/">Đặt lịch chụp ngay →</a>';
+    }
+    return true;
+  }
+
   function renderGoogleReviews(data){
     if(!data || !data.ok || !data.reviews){
       // Có cài Google API nhưng chưa cấu hình hoặc lỗi -> để hàm fallback xử lý
@@ -181,14 +200,12 @@
     });
   }
 
-  // Ưu tiên đánh giá Google. Nếu chưa cấu hình API key thì rơi xuống reviews.json.
+  // Lấy Google reviews. Luôn hiện bảng rating + nút "xem trên Google" nếu có,
+  // dù danh sách đánh giá chi tiết có lấy được hay không.
   fetch('/.netlify/functions/google-reviews').then(function(r){ return r.json(); }).then(function(data){
-    if (renderGoogleReviews(data)) return;
-    // Có thông báo "Chưa cấu hình GOOGLE_API_KEY" -> hiện cảnh báo nhẹ trên trang Admin có thể thấy được
-    if (data && data.error && /API_KEY|PLACE_ID/i.test(data.error)) {
-      $sum.innerHTML = '<div class="gr-warn">⚠ <b>Đánh giá Google chưa kích hoạt.</b> Cần thêm <code>GOOGLE_API_KEY</code> và <code>GOOGLE_PLACE_ID</code> vào Netlify env vars. Hiện tạm đánh giá thủ công bên dưới.</div>';
-    }
-    return renderCuratedReviews();
+    if (renderGoogleReviews(data)) return; // có reviews đầy đủ -> dùng luôn
+    renderGoogleSummary(data); // không có reviews -> ít nhất hiện bảng tổng quan
+    return renderCuratedReviews(); // và phía dưới hiện đánh giá thủ công
   }).catch(function(){
     return renderCuratedReviews();
   });
