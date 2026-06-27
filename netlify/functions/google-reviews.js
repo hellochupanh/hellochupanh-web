@@ -95,7 +95,7 @@ exports.handler = async function (event) {
   const skipCache = (params.refresh === "1");
   if (store && !skipCache) {
     try {
-      const cached = await store.get("latest_v6", { type: "json" });
+      const cached = await store.get("latest_v7", { type: "json" });
       if (cached && cached.t && (Date.now() - cached.t) < CACHE_TTL_MS) {
         return {
           statusCode: 200, headers: CORS,
@@ -225,13 +225,13 @@ exports.handler = async function (event) {
     }
     const reviews = data.reviews;
     if (store) {
-      try { await store.setJSON("latest_v6", { t: Date.now(), d: data }); } catch (e) {}
+      try { await store.setJSON("latest_v7", { t: Date.now(), d: data }); } catch (e) {}
     }
     return {
       statusCode: 200, headers: CORS,
       body: JSON.stringify({
         ok: true, cached: false, ts: Date.now(),
-        debug: { rawKeys: Object.keys(jsonForDebug||{}), rawReviewsLen: reviewsRaw.length, filteredLen: reviews.length, keyDebug: keyDebug },
+        debug: { rawKeys: Object.keys(jsonForDebug||{}), rawReviewsLen: reviewsRaw.length, filteredLen: reviews.length, keyDebug: keyDebug, placeId: cleanPid, displayName: (jsonForDebug && jsonForDebug.displayName && jsonForDebug.displayName.text) || jsonForDebug.name || "(unknown)" },
         ...data
       })
     };
