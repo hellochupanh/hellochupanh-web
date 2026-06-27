@@ -95,7 +95,7 @@ exports.handler = async function (event) {
   const skipCache = (params.refresh === "1");
   if (store && !skipCache) {
     try {
-      const cached = await store.get("latest_v7", { type: "json" });
+      const cached = await store.get("latest_v8", { type: "json" });
       if (cached && cached.t && (Date.now() - cached.t) < CACHE_TTL_MS) {
         return {
           statusCode: 200, headers: CORS,
@@ -180,7 +180,7 @@ exports.handler = async function (event) {
     } else {
       // Cũ fail -> dùng NEW API để ít ra có rating + total + mapsUrl
       const resourceName = /^places\//.test(placeId) ? placeId : ("places/" + placeId);
-      const newResp = await fetch("https://places.googleapis.com/v1/" + resourceName + "?languageCode=vi", {
+      const newResp = await fetch("https://places.googleapis.com/v1/" + resourceName, {
         headers: {
           "X-Goog-Api-Key": apiKey,
           "X-Goog-FieldMask": "id,displayName,rating,userRatingCount,googleMapsUri,reviews.rating,reviews.text,reviews.originalText,reviews.authorAttribution,reviews.relativePublishTimeDescription,reviews.publishTime"
@@ -225,7 +225,7 @@ exports.handler = async function (event) {
     }
     const reviews = data.reviews;
     if (store) {
-      try { await store.setJSON("latest_v7", { t: Date.now(), d: data }); } catch (e) {}
+      try { await store.setJSON("latest_v8", { t: Date.now(), d: data }); } catch (e) {}
     }
     return {
       statusCode: 200, headers: CORS,
