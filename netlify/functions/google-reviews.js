@@ -69,7 +69,7 @@ async function findPlaceId(apiKey) {
   return j.candidates[0].place_id;
 }
 
-exports.handler = async function () {
+exports.handler = async function (event) {
   const apiKey   = process.env.GOOGLE_API_KEY;
   let   placeId  = process.env.GOOGLE_PLACE_ID;
   if (!apiKey) {
@@ -91,11 +91,11 @@ exports.handler = async function () {
     if (token) store = getStore({ name: "google-reviews-cache", siteID, token });
   } catch (e) { /* Blobs không sẵn sàng — vẫn chạy bình thường, chỉ là không cache */ }
 
-  const params = event.queryStringParameters || {};
+  const params = (event && event.queryStringParameters) || {};
   const skipCache = (params.refresh === "1");
   if (store && !skipCache) {
     try {
-      const cached = await store.get("latest_v2", { type: "json" });
+      const cached = await store.get("latest_v3", { type: "json" });
       if (cached && cached.t && (Date.now() - cached.t) < CACHE_TTL_MS) {
         return {
           statusCode: 200, headers: CORS,
@@ -189,7 +189,7 @@ exports.handler = async function () {
       reviews: reviews
     };
     if (store) {
-      try { await store.setJSON("latest_v2", { t: Date.now(), d: data }); } catch (e) {}
+      try { await store.setJSON("latest_v3", { t: Date.now(), d: data }); } catch (e) {}
     }
     return {
       statusCode: 200, headers: CORS,
