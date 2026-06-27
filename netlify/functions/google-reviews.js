@@ -95,7 +95,7 @@ exports.handler = async function (event) {
   const skipCache = (params.refresh === "1");
   if (store && !skipCache) {
     try {
-      const cached = await store.get("latest_v3", { type: "json" });
+      const cached = await store.get("latest_v4", { type: "json" });
       if (cached && cached.t && (Date.now() - cached.t) < CACHE_TTL_MS) {
         return {
           statusCode: 200, headers: CORS,
@@ -140,62 +140,60 @@ exports.handler = async function (event) {
     }
   }
 
-  // ----- Gọi Google Places API (New) cho Place Details -----
-  // Nếu placeId từ cache hoặc env có dạng "places/ChIJ..." giữ nguyên, không có "places/" thì thêm vào.
-  const resourceName = /^places\//.test(placeId) ? placeId : ("places/" + placeId);
-  const detailUrl = "https://places.googleapis.com/v1/" + resourceName
-    + "?languageCode=vi";
-  const fieldMask = "id,displayName,rating,userRatingCount,googleMapsUri,reviews";
+  // ----- Gọi Google Places API CŨ cho Place Details (trả về reviews ổn định hơn) -----
+  // place_id từ new API có dạng "places/ChIJ..." -> phải lột bỏ "places/" để dùng với API cũ.
+  const cleanPid = String(placeId).replace(/^places\//, '');
+  const detailUrl = "https://maps.googleapis.com/maps/api/place/details/json"
+    + "?place_id=" + encodeURIComponent(cleanPid)
+    + "&fields=name,rating,user_ratings_total,url,reviews"
+    + "&language=vi"
+    + "&reviews_no_translations=true"
+    + "&reviews_sort=newest"
+    + "&key=" + encodeURIComponent(apiKey);
 
   try {
-    const resp = await fetch(detailUrl, {
-      headers: {
-        "X-Goog-Api-Key": apiKey,
-        "X-Goog-FieldMask": fieldMask
-      }
-    });
+    const resp = await fetch(detailUrl);
     const json = await resp.json();
-    if (!resp.ok) {
-      const msg = (json && json.error && json.error.message) ? json.error.message : ("HTTP " + resp.status);
+    if (json.status !== "OK") {
+      const msg = json.error_message ? (json.status + " — " + json.error_message) : (json.status || "lỗi không rõ");
       return {
         statusCode: 200, headers: CORS,
         body: JSON.stringify({
           ok: false,
-          error: "Place Details (new): " + msg,
+          error: "Place Details (cũ): " + msg,
           keyDebug: keyDebug,
           reviews: [], total: 0, rating: 0, mapsUrl: ""
         })
       };
     }
-    const reviewsRaw = Array.isArray(json.reviews) ? json.reviews : [];
+    const r = json.result || {};
+    const reviewsRaw = Array.isArray(r.reviews) ? r.reviews : [];
     const reviews = reviewsRaw
       .filter(x => x && (x.rating || 0) >= MIN_RATING)
-      .map(x => {
-        const auth = x.authorAttribution || {};
-        const txt = (x.text && x.text.text) || (x.originalText && x.originalText.text) || "";
-        return {
-          name: auth.displayName || "",
-          avatar: auth.photoUri || "",
-          rating: x.rating || 0,
-          text: txt,
-          time_text: x.relativePublishTimeDescription || "",
-          time: x.publishTime || ""
-        };
-      });
+      .map(x => ({
+        name: x.author_name || "",
+        avatar: x.profile_photo_url || "",
+        rating: x.rating || 0,
+        text: x.text || "",
+        time_text: x.relative_time_description || "",
+        time: x.time || 0
+      }));
     const data = {
-      total: json.userRatingCount || 0,
-      rating: json.rating || 0,
-      mapsUrl: json.googleMapsUri || "",
+      total: r.user_ratings_total || 0,
+      rating: r.rating || 0,
+      mapsUrl: r.url || "",
       reviews: reviews
     };
+    var json2 = json; // alias for debug field below
+    var jsonForDebug = r;
     if (store) {
-      try { await store.setJSON("latest_v3", { t: Date.now(), d: data }); } catch (e) {}
+      try { await store.setJSON("latest_v4", { t: Date.now(), d: data }); } catch (e) {}
     }
     return {
       statusCode: 200, headers: CORS,
       body: JSON.stringify({
         ok: true, cached: false, ts: Date.now(),
-        debug: { rawKeys: Object.keys(json||{}), rawReviewsLen: reviewsRaw.length, filteredLen: reviews.length, keyDebug: keyDebug },
+        debug: { rawKeys: Object.keys(jsonForDebug||{}), rawReviewsLen: reviewsRaw.length, filteredLen: reviews.length, keyDebug: keyDebug },
         ...data
       })
     };
