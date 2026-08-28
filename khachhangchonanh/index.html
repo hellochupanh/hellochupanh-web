@@ -401,13 +401,13 @@
   </header>
   <div class="tabs">
     <button class="tab active" data-view="original">Ảnh gốc</button>
+    <button class="tab" data-view="studio">Lựa tại studio</button>
     <button class="tab" data-view="selected">Đã chọn <span class="badge" id="selBadge" style="display:none">0</span></button>
     <button class="tab" data-view="edited">Ảnh đã chỉnh <span class="badge" id="editedBadge" style="display:none">0</span></button>
   </div>
   <div id="content"></div>
 </section>
 
-<!-- Scroll cue - shows after login until user scrolls -->
 <div class="scroll-cue" id="scrollCue">
   <div class="arrow">↓</div>
   <div class="label">Cuộn xuống để xem ảnh</div>
@@ -454,7 +454,7 @@
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxoPFgtMxB5oz3x2G1koBakKvii3JSal8AYtUbkGpfAWFafs3yHopFRQOSHV3ANoBh78w/exec";
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 giờ — khách quay lại trong ngày vào ngay tức thì
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 const $ = (id) => document.getElementById(id);
 const driveThumb = (id, w) => `https://drive.google.com/thumbnail?id=${id}&sz=w${w||400}`;
@@ -506,11 +506,9 @@ $('loginForm').addEventListener('submit', async (e) => {
   $('loginBtn').disabled = true;
   $('loginErr').textContent = '';
 
-  // Hit cache FIRST for instant view
   let res = readCache(code);
   if (res) enterGallery(code, res);
 
-  // Loading UX: animated dots + tip để khách thấy đang chạy, không lo
   const baseMsg = res ? 'Đang làm mới' : 'Đang nạp kho ảnh';
   let _dots = 0;
   $('loginBtn').textContent = baseMsg + '…';
@@ -518,12 +516,10 @@ $('loginForm').addEventListener('submit', async (e) => {
     _dots = (_dots + 1) % 4;
     $('loginBtn').textContent = baseMsg + (_dots === 0 ? '…' : '.'.repeat(_dots));
   }, 500);
-  // Sau 1.5s vẫn chưa xong -> gợi ý cho khách lần đầu
   const _tipTimer = setTimeout(() => {
     if (!res) $('loginErr').innerHTML = '<span style="color:#888;font-weight:400">Lần đầu mất 5–15 giây vì kho có nhiều ảnh. Lần sau bạn vào sẽ ngay tức thì.</span>';
   }, 1500);
 
-  // Then fetch fresh in background
   const fresh = await apiGet('list', { code });
   clearInterval(_loadTick);
   clearTimeout(_tipTimer);
@@ -559,13 +555,10 @@ function enterGallery(code, res) {
   if (savedNotes) { try { state.notes = JSON.parse(savedNotes); } catch(_){} }
   openGallery();
   loadEdited();
-  // Tải lựa chọn đã lưu trên máy chủ (đồng bộ giữa các máy)
   loadSelectionsFromServer(code);
-  // Show scroll cue
   showScrollCue();
 }
 
-/* ===== Lưu lựa chọn ảnh: localStorage (nhanh) + máy chủ (đồng bộ) ===== */
 let _selSaveTimer = null;
 function persistSelections() {
   if (!state.code) return;
@@ -593,9 +586,8 @@ async function saveSelectionsToServer() {
       body: _selBody(),
       keepalive: true
     });
-  } catch (_) { /* mất mạng -> bỏ qua, sẽ lưu lại khi đổi tiếp */ }
+  } catch (_) {}
 }
-// Gửi ngay khi khách thoát / đóng tab / chuyển nền (sendBeacon đảm bảo gửi xong dù trang đang đóng)
 function flushSelectionsNow() {
   if (!state.code) return;
   clearTimeout(_selSaveTimer);
@@ -606,7 +598,6 @@ function flushSelectionsNow() {
       if (navigator.sendBeacon('/.netlify/functions/selections', blob)) return;
     } catch (_) {}
   }
-  // Dự phòng
   try {
     fetch('/.netlify/functions/selections', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -629,7 +620,6 @@ async function loadSelectionsFromServer(code) {
     const sIds = Array.isArray(d.ids) ? d.ids : [];
     const sNotes = (d.notes && typeof d.notes === 'object') ? d.notes : {};
     const localSize = state.selected.size;
-    // Máy chủ có dữ liệu -> luôn ưu tiên máy chủ (nguồn chân lý đa thiết bị)
     if (sIds.length > 0 || Object.keys(sNotes).length > 0) {
       state.selected = new Set(sIds);
       state.notes = sNotes;
@@ -638,15 +628,14 @@ async function loadSelectionsFromServer(code) {
         localStorage.setItem('notes:' + code, JSON.stringify(sNotes));
       } catch (_) {}
       updateCount();
-      if (state.view === 'original' || state.view === 'selected') renderGrid();
+      if (state.view === 'original' || state.view === 'selected' || state.view === 'studio') renderGrid();
       if (localSize === 0 && sIds.length > 0) {
         showToast(`Đã khôi phục ${sIds.length} ảnh đã chọn lần trước`, 'dl');
       }
     } else if (state.selected.size > 0) {
-      // Máy chủ trống nhưng máy này có -> đẩy lên máy chủ
       saveSelectionsToServer();
     }
-  } catch (_) { /* lỗi mạng -> bỏ qua */ }
+  } catch (_) {}
 }
 async function clearSelectionsOnServer() {
   if (!state.code) return;
@@ -670,7 +659,6 @@ function showScrollCue() {
       if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
       cue.classList.remove('show');
     });
-    // Auto hide after 8s
     setTimeout(() => cue.classList.remove('show'), 8000);
   }, 500);
 }
@@ -710,7 +698,7 @@ document.querySelectorAll('.tab').forEach(btn => {
 function switchView(view) {
   state.view = view;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === view));
-  const showCounter = (view === 'original' || view === 'selected');
+  const showCounter = (view === 'original' || view === 'selected' || view === 'studio');
   $('counterWrap').style.display = showCounter ? '' : 'none';
   $('finishBtn').style.display = showCounter ? '' : 'none';
   renderGrid();
@@ -720,7 +708,7 @@ function switchView(view) {
 function renderGrid() {
   const list = (state.view === 'selected')
     ? state.photos.filter(p => state.selected.has(p.id))
-    : (state.view === 'original' ? state.photos : state.edited);
+    : ((state.view === 'original' || state.view === 'studio') ? state.photos : state.edited);
   const content = $('content');
   content.innerHTML = '';
   if (state.view === 'edited' && list.length === 0) {
@@ -735,17 +723,25 @@ function renderGrid() {
     content.innerHTML = `<div class="empty"><div class="big">📭</div><p>Chưa có ảnh.</p></div>`;
     return;
   }
+  if (state.view === 'selected' && list.length > 0) {
+    const bar = document.createElement('div');
+    bar.style.cssText = 'max-width:1400px;margin:0 auto;padding:16px 20px 0;display:flex;justify-content:flex-end;align-items:center;gap:10px;flex-wrap:wrap';
+    bar.innerHTML = '<span style="color:var(--muted);font-size:14px">Bạn chọn <b style="color:var(--gold-dark)">'+list.length+'</b> ảnh</span>'
+      + '<button id="dlAllSelBtn" style="background:var(--gold);color:#fff;border:none;padding:11px 20px;border-radius:999px;font-weight:600;font-size:14px;cursor:pointer;box-shadow:0 4px 12px rgba(244,161,79,.28)">⬇ Tải hết '+list.length+' ảnh</button>';
+    content.appendChild(bar);
+    bar.querySelector('#dlAllSelBtn').addEventListener('click', downloadAllSelected);
+  }
+
   const grid = document.createElement('div');
   grid.className = 'grid';
-  content.appendChild(grid); // hiện lưới ngay để lô đầu thấy được liền
+  content.appendChild(grid);
 
-  // Token để huỷ render dở dang khi khách chuyển tab khác
   renderGrid._tok = (renderGrid._tok || 0) + 1;
   const myTok = renderGrid._tok;
 
   const mountTile = (p, idx) => {
     const tile = document.createElement('div');
-    const isOriginalView = (state.view === 'original' || state.view === 'selected');
+    const isOriginalView = (state.view === 'original' || state.view === 'selected' || state.view === 'studio');
     const hasNote = state.notes[p.id] && state.notes[p.id].trim();
     const isVideo = p.type === 'video';
     let cls = 'tile';
@@ -790,15 +786,13 @@ function renderGrid() {
     grid.appendChild(tile);
   };
 
-  // Render theo lô: 80 ảnh đầu hiện ngay, phần còn lại nạp dần từng khung hình
-  // để UI không bị đứng khi kho > 500 ảnh.
   const FIRST = 80, CHUNK = 80;
   let i = 0;
   const cap = Math.min(FIRST, list.length);
   for (; i < cap; i++) mountTile(list[i], i);
   if (i < list.length) {
     const next = () => {
-      if (myTok !== renderGrid._tok) return; // khách chuyển tab khác -> dừng
+      if (myTok !== renderGrid._tok) return;
       const end = Math.min(i + CHUNK, list.length);
       for (; i < end; i++) mountTile(list[i], i);
       if (i < list.length) requestAnimationFrame(next);
@@ -807,15 +801,32 @@ function renderGrid() {
   }
 }
 
+function downloadAllSelected() {
+  const photos = state.photos.filter(p => state.selected.has(p.id));
+  if (!photos.length) { alert('Chưa có ảnh nào được chọn.'); return; }
+  const msg = 'Tải hết ' + photos.length + ' ảnh về máy?\n\n(Nên dùng máy tính để tải nhiều ảnh cùng lúc. Trên điện thoại có thể chỉ tải được vài ảnh đầu.)';
+  if (!confirm(msg)) return;
+  showToast('⬇ Đang tải ' + photos.length + ' ảnh về Downloads (chờ vài phút)...', 'dl');
+  photos.forEach((p, i) => {
+    setTimeout(() => {
+      try {
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = driveDownload(p.id);
+        document.body.appendChild(iframe);
+        setTimeout(() => { try { iframe.remove(); } catch(_){} }, 15000);
+      } catch (e) {}
+    }, i * 700);
+  });
+}
+
 async function triggerDownload(fileId, fileName) {
-  // lh3.googleusercontent.com cho phép CORS -> fetch được; drive.google.com/thumbnail thì không.
   const corsImgUrl = `https://lh3.googleusercontent.com/d/${fileId}=w2400`;
   const ua = (navigator.userAgent || '').toLowerCase();
   const isMobile = /iphone|ipad|ipod|android|mobile/.test(ua)
-    || (/macintosh|mac os/.test(ua) && (navigator.maxTouchPoints || 0) > 1); // iPadOS
+    || (/macintosh|mac os/.test(ua) && (navigator.maxTouchPoints || 0) > 1);
   const canShareApi = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
 
-  // ===== 1) Trên di động: Web Share API -> bảng "Lưu vào Ảnh"
   if (isMobile && canShareApi && typeof navigator.canShare === 'function') {
     showToast('Đang chuẩn bị ảnh...', 'dl');
     try {
@@ -832,20 +843,17 @@ async function triggerDownload(fileId, fileName) {
             return;
           } catch (e) {
             if (e && (e.name === 'AbortError' || /cancell?ed|abort/i.test(e.message || ''))) return;
-            // share lỗi khác -> rơi xuống cách 2
           }
         }
       }
-    } catch (_) { /* CORS/mạng -> rơi xuống cách 2 */ }
+    } catch (_) {}
 
-    // ===== 2) Dự phòng di động: mở ảnh trong tab mới để khách nhấn giữ
     try {
       const w = window.open(corsImgUrl, '_blank', 'noopener,noreferrer');
       if (w) { showToast('Nhấn giữ ảnh → chọn "Lưu vào Ảnh"', 'dl'); return; }
-    } catch (_) { /* bị chặn pop-up -> rơi xuống cách 3 */ }
+    } catch (_) {}
   }
 
-  // ===== 3) Máy tính (hoặc fallback cuối): tải về Downloads như cũ
   const iframe = document.createElement('iframe');
   iframe.style.display = 'none';
   iframe.src = driveDownload(fileId);
@@ -892,9 +900,6 @@ function preloadAroundIndex(idx) {
   }
 }
 
-/* Danh sách ảnh đang hiển thị, theo tab khách đang xem.
-   Quan trọng: index của ô ảnh (state.lbIndex, tile.dataset.idx) là index trong DANH SÁCH NÀY,
-   không phải state.photos. Mọi nơi đụng tới lightbox phải dùng currentList() để khớp với lưới. */
 function currentList() {
   if (state.view === 'selected') return state.photos.filter(p => state.selected.has(p.id));
   if (state.view === 'edited')   return state.edited;
@@ -930,8 +935,7 @@ function showLightboxMedia() {
     img.style.display = ''; img.src = driveFull(p.id);
   }
   $('lbCounter').textContent = `${state.lbIndex + 1} / ${list.length} · ${p.name}`;
-  // Cho phép thả tim + ghi chú cả ở tab "Đã chọn" lẫn "Ảnh gốc"
-  const canPick = (state.view === 'original' || state.view === 'selected');
+  const canPick = (state.view === 'original' || state.view === 'selected' || state.view === 'studio');
   $('lbHeart').style.display = canPick ? '' : 'none';
   $('lbNote').classList.toggle('show', canPick);
   if (canPick) $('lbNote').value = state.notes[p.id] || '';
@@ -961,7 +965,7 @@ function lbNav(dir) {
   preloadAroundIndex(state.lbIndex);
 }
 function syncLightboxState() {
-  if (state.view !== 'original' && state.view !== 'selected') return;
+  if (state.view !== 'original' && state.view !== 'selected' && state.view !== 'studio') return;
   const p = currentList()[state.lbIndex]; if (!p) return;
   const has = state.selected.has(p.id);
   $('lbHeart').classList.toggle('selected', has);
@@ -971,13 +975,12 @@ $('lbClose').addEventListener('click', closeLightbox);
 $('lbNext').addEventListener('click', () => lbNav(1));
 $('lbPrev').addEventListener('click', () => lbNav(-1));
 $('lbHeart').addEventListener('click', () => {
-  if (state.view !== 'original' && state.view !== 'selected') return;
+  if (state.view !== 'original' && state.view !== 'selected' && state.view !== 'studio') return;
   const p = currentList()[state.lbIndex];
   if (!p) return;
   const wasSelected = state.selected.has(p.id);
   const tile = document.querySelector(`.tile[data-idx="${state.lbIndex}"]`);
   toggleSelect(p.id, tile);
-  // Trong tab "Đã chọn", nếu khách vừa bỏ chọn -> đóng lightbox để khỏi rối
   if (state.view === 'selected' && wasSelected) closeLightbox();
 });
 $('lbDl').addEventListener('click', () => {
@@ -1061,7 +1064,6 @@ $('finishBtn').addEventListener('click', () => {
     alert('Gửi chưa thành công: ' + msg + '. Vui lòng bấm "Hoàn tất" lại nhé.');
   };
 
-  // Gửi ngầm — không bắt khách chờ máy chủ gửi mail xong
   const sendPromise = apiPost({
     action: "submit", code: state.code,
     ids: selectedPhotos.map(p => p.id),
@@ -1069,7 +1071,6 @@ $('finishBtn').addEventListener('click', () => {
     notes: selectedNotes
   });
 
-  // Hiện màn hình "thành công" nhanh (tối đa ~1.2s)
   const timer = setTimeout(() => { if (!finished) showModal(null, count); }, 1200);
 
   sendPromise.then(res => {
@@ -1105,7 +1106,6 @@ function showToast(msg, cls) {
 })();
 </script>
 <script>
-/* Ảnh nền màn hình đăng nhập — đổi được trong /admin (Cài đặt chung). Phòng thủ: lỗi thì giữ ảnh mặc định. */
 (function(){
   function resolveImg(p){ if(!p) return ""; if(/^https?:/.test(p)) return p; return "/"+String(p).replace(/^\//,""); }
   try {
