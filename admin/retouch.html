@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex" />
+<title>Danh sách retouch — Hello Chụp Ảnh</title>
+<style>
+  body{font-family:-apple-system,"Be Vietnam Pro",sans-serif;background:#faf7f2;color:#23201c;margin:0;padding:24px;}
+  .wrap{max-width:1240px;margin:0 auto;}
+  a.back{color:#8a8175;text-decoration:none;font-size:14px;}
+  h1{font-family:"Playfair Display",Georgia,serif;font-size:26px;margin:6px 0 4px;}
+  .sub{color:#8a8175;font-size:14px;margin-bottom:16px;}
+  .msg{background:#fff;border:1.5px solid #ece6dc;border-radius:14px;padding:24px;text-align:center;color:#5a5349;}
+  .err{background:#fff1f2;border:1px solid #fecaca;color:#b91c1c;border-radius:12px;padding:16px;font-size:14px;line-height:1.6;}
+  .btn{background:#F4A14F;color:#fff;border:none;padding:10px 18px;border-radius:999px;font-weight:600;cursor:pointer;font-size:14px;text-decoration:none;display:inline-block;}
+  .btn.alt{background:#fff;color:#23201c;border:1.5px solid #ece6dc;}
+  .btn:disabled{opacity:.55;cursor:default;}
+  .cnt{font-weight:700;color:#d9863a;}
+  .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:#fff;border:1.5px solid #ece6dc;border-radius:14px;padding:14px 16px;margin-bottom:16px;}
+  .toolbar label{font-size:13px;color:#5a5349;font-weight:600;}
+  .toolbar select,.toolbar input{padding:8px 12px;border:1.5px solid #ece6dc;border-radius:8px;font-size:14px;font-family:inherit;background:#fff;}
+  .spacer{flex:1;}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.05);}
+  th,td{text-align:left;padding:12px 14px;border-bottom:1px solid #f0eadf;font-size:14px;vertical-align:top;}
+  th{background:#f3ece1;color:#5a5349;font-size:12px;text-transform:uppercase;letter-spacing:.5px;}
+  tr:last-child td{border-bottom:none;}
+  td a{color:#d9863a;text-decoration:none;font-weight:600;}
+  .code{font-weight:700;color:#23201c;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+  .when{color:#8a8175;font-size:12.5px;white-space:nowrap;}
+  .num{font-weight:700;color:#d9863a;text-align:right;font-variant-numeric:tabular-nums;}
+  .row-detail{background:#fdfbf7;}
+  .row-detail td{padding:14px 18px;font-size:13px;color:#5a5349;}
+  .row-detail .imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:10px;}
+  .row-detail .imgs a{display:block;position:relative;padding-bottom:100%;background:#f3ece1;border-radius:6px;overflow:hidden;}
+  .row-detail .imgs img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .row-detail .imgs .lbl{position:absolute;left:4px;top:4px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;}
+  .chip{display:inline-block;background:#fff0db;color:#b3650a;border:1.5px solid #f4c98a;border-radius:999px;padding:3px 10px;font-size:12.5px;font-weight:600;margin-left:6px;}
+  .expand{background:none;border:none;color:#d9863a;font-weight:600;cursor:pointer;font-size:13px;padding:0;}
+  .hint{color:#a89e8f;font-size:12.5px;margin:-4px 0 14px;}
+  @media(max-width:760px){
+    table,thead,tbody,th,td,tr{display:block;}
+    thead{display:none;}
+    tr{border:1px solid #ece6dc;border-radius:12px;margin-bottom:12px;padding:6px;}
+    td{border:none;padding:6px 10px;}
+    td[data-label]:before{content:attr(data-label);display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#a89e8f;margin-bottom:2px;}
+    .num{text-align:left;}
+  }
+</style>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/admin/">← Về trang quản trị</a>
+  <h1>Danh sách retouch</h1>
+  <div class="sub">Khách đã chọn ảnh — lọc theo tháng cập nhật, xuất Excel gửi retoucher.</div>
+  <div id="app"><div class="msg">Đang tải…</div></div>
+</div>
+
+<script>
+(function(){
+  var I = window.netlifyIdentity;
+  var app = document.getElementById('app');
+  var currentUser = null;
+  var API_URL = "https://script.google.com/macros/s/AKfycbxoPFgtMxB5oz3x2G1koBakKvii3JSal8AYtUbkGpfAWFafs3yHopFRQOSHV3ANoBh78w/exec";
+  var driveView = function(id){ return "https://drive.google.com/file/d/" + id + "/view"; };
+  var driveThumb = function(id){ return "https://drive.google.com/thumbnail?id=" + id + "&sz=w200"; };
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]);}); }
+  function fmtDate(s){ if(!s) return ''; try{ var d=new Date(s); return d.toLocaleString('vi-VN'); }catch(e){ return s; } }
+  function monthOf(s){ if(!s) return ''; try{ var d=new Date(s); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }catch(e){ return ''; } }
+  function login(){ app.innerHTML = '<div class="msg">Vui lòng đăng nhập admin để xem danh sách.<br/><br/><button class="btn" id="lg">Đăng nhập</button></div>'; document.getElementById('lg').onclick = function(){ I.open(); }; }
+  var state = { items: [], filterMonth: '', details: {} };
+  async function loadList(user){
+    app.innerHTML = '<div class="msg">Đang tải danh sách…</div>';
+    try {
+      var tok = await user.jwt();
+      var r = await fetch('/.netlify/functions/selections?action=list', { headers: { Authorization: 'Bearer ' + tok } });
+      var j = await r.json();
+      if (!r.ok || !j.ok) throw new Error(j.error || ('HTTP '+r.status));
+      state.items = j.items || [];
+      var thisMonth = monthOf(new Date().toISOString());
+      var hasThisMonth = state.items.some(function(x){ return monthOf(x.updated_at) === thisMonth; });
+      state.filterMonth = hasThisMonth ? thisMonth : '';
+      render();
+    } catch (e) { app.innerHTML = '<div class="err">Lỗi tải danh sách: '+esc(e.message)+'</div>'; }
+  }
+  function getMonths(){ var set = {}; state.items.forEach(function(x){ var m = monthOf(x.updated_at); if (m) set[m] = true; }); return Object.keys(set).sort().reverse(); }
+  function filtered(){ if (!state.filterMonth) return state.items.slice(); return state.items.filter(function(x){ return monthOf(x.updated_at) === state.filterMonth; }); }
+  function render(){
+    var months = getMonths();
+    var monthOpts = '<option value="">Tất cả</option>' + months.map(function(m){ var sel = (m === state.filterMonth) ? ' selected' : ''; var lbl = 'Tháng ' + m.split('-')[1] + '/' + m.split('-')[0]; return '<option value="'+m+'"'+sel+'>'+lbl+'</option>'; }).join('');
+    var rows = filtered();
+    var totalPhotos = rows.reduce(function(s,x){ return s + (x.count||0); }, 0);
+    var html = '<div class="toolbar"><label>Tháng:</label><select id="fMonth">'+monthOpts+'</select><span class="chip">'+rows.length+' khách · '+totalPhotos+' ảnh</span><div class="spacer"></div><button class="btn alt" id="btnRefresh">↻ Làm mới</button><button class="btn" id="btnXlsx" '+(rows.length?'':'disabled')+'>📥 Xuất Excel</button></div><div class="hint">Bấm vào mã khách để xem tên + danh sách ảnh (tải chậm hơn vì gọi Google Drive).</div>';
+    if (rows.length === 0) { html += '<div class="msg">Không có khách nào chọn ảnh trong khoảng đã lọc.</div>'; app.innerHTML = html; }
+    else {
+      html += '<table><thead><tr><th>Mã khách</th><th>Ngày cập nhật</th><th style="text-align:right">Số ảnh</th><th>Xem trên web</th><th></th></tr></thead><tbody id="tb"></tbody></table>';
+      app.innerHTML = html;
+      var tb = document.getElementById('tb');
+      rows.forEach(function(item){
+        var tr = document.createElement('tr');
+        tr.dataset.code = item.code;
+        tr.innerHTML = '<td data-label="Mã"><button class="expand" data-code="'+esc(item.code)+'">'+esc(item.code)+' ▾</button></td><td data-label="Cập nhật"><span class="when">'+esc(fmtDate(item.updated_at))+'</span></td><td data-label="Số ảnh" class="num">'+item.count+'</td><td data-label="Web"><a href="/khachhangchonanh/?code='+encodeURIComponent(item.code)+'" target="_blank">Mở app</a></td><td></td>';
+        tb.appendChild(tr);
+      });
+      tb.addEventListener('click', function(ev){ var b = ev.target.closest('.expand'); if (!b) return; toggleDetail(b.dataset.code, b); });
+    }
+    document.getElementById('fMonth').addEventListener('change', function(e){ state.filterMonth = e.target.value; render(); });
+    document.getElementById('btnRefresh').addEventListener('click', function(){ if (currentUser) loadList(currentUser); });
+    var xb = document.getElementById('btnXlsx'); if (xb) xb.addEventListener('click', function(){ exportExcel(); });
+  }
+  async function fetchDetail(code){
+    if (state.details[code]) return state.details[code];
+    var url = new URL(API_URL); url.searchParams.set('action','list'); url.searchParams.set('code', code);
+    var r1 = await fetch(url.toString()); var d = await r1.json();
+    var r2 = await fetch('/.netlify/functions/selections?code='+encodeURIComponent(code)); var s = await r2.json();
+    var selIds = (s && s.data && Array.isArray(s.data.ids)) ? s.data.ids : [];
+    var notes = (s && s.data && s.data.notes) || {};
+    var photos = (d && d.photos) || []; var byId = {}; photos.forEach(function(p){ byId[p.id] = p; });
+    var selected = selIds.map(function(id){ var p = byId[id] || {}; return { id: id, name: p.name || '', hasName: !!p.name }; });
+    state.details[code] = { client: (d && d.client) || {}, sourceFolderUrl: (d && d.sourceFolderUrl) || '', selected: selected, notes: notes };
+    return state.details[code];
+  }
+  async function toggleDetail(code, btn){
+    var tr = btn.closest('tr');
+    var existing = document.querySelector('tr.row-detail[data-parent="'+CSS.escape(code)+'"]');
+    if (existing) { existing.remove(); btn.textContent = code + ' ▾'; return; }
+    btn.textContent = code + ' ⏳';
+    try {
+      var det = await fetchDetail(code);
+      var name = (det.client && det.client.name) || '(chưa có tên trong hệ thống)';
+      var imgs = det.selected.map(function(s, i){ var lbl = s.name ? esc(s.name) : ('#'+(i+1)); return '<a href="'+driveView(s.id)+'" target="_blank" title="'+lbl+'"><img loading="lazy" src="'+driveThumb(s.id)+'" alt="'+lbl+'"/><span class="lbl">'+lbl+'</span></a>'; }).join('');
+      var noteEntries = Object.keys(det.notes || {}).filter(function(k){ return String(det.notes[k]||'').trim(); });
+      var noteHtml = '';
+      if (noteEntries.length) {
+        noteHtml = '<div style="margin-top:10px"><b>Ghi chú:</b><ul style="margin:6px 0 0;padding-left:18px">' + noteEntries.map(function(k){ var p = det.selected.find(function(x){ return x.id === k; }); var nm = p && p.name ? p.name : k.slice(0,10); return '<li>'+esc(nm)+': '+esc(det.notes[k])+'</li>'; }).join('') + '</ul></div>';
+      }
+      var folderLink = det.sourceFolderUrl ? '<a href="'+esc(det.sourceFolderUrl)+'" target="_blank">📁 Mở folder Drive khách</a>' : '<span style="color:#a89e8f">(chưa có folder Drive)</span>';
+      var det_tr = document.createElement('tr'); det_tr.className = 'row-detail'; det_tr.dataset.parent = code;
+      det_tr.innerHTML = '<td colspan="5"><div><b>Khách:</b> '+esc(name)+' &nbsp;·&nbsp; '+folderLink+'</div><div class="imgs">'+imgs+'</div>'+noteHtml+'</td>';
+      tr.after(det_tr); btn.textContent = code + ' ▴';
+    } catch (e) { btn.textContent = code + ' ▾'; alert('Không tải được chi tiết: ' + e.message); }
+  }
+  async function exportExcel(){
+    var rows = filtered(); if (!rows.length) return;
+    var xb = document.getElementById('btnXlsx'); var oldTxt = xb.textContent;
+    xb.disabled = true; xb.textContent = 'Đang gom dữ liệu (0/'+rows.length+')…';
+    var done = 0; var pool = 3; var i = 0;
+    async function worker(){ while (i < rows.length) { var my = i++; try { await fetchDetail(rows[my].code); } catch (e) {} done++; xb.textContent = 'Đang gom dữ liệu ('+done+'/'+rows.length+')…'; } }
+    var workers = [];
+    for (var k = 0; k < Math.min(pool, rows.length); k++) workers.push(worker());
+    await Promise.all(workers);
+    var overview = rows.map(function(x){ var d = state.details[x.code] || {}; return { 'Mã khách': x.code, 'Tên khách': (d.client && d.client.name) || '', 'Ngày cập nhật': fmtDate(x.updated_at), 'Số ảnh chọn': x.count, 'Link web khách': 'https://hellochupanh.com/khachhangchonanh/?code=' + x.code, 'Folder Drive khách': (d.sourceFolderUrl) || '' }; });
+    var detailRows = [];
+    rows.forEach(function(x){ var d = state.details[x.code] || { selected: [], notes: {} }; (d.selected || []).forEach(function(s, i){ detailRows.push({ 'Mã khách': x.code, 'Tên khách': (d.client && d.client.name) || '', 'STT': i + 1, 'Tên file ảnh': s.name || '', 'Link ảnh Drive': driveView(s.id), 'Ghi chú': (d.notes && d.notes[s.id]) || '' }); }); });
+    var wb = XLSX.utils.book_new();
+    var ws1 = XLSX.utils.json_to_sheet(overview); ws1['!cols'] = [{wch:12},{wch:24},{wch:20},{wch:11},{wch:44},{wch:44}]; XLSX.utils.book_append_sheet(wb, ws1, 'Tổng quan');
+    var ws2 = XLSX.utils.json_to_sheet(detailRows); ws2['!cols'] = [{wch:12},{wch:24},{wch:6},{wch:32},{wch:48},{wch:34}]; XLSX.utils.book_append_sheet(wb, ws2, 'Chi tiết ảnh');
+    var fname = 'retouch-' + (state.filterMonth || 'tat-ca') + '-' + new Date().toISOString().slice(0,10) + '.xlsx';
+    XLSX.writeFile(wb, fname);
+    xb.disabled = false; xb.textContent = oldTxt;
+  }
+  if (!I) { app.innerHTML = '<div class="err">Không tải được Netlify Identity. Vui lòng reload trang.</div>'; return; }
+  I.on('init', function(user){ if (user) { currentUser = user; loadList(user); } else login(); });
+  I.on('login', function(user){ currentUser = user; loadList(user); });
+  I.on('logout', function(){ currentUser = null; login(); });
+})();
+</script>
+</body>
+</html>
