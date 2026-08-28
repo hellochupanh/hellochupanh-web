@@ -875,11 +875,12 @@ function toggleSelect(id, tile) {
   if (state.view === 'selected') renderGrid();
 }
 function updateCount() {
-  $('count').textContent = state.selected.size;
+  const validCount = state.photos.filter(p => state.selected.has(p.id)).length;
+  $('count').textContent = validCount;
   const sb = $('selBadge');
   if (sb) {
-    sb.textContent = state.selected.size;
-    sb.style.display = state.selected.size > 0 ? '' : 'none';
+    sb.textContent = validCount;
+    sb.style.display = validCount > 0 ? '' : 'none';
   }
 }
 
