@@ -812,7 +812,6 @@ async function downloadAllPhotos(photos) {
   const setBtn = (txt, disabled) => { if (btn) { btn.textContent = txt; btn.disabled = !!disabled; } };
 
   if (isMobile && canShareFiles) {
-    // Fetch NGAY — không có confirm để không tốn 1 tap
     setBtn('⏳ Đang tải 0/' + photos.length + '...', true);
     const files = [];
     let done = 0; let idx = 0;
@@ -834,30 +833,42 @@ async function downloadAllPhotos(photos) {
       }
     }
     const ws = [];
-    for (let k = 0; k < Math.min(4, photos.length); k++) ws.push(worker());
+    for (let k = 0; k < Math.min(6, photos.length); k++) ws.push(worker());
     await Promise.all(ws);
 
     if (!files.length || !navigator.canShare({files: files})) {
       setBtn(origTxt, false);
-      alert('Không tải được ảnh. Vui lòng thử lại hoặc dùng máy tính.');
+      alert('Không tải được ảnh. Vui lòng thử lại.');
       return;
     }
-    // Đổi nút thành "Bấm để lưu vào Ảnh" — cần user gesture MỚI để iOS cho phép share
-    setBtn('✓ Sẵn sàng — Bấm để lưu vào Ảnh', false);
-    btn._pendingFiles = files;
-    // Handler cho lần bấm thứ 2
-    const shareHandler = async () => {
-      btn.removeEventListener('click', shareHandler);
-      const fs = btn._pendingFiles;
-      if (!fs) return;
-      try {
-        await navigator.share({files: fs, title: 'Ảnh Hello Chụp Ảnh'});
-        setBtn('✓ Xong — chọn "Lưu vào Ảnh"', false);
-      } catch (e) {
-        if (!(e && (e.name === 'AbortError' || /cancell?ed|abort/i.test(e.message||'')))) {
-          alert('Lỗi chia sẻ: ' + (e.message || 'không rõ'));
-        }
+
+    // THỬ SHARE NGAY — nếu iOS còn "user activation" thì 1-tap xong.
+    try {
+      await navigator.share({files: files, title: 'Ảnh Hello Chụp Ảnh'});
+      setBtn(origTxt, false);
+      showToast('✓ Chọn "Lưu vào Ảnh" để lưu hết', 'dl');
+      return; // XONG 1 TAP!
+    } catch (e) {
+      // AbortError = khách hủy — không cần tap lại
+      if (e && (e.name === 'AbortError' || /cancell?ed|abort/i.test(e.message||''))) {
         setBtn(origTxt, false);
+        return;
+      }
+      // NotAllowedError = iOS đã hết user activation vì fetch quá lâu → cần tap lần 2
+    }
+
+    // Fallback 2-tap: cần user gesture mới
+    setBtn('✓ Sẵn sàng — Bấm để lưu vào Ảnh', false);
+    const shareHandler = async () => {
+      try {
+        await navigator.share({files: files, title: 'Ảnh Hello Chụp Ảnh'});
+        setBtn(origTxt, false);
+        showToast('✓ Chọn "Lưu vào Ảnh" để lưu hết', 'dl');
+      } catch (err) {
+        setBtn(origTxt, false);
+        if (!(err && (err.name === 'AbortError' || /cancell?ed|abort/i.test(err.message||'')))) {
+          alert('Lỗi chia sẻ: ' + (err.message || 'không rõ'));
+        }
       }
     };
     btn.addEventListener('click', shareHandler, { once: true });
