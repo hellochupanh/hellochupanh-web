@@ -807,45 +807,64 @@ async function downloadAllPhotos(photos) {
   const ua = (navigator.userAgent||'').toLowerCase();
   const isMobile = /iphone|ipad|ipod|android|mobile/.test(ua) || (/macintosh|mac os/.test(ua) && (navigator.maxTouchPoints||0) > 1);
   const canShareFiles = typeof navigator !== 'undefined' && typeof navigator.share === 'function' && typeof navigator.canShare === 'function';
+  const btn = document.getElementById('dlAllSelBtn');
+  const origTxt = btn ? btn.textContent : '';
+  const setBtn = (txt, disabled) => { if (btn) { btn.textContent = txt; btn.disabled = !!disabled; } };
+
   if (isMobile && canShareFiles) {
-    if (!confirm('Tải ' + photos.length + ' ảnh vào Ảnh?\n\nSau khi tải xong sẽ hiện bảng chia sẻ — bấm "Lưu vào Ảnh" để lưu toàn bộ.')) return;
-    showToast('Đang tải ' + photos.length + ' ảnh...', 'dl');
-    try {
-      const files = [];
-      let done = 0; let idx = 0;
-      async function worker() {
-        while (idx < photos.length) {
-          const my = idx++;
-          const p = photos[my];
-          try {
-            const r = await fetch('https://lh3.googleusercontent.com/d/' + p.id + '=w2400');
-            if (r.ok) {
-              const blob = await r.blob();
-              const base = (p.name||'anh').replace(/\.[^.]*$/,'').replace(/[^\w\-]+/g,'_') || 'anh';
-              const ext = (blob.type && blob.type.indexOf('png') >= 0) ? '.png' : '.jpg';
-              files.push(new File([blob], base + ext, {type: blob.type || 'image/jpeg'}));
-            }
-          } catch(_){}
-          done++; if (done % 3 === 0 || done === photos.length) showToast('Đã tải ' + done + '/' + photos.length + '...', 'dl');
-        }
-      }
-      const ws = [];
-      for (let k = 0; k < Math.min(3, photos.length); k++) ws.push(worker());
-      await Promise.all(ws);
-      if (files.length && navigator.canShare({files: files})) {
-        showToast('Mở bảng chia sẻ...', 'dl');
+    // Fetch NGAY — không có confirm để không tốn 1 tap
+    setBtn('⏳ Đang tải 0/' + photos.length + '...', true);
+    const files = [];
+    let done = 0; let idx = 0;
+    async function worker() {
+      while (idx < photos.length) {
+        const my = idx++;
+        const p = photos[my];
         try {
-          await navigator.share({files: files, title: 'Ảnh Hello Chụp Ảnh'});
-          showToast('✓ Chọn "Lưu vào Ảnh" để lưu hết', 'dl');
-          return;
-        } catch(e) {
-          if (e && (e.name === 'AbortError' || /cancell?ed|abort/i.test(e.message||''))) return;
-        }
+          const r = await fetch('https://lh3.googleusercontent.com/d/' + p.id + '=w2400');
+          if (r.ok) {
+            const blob = await r.blob();
+            const base = (p.name||'anh').replace(/\.[^.]*$/,'').replace(/[^\w\-]+/g,'_') || 'anh';
+            const ext = (blob.type && blob.type.indexOf('png') >= 0) ? '.png' : '.jpg';
+            files.push(new File([blob], base + ext, {type: blob.type || 'image/jpeg'}));
+          }
+        } catch(_){}
+        done++;
+        setBtn('⏳ Đang tải ' + done + '/' + photos.length + '...', true);
       }
-      alert('Điện thoại của bạn không hỗ trợ chia sẻ nhiều ảnh cùng lúc. Vui lòng dùng máy tính hoặc tải từng ảnh.');
+    }
+    const ws = [];
+    for (let k = 0; k < Math.min(4, photos.length); k++) ws.push(worker());
+    await Promise.all(ws);
+
+    if (!files.length || !navigator.canShare({files: files})) {
+      setBtn(origTxt, false);
+      alert('Không tải được ảnh. Vui lòng thử lại hoặc dùng máy tính.');
       return;
-    } catch(_){}
+    }
+    // Đổi nút thành "Bấm để lưu vào Ảnh" — cần user gesture MỚI để iOS cho phép share
+    setBtn('✓ Sẵn sàng — Bấm để lưu vào Ảnh', false);
+    btn._pendingFiles = files;
+    // Handler cho lần bấm thứ 2
+    const shareHandler = async () => {
+      btn.removeEventListener('click', shareHandler);
+      const fs = btn._pendingFiles;
+      if (!fs) return;
+      try {
+        await navigator.share({files: fs, title: 'Ảnh Hello Chụp Ảnh'});
+        setBtn('✓ Xong — chọn "Lưu vào Ảnh"', false);
+      } catch (e) {
+        if (!(e && (e.name === 'AbortError' || /cancell?ed|abort/i.test(e.message||'')))) {
+          alert('Lỗi chia sẻ: ' + (e.message || 'không rõ'));
+        }
+        setBtn(origTxt, false);
+      }
+    };
+    btn.addEventListener('click', shareHandler, { once: true });
+    return;
   }
+
+  // Máy tính hoặc fallback: iframe cascade
   if (!confirm('Tải hết ' + photos.length + ' ảnh về máy?')) return;
   showToast('⬇ Đang tải ' + photos.length + ' ảnh về Downloads...', 'dl');
   photos.forEach((p, i) => {
