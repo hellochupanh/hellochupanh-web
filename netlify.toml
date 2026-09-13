@@ -18,3 +18,14 @@
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
+# Trang lựa ảnh của khách - phải luôn lấy bản mới để nhận bugfix ngay lập tức
+[[headers]]
+  for = "/khachhangchonanh/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/khachhangchonanh/"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
