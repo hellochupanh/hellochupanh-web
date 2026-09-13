@@ -470,29 +470,30 @@ let state = {
   lbIndex: 0, sourceFolderUrl: "", lastViewedIdx: -1
 };
 
-// Google Apps Script thi thoảng trả HTML (trang lỗi tạm thời) thay vì JSON -> gây lỗi
-// "Unexpected token '<'". Tự động thử lại 2 lần với backoff thay vì báo lỗi ngay cho khách.
-async function _fetchJsonWithRetry(url, options, attempts = 3) {
+// Google Apps Script cold-start có thể mất 15-20s. Trả HTML tạm khi bận -> gây lỗi
+// "Unexpected token '<'". Retry nhiều lần với backoff dài để chịu được cold-start.
+async function _fetchJsonWithRetry(url, options, attempts = 5) {
   let lastErr = 'unknown';
   for (let i = 0; i < attempts; i++) {
     try {
       const r = await fetch(url, options);
       const text = await r.text();
-      // Nếu là JSON hợp lệ -> trả ngay
       try {
-        const j = JSON.parse(text);
-        return j;
+        return JSON.parse(text);
       } catch (_) {
-        // Không phải JSON (thường là trang lỗi HTML tạm thời của Apps Script) -> retry
-        lastErr = 'server tạm lỗi (HTML thay vì JSON), thử lại...';
+        // HTML thay vì JSON -> Apps Script đang cold-start hoặc bận -> retry
+        lastErr = 'server đang khởi động, đang thử lại (lần ' + (i + 1) + '/' + attempts + ')';
       }
     } catch (err) {
       lastErr = err.message || String(err);
     }
-    // Backoff 700ms, 1500ms
-    if (i < attempts - 1) await new Promise(res => setTimeout(res, 700 + i * 800));
+    // Backoff dài: 1s, 2s, 3s, 5s (tổng ~11s + 5 lần fetch, đủ chịu cold-start 20s)
+    if (i < attempts - 1) {
+      const delays = [1000, 2000, 3000, 5000];
+      await new Promise(res => setTimeout(res, delays[i]));
+    }
   }
-  return { ok: false, error: 'Lỗi kết nối: ' + lastErr };
+  return { ok: false, error: 'Máy chủ đang bận, vui lòng thử lại sau ít phút (' + lastErr + ')' };
 }
 async function apiGet(action, params = {}) {
   const url = new URL(API_URL);
