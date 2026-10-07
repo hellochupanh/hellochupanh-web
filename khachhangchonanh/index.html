@@ -837,7 +837,7 @@ function renderGrid() {
     });
     tile.querySelector('.download').addEventListener('click', (e) => {
       e.stopPropagation();
-      triggerDownload(p.id, p.name);
+      triggerDownload(p.id, p.name, p.type === 'video');
     });
     if (isOriginalView) {
       tile.querySelector('.heart').addEventListener('click', (e) => { e.stopPropagation(); toggleSelect(p.id, tile); });
@@ -885,7 +885,19 @@ function downloadAllSelected() {
   });
 }
 
-async function triggerDownload(fileId, fileName) {
+async function triggerDownload(fileId, fileName, isVideo) {
+  // VIDEO/CLIP: không dùng Web Share (vì fetch URL ảnh thumbnail không đúng file video).
+  // Mở Drive preview để khách bấm nút tải xuống của Google Drive (hoạt động trên cả mobile & desktop).
+  if (isVideo) {
+    const previewUrl = `https://drive.google.com/file/d/${fileId}/view`;
+    try {
+      const w = window.open(previewUrl, '_blank', 'noopener,noreferrer');
+      if (w) { showToast('Mở Drive — bấm nút ⋮ → "Tải xuống" để lưu clip', 'dl'); return; }
+    } catch (_) {}
+    // Fallback: điều hướng cùng tab
+    location.href = previewUrl;
+    return;
+  }
   // lh3.googleusercontent.com cho phép CORS -> fetch được; drive.google.com/thumbnail thì không.
   const corsImgUrl = `https://lh3.googleusercontent.com/d/${fileId}=w2400`;
   const ua = (navigator.userAgent || '').toLowerCase();
@@ -1061,7 +1073,7 @@ $('lbHeart').addEventListener('click', () => {
 });
 $('lbDl').addEventListener('click', () => {
   const p = currentList()[state.lbIndex];
-  if (p) triggerDownload(p.id, p.name);
+  if (p) triggerDownload(p.id, p.name, p.type === 'video');
 });
 $('lbNote').addEventListener('input', (e) => {
   const p = currentList()[state.lbIndex]; if (!p) return;
