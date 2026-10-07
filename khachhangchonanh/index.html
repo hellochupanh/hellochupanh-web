@@ -394,7 +394,6 @@
     </div>
     <div class="head-actions">
       <a class="btn-sm blue" id="dlAllBtn" target="_blank" rel="noopener" style="display:none">📥 Tải toàn bộ</a>
-      <a class="btn-sm blue" id="clipBtn" target="_blank" rel="noopener" style="display:none">🎬 Xem clip</a>
       <span class="counter" id="counterWrap">❤ <span id="count">0</span></span>
       <button class="btn-sm primary" id="finishBtn">Hoàn tất</button>
       <button class="btn-sm" id="logoutBtn">Thoát</button>
@@ -721,10 +720,6 @@ function openGallery() {
   if (state.sourceFolderUrl) {
     $('dlAllBtn').style.display = '';
     $('dlAllBtn').href = state.sourceFolderUrl;
-  }
-  if (state.clipFolderUrl) {
-    $('clipBtn').style.display = '';
-    $('clipBtn').href = state.clipFolderUrl;
   }
   // Hiện tab "Clip" nếu khách có clip
   if (state.clips && state.clips.length > 0) {
