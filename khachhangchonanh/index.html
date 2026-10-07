@@ -394,6 +394,7 @@
     </div>
     <div class="head-actions">
       <a class="btn-sm blue" id="dlAllBtn" target="_blank" rel="noopener" style="display:none">📥 Tải toàn bộ</a>
+      <a class="btn-sm blue" id="clipBtn" target="_blank" rel="noopener" style="display:none">🎬 Xem clip</a>
       <span class="counter" id="counterWrap">❤ <span id="count">0</span></span>
       <button class="btn-sm primary" id="finishBtn">Hoàn tất</button>
       <button class="btn-sm" id="logoutBtn">Thoát</button>
@@ -467,7 +468,7 @@ let state = {
   code: null, client: null, photos: [], edited: [],
   view: "original", selected: new Set(), notes: {},
   selLoaded: false, // Chỉ cho phép save/flush lên server SAU KHI đã load xong data cũ (chống ghi rỗng đè lên data cũ)
-  lbIndex: 0, sourceFolderUrl: "", lastViewedIdx: -1
+  lbIndex: 0, sourceFolderUrl: "", clipFolderUrl: "", lastViewedIdx: -1
 };
 
 // Google Apps Script cold-start có thể mất 15-20s. Trả HTML tạm khi bận -> gây lỗi
@@ -561,6 +562,7 @@ $('loginForm').addEventListener('submit', async (e) => {
   } else {
     state.photos = fresh.photos || [];
     state.sourceFolderUrl = fresh.sourceFolderUrl || "";
+    state.clipFolderUrl = fresh.clipFolderUrl || "";
     if (state.view === 'original') renderGrid();
   }
 });
@@ -570,6 +572,7 @@ function enterGallery(code, res) {
   state.client = res.client;
   state.photos = res.photos || [];
   state.sourceFolderUrl = res.sourceFolderUrl || "";
+  state.clipFolderUrl = res.clipFolderUrl || "";
   state.selected = new Set();
   state.notes = {};
   state.view = "original";
@@ -715,6 +718,10 @@ function openGallery() {
   if (state.sourceFolderUrl) {
     $('dlAllBtn').style.display = '';
     $('dlAllBtn').href = state.sourceFolderUrl;
+  }
+  if (state.clipFolderUrl) {
+    $('clipBtn').style.display = '';
+    $('clipBtn').href = state.clipFolderUrl;
   }
   switchView('original');
 }
