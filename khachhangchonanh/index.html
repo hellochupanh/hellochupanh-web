@@ -405,6 +405,7 @@
     <button class="tab" data-view="studio">Lựa tại studio</button>
     <button class="tab" data-view="selected">Đã chọn <span class="badge" id="selBadge" style="display:none">0</span></button>
     <button class="tab" data-view="edited">Ảnh đã chỉnh <span class="badge" id="editedBadge" style="display:none">0</span></button>
+    <button class="tab" data-view="clip" id="clipTab" style="display:none">🎬 Clip <span class="badge" id="clipBadge" style="display:none">0</span></button>
   </div>
   <div id="content"></div>
 </section>
@@ -465,7 +466,7 @@ const driveDownload = (id) => `https://drive.google.com/uc?export=download&id=${
 const driveVideoPreview = (id) => `https://drive.google.com/file/d/${id}/preview`;
 
 let state = {
-  code: null, client: null, photos: [], edited: [],
+  code: null, client: null, photos: [], edited: [], clips: [],
   view: "original", selected: new Set(), notes: {},
   selLoaded: false, // Chỉ cho phép save/flush lên server SAU KHI đã load xong data cũ (chống ghi rỗng đè lên data cũ)
   lbIndex: 0, sourceFolderUrl: "", clipFolderUrl: "", lastViewedIdx: -1
@@ -561,6 +562,7 @@ $('loginForm').addEventListener('submit', async (e) => {
     enterGallery(code, fresh);
   } else {
     state.photos = fresh.photos || [];
+    state.clips = fresh.clips || [];
     state.sourceFolderUrl = fresh.sourceFolderUrl || "";
     state.clipFolderUrl = fresh.clipFolderUrl || "";
     if (state.view === 'original') renderGrid();
@@ -571,6 +573,7 @@ function enterGallery(code, res) {
   state.code = code;
   state.client = res.client;
   state.photos = res.photos || [];
+  state.clips = res.clips || [];
   state.sourceFolderUrl = res.sourceFolderUrl || "";
   state.clipFolderUrl = res.clipFolderUrl || "";
   state.selected = new Set();
@@ -723,6 +726,13 @@ function openGallery() {
     $('clipBtn').style.display = '';
     $('clipBtn').href = state.clipFolderUrl;
   }
+  // Hiện tab "Clip" nếu khách có clip
+  if (state.clips && state.clips.length > 0) {
+    $('clipTab').style.display = '';
+    const cb = $('clipBadge');
+    cb.style.display = 'inline-block';
+    cb.textContent = state.clips.length;
+  }
   switchView('original');
 }
 
@@ -757,9 +767,14 @@ function switchView(view) {
 function renderGrid() {
   const list = (state.view === 'selected')
     ? state.photos.filter(p => state.selected.has(p.id))
+    : (state.view === 'clip') ? state.clips
     : ((state.view === 'original' || state.view === 'studio') ? state.photos : state.edited);
   const content = $('content');
   content.innerHTML = '';
+  if (state.view === 'clip' && list.length === 0) {
+    content.innerHTML = `<div class="empty"><div class="big">🎬</div><h3 style="font-weight:600;margin-bottom:6px">Chưa có clip</h3><p>Chưa có clip nào trong album của bạn.</p></div>`;
+    return;
+  }
   if (state.view === 'edited' && list.length === 0) {
     content.innerHTML = `<div class="empty"><div class="big">🎨</div><h3 style="font-weight:600;margin-bottom:6px">Chưa có ảnh đã chỉnh</h3><p>Photographer chưa upload ảnh chỉnh sửa.</p></div>`;
     return;
@@ -952,7 +967,7 @@ function preloadImage(id) {
   img.src = driveFull(id);
 }
 function preloadAroundIndex(idx) {
-  const list = state.view === 'original' ? state.photos : state.edited;
+  const list = state.view === 'original' ? state.photos : (state.view === 'clip' ? state.clips : state.edited);
   for (let off of [1, -1, 2, -2]) {
     const i = (idx + off + list.length) % list.length;
     const p = list[i];
@@ -966,6 +981,7 @@ function preloadAroundIndex(idx) {
 function currentList() {
   if (state.view === 'selected') return state.photos.filter(p => state.selected.has(p.id));
   if (state.view === 'edited')   return state.edited;
+  if (state.view === 'clip')     return state.clips;
   return state.photos;
 }
 
