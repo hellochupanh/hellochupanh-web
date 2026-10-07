@@ -893,16 +893,42 @@ function downloadAllSelected() {
 }
 
 async function triggerDownload(fileId, fileName, isVideo) {
-  // VIDEO/CLIP: không dùng Web Share (vì fetch URL ảnh thumbnail không đúng file video).
-  // Mở Drive preview để khách bấm nút tải xuống của Google Drive (hoạt động trên cả mobile & desktop).
+  // VIDEO/CLIP: Google Drive chặn CORS fetch video -> không dùng Web Share được như ảnh.
+  // Cách tốt nhất: dùng link <a download> tới URL tải trực tiếp của Drive.
+  // Trên iOS Safari: mở inline player (vuốt chọn "Lưu Video").
+  // Trên Android: tự động tải vào Downloads.
+  // Trên desktop: iframe trigger download như cũ.
   if (isVideo) {
-    const previewUrl = `https://drive.google.com/file/d/${fileId}/view`;
+    const dlUrl = `https://drive.google.com/uc?export=download&id=${fileId}&confirm=t`;
+    const ua = (navigator.userAgent || '').toLowerCase();
+    const isIOS = /iphone|ipad|ipod/.test(ua)
+      || (/macintosh|mac os/.test(ua) && (navigator.maxTouchPoints || 0) > 1);
+    if (isIOS) {
+      // iOS: mở trong tab mới -> Safari play inline, khách bấm nút chia sẻ -> "Lưu Video"
+      try {
+        const w = window.open(dlUrl, '_blank', 'noopener,noreferrer');
+        if (w) { showToast('Clip đang mở — bấm nút chia sẻ ↗ chọn "Lưu Video"', 'dl'); return; }
+      } catch (_) {}
+      location.href = dlUrl;
+      return;
+    }
+    // Android & desktop: thử anchor download trước
     try {
-      const w = window.open(previewUrl, '_blank', 'noopener,noreferrer');
-      if (w) { showToast('Mở Drive — bấm nút ⋮ → "Tải xuống" để lưu clip', 'dl'); return; }
+      const a = document.createElement('a');
+      a.href = dlUrl;
+      a.download = fileName || 'clip.mov';
+      a.rel = 'noopener';
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      showToast('⬇ Đang tải ' + (fileName || 'clip') + '...', 'dl');
+      return;
     } catch (_) {}
-    // Fallback: điều hướng cùng tab
-    location.href = previewUrl;
+    // Fallback cuối: Drive preview
+    const previewUrl = `https://drive.google.com/file/d/${fileId}/view`;
+    try { window.open(previewUrl, '_blank', 'noopener,noreferrer'); } catch(_) {}
+    showToast('Mở Drive — bấm ⋮ → "Tải xuống" để lưu clip', 'dl');
     return;
   }
   // lh3.googleusercontent.com cho phép CORS -> fetch được; drive.google.com/thumbnail thì không.
