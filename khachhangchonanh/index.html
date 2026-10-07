@@ -250,16 +250,16 @@
     overflow: hidden;
     touch-action: pan-y pinch-zoom;
   }
-  .lb-stage img, .lb-stage video {
+  .lb-stage img, .lb-stage iframe {
     max-width: 100%; max-height: 100%; border-radius: 4px;
     display: block;
   }
-  /* Clip: <video> native, giữ đúng tỉ lệ gốc (dọc hay ngang) */
-  .lb-stage video { background: #000; object-fit: contain; }
-  /* Trên mobile: lightbox dùng gần hết màn hình để clip dọc hiện lớn */
+  /* Clip: iframe Drive native, chiếm trọn chiều cao -> controls Drive nằm dưới cùng, không chồng lên video */
+  .lb-stage iframe { width: 100%; height: 100%; border: none; background: #000; }
+  /* Trên mobile: iframe dùng gần hết màn hình, chiều dọc để video dọc hiển thị lớn */
   @media (max-width: 640px) {
     .lb-stage { padding: 44px 0 60px; }
-    .lb-stage video { max-height: calc(100vh - 110px); width: 100%; height: auto; }
+    .lb-stage iframe { height: calc(100vh - 110px); max-height: none; }
     .lb-top { padding: 10px 12px; }
   }
   .lb-nav {
@@ -431,7 +431,7 @@
     <button class="lb-nav prev" id="lbPrev">‹</button>
     <button class="lb-nav next" id="lbNext">›</button>
     <img id="lbImg" alt="" style="display:none" />
-    <video id="lbVideo" controls playsinline preload="metadata" style="display:none"></video>
+    <iframe id="lbVideo" allow="autoplay; fullscreen" allowfullscreen style="display:none"></iframe>
     <div class="lb-hint" id="lbHint">Vuốt ngang để xem ảnh khác · Vuốt xuống để đóng</div>
   </div>
   <div class="lb-bottom">
@@ -1048,12 +1048,9 @@ function showLightboxMedia() {
   const video = $('lbVideo');
   if (isVideo) {
     img.style.display = 'none'; video.style.display = '';
-    // Dùng URL tải trực tiếp làm nguồn video -> browser native player (sạch, không bị thanh Drive che)
-    video.src = driveDownload(p.id);
-    try { video.load(); } catch(_){}
+    video.src = driveVideoPreview(p.id);
   } else {
-    try { video.pause(); } catch(_){}
-    video.removeAttribute('src'); video.load(); video.style.display = 'none';
+    video.src = 'about:blank'; video.style.display = 'none';
     img.style.display = ''; img.src = driveFull(p.id);
   }
   $('lbCounter').textContent = `${state.lbIndex + 1} / ${list.length} · ${p.name}`;
@@ -1066,9 +1063,7 @@ function showLightboxMedia() {
 }
 function closeLightbox() {
   $('lightbox').classList.remove('active');
-  const v = $('lbVideo');
-  try { v.pause(); } catch(_){}
-  v.removeAttribute('src'); try { v.load(); } catch(_){}
+  $('lbVideo').src = 'about:blank';
   document.body.style.overflow = '';
   if (state.lbIndex >= 0) {
     state.lastViewedIdx = state.lbIndex;
