@@ -1330,5 +1330,65 @@ function showToast(msg, cls) {
 /* Giu lai anh da chon sau khi Hoan tat: khong xoa danh sach chon tren may chu */
 window.clearSelectionsOnServer = async function () {};
 </script>
+<script>
+/* Tu dong cap nhat anh moi: cap nhat so dem khi co du lieu moi + lam moi dinh ky 90s */
+(function () {
+  function setBadge(id, view, n) {
+    let b = document.getElementById(id);
+    if (!b) {
+      const t = document.querySelector('.tab[data-view="' + view + '"]');
+      if (!t) return;
+      b = document.createElement('span'); b.className = 'badge'; b.id = id;
+      t.appendChild(document.createTextNode(' ')); t.appendChild(b);
+    }
+    b.textContent = n; b.style.display = n > 0 ? 'inline-block' : 'none';
+  }
+  let origN = -1;
+  function paintOrig(arr) {
+    origN = arr.length;
+    setBadge('origBadge', 'original', arr.length);
+    const h = document.getElementById('clientHint');
+    if (h) {
+      const v = arr.filter(p => p.type === 'video').length;
+      h.textContent = (arr.length - v) + ' ảnh' + (v > 0 ? ' + ' + v + ' video' : '') + ' · Bấm ❤ chọn, ⬇ tải';
+    }
+  }
+  const d = Object.getOwnPropertyDescriptor(state, 'photos');
+  Object.defineProperty(state, 'photos', {
+    configurable: true, enumerable: true, get: d.get,
+    set(v) { d.set.call(state, v); paintOrig(v || []); }
+  });
+  async function refresh() {
+    const gal = document.getElementById('gallery');
+    const lb = document.getElementById('lightbox');
+    if (document.hidden || !state.code || !gal || !gal.classList.contains('active')) return;
+    if (lb && lb.classList.contains('active')) return;
+    const code = state.code;
+    try {
+      const fresh = await apiGet('list', { code: code });
+      if (fresh && fresh.ok && state.code === code) {
+        const photos = fresh.photos || [], clips = fresh.clips || [];
+        if (photos.length !== origN || clips.length !== (state.clips || []).length) {
+          writeCache(code, fresh);
+          state.photos = photos;
+          state.clips = clips;
+          if (state.view === 'original') window.renderGrid();
+          window.updateCount();
+        }
+      }
+      const st = await apiGet('studio', { code: code });
+      if (st && st.ok && state.code === code) {
+        const sp = st.photos || [];
+        if (sp.length !== (state.studio || []).length) {
+          state.studio = sp;
+          setBadge('studioBadge', 'studio', sp.length);
+          if (state.view === 'studio') { window.renderGrid(); window.updateCount(); }
+        }
+      }
+    } catch (e) {}
+  }
+  setInterval(refresh, 90000);
+})();
+</script>
 </body>
 </html>
