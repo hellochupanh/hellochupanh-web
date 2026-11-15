@@ -1406,5 +1406,37 @@ window.clearSelectionsOnServer = async function () {};
   }, 90000);
 })();
 </script>
+<script>
+/* Tai anh GOC: dung ban goc (=d) thay vi lh3 =w2400 (bi thu nho) */
+(function () {
+  const _orig = window.triggerDownload;
+  const mimeOf = n => /.png$/i.test(n || '') ? 'image/png' : (/.heic$/i.test(n || '') ? 'image/heic' : 'image/jpeg');
+  window.triggerDownload = async function (fileId, fileName, isVideo) {
+    if (isVideo) return _orig.apply(this, arguments);
+    const origUrl = 'https://lh3.googleusercontent.com/d/' + fileId + '=d';
+    const ua = (navigator.userAgent || '').toLowerCase();
+    const isMobile = /iphone|ipad|ipod|android|mobile/.test(ua) || (/macintosh|mac os/.test(ua) && (navigator.maxTouchPoints || 0) > 1);
+    const canShareApi = typeof navigator.share === 'function' && typeof navigator.canShare === 'function';
+    if (isMobile && canShareApi) {
+      showToast('Đang chuẩn bị ảnh gốc...', 'dl');
+      try {
+        const r = await fetch(origUrl);
+        if (r.ok) {
+          const blob = await r.blob();
+          const name = fileName || 'anh.jpg';
+          const file = new File([blob], name, { type: mimeOf(name) });
+          if (navigator.canShare({ files: [file] })) {
+            try { await navigator.share({ files: [file], title: name }); showToast('✓ Xong — chọn "Lưu vào Ảnh" để vào thư viện', 'dl'); return; }
+            catch (e) { if (e && (e.name === 'AbortError' || /cancell?ed|abort/i.test(e.message || ''))) return; }
+          }
+        }
+      } catch (_) {}
+      try { const w = window.open('https://lh3.googleusercontent.com/d/' + fileId + '=s0', '_blank', 'noopener,noreferrer'); if (w) { showToast('Nhấn giữ ảnh → chọn "Lưu vào Ảnh"', 'dl'); return; } } catch (_) {}
+    }
+    const iframe = document.createElement('iframe'); iframe.style.display = 'none'; iframe.src = driveDownload(fileId); document.body.appendChild(iframe);
+    setTimeout(function () { try { iframe.remove(); } catch (_) {} }, 15000);
+  };
+})();
+</script>
 </body>
 </html>
