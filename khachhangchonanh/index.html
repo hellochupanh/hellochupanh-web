@@ -1242,5 +1242,56 @@ function showToast(msg, cls) {
   } catch(e){}
 })();
 </script>
+<script>
+/* LUA TAI STUDIO: tab "Lua tai studio" lay anh tu folder LUA TAI STUDIO (action=studio) */
+(function () {
+  let orig = state.photos || [];
+  let ctx = false;
+  state.studio = [];
+  state.studioLoaded = false;
+  function union() {
+    const seen = new Set(), out = [];
+    orig.concat(state.studio || []).forEach(p => { if (!seen.has(p.id)) { seen.add(p.id); out.push(p); } });
+    return out;
+  }
+  Object.defineProperty(state, 'photos', {
+    configurable: true, enumerable: true,
+    get() {
+      if (ctx && state.view === 'studio') return state.studio;
+      if (ctx && state.view === 'original') return orig;
+      return union();
+    },
+    set(v) { orig = v || []; }
+  });
+  ['renderGrid', 'currentList', 'preloadAroundIndex'].forEach(function (name) {
+    const f = window[name];
+    window[name] = function () {
+      const prev = ctx; ctx = true;
+      try { return f.apply(this, arguments); } finally { ctx = prev; }
+    };
+  });
+  const _enter = window.enterGallery;
+  window.enterGallery = function () {
+    state.studio = []; state.studioLoaded = false;
+    return _enter.apply(this, arguments);
+  };
+  const _switch = window.switchView;
+  window.switchView = function (view) {
+    const r = _switch.apply(this, arguments);
+    if (view === 'studio' && !state.studioLoaded) loadStudio();
+    return r;
+  };
+  async function loadStudio() {
+    state.studioLoaded = true;
+    const content = document.getElementById('content');
+    if (content) content.innerHTML = '<div class="empty"><div class="big">⏳</div><h3>Đang tải ảnh lựa tại studio…</h3></div>';
+    let res = null;
+    try { res = await apiGet('studio', { code: state.code }); } catch (e) {}
+    if (!res || !res.ok) state.studioLoaded = false;
+    state.studio = res && res.ok ? (res.photos || []) : [];
+    if (state.view === 'studio') { window.renderGrid(); window.updateCount(); }
+  }
+})();
+</script>
 </body>
 </html>
