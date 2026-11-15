@@ -1390,5 +1390,21 @@ window.clearSelectionsOnServer = async function () {};
   setInterval(refresh, 90000);
 })();
 </script>
+<script>
+/* Lam moi dinh ky tab Anh da chinh (RETOUCH) */
+(function () {
+  setInterval(async function () {
+    const gal = document.getElementById('gallery');
+    const lb = document.getElementById('lightbox');
+    if (document.hidden || !state.code || !gal || !gal.classList.contains('active')) return;
+    if (lb && lb.classList.contains('active')) return;
+    const code = state.code, n = (state.edited || []).length;
+    try {
+      await loadEdited();
+      if (state.code === code && (state.edited || []).length !== n && state.view === 'edited') window.renderGrid();
+    } catch (e) {}
+  }, 90000);
+})();
+</script>
 </body>
 </html>
