@@ -1293,5 +1293,38 @@ function showToast(msg, cls) {
   }
 })();
 </script>
+<script>
+/* So anh tren tab Anh goc / Lua tai studio */
+(function () {
+  function setBadge(id, view, n) {
+    let b = document.getElementById(id);
+    if (!b) {
+      const t = document.querySelector('.tab[data-view="' + view + '"]');
+      if (!t) return;
+      b = document.createElement('span'); b.className = 'badge'; b.id = id;
+      t.appendChild(document.createTextNode(' ')); t.appendChild(b);
+    }
+    b.textContent = n; b.style.display = n > 0 ? 'inline-block' : 'none';
+  }
+  const _enter = window.enterGallery;
+  window.enterGallery = function (code, res) {
+    const r = _enter.apply(this, arguments);
+    setBadge('origBadge', 'original', ((res && res.photos) || []).length);
+    setBadge('studioBadge', 'studio', 0);
+    prefetchStudio(code);
+    return r;
+  };
+  async function prefetchStudio(code) {
+    state.studioLoaded = true;
+    let res = null;
+    try { res = await apiGet('studio', { code: code }); } catch (e) {}
+    if (state.code !== code) return;
+    if (!res || !res.ok) { state.studioLoaded = false; return; }
+    state.studio = res.photos || [];
+    setBadge('studioBadge', 'studio', state.studio.length);
+    if (state.view === 'studio') { window.renderGrid(); window.updateCount(); }
+  }
+})();
+</script>
 </body>
 </html>
